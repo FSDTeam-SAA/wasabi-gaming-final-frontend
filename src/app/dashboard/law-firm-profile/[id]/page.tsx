@@ -59,7 +59,6 @@ export default function LawFirmProfilePage({ params }: { params: { id: string } 
     const [activeTab, setActiveTab] = useState<"overview" | "positions" | "culture">("overview");
     const router = useRouter();
 
-    // Dynamic firm data - you can replace this with API data fetched via React Query using params.id
     const firmData: FirmData = {
         name: "DLA Piper",
         tagline: "Global Business Law Firm",
