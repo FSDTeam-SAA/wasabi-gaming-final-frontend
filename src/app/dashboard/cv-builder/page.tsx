@@ -3,7 +3,7 @@ import ChooseCVStyle from "./_components/choose-cv-style";
 
 const page = () => {
   return (
-    <div className="p-4 space-y-5">
+    <div className="container p-4 space-y-5">
       <TitleProgress />
       <ChooseCVStyle />
     </div>
