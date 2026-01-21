@@ -1,11 +1,11 @@
 import TitleProgress from "./_components/title-progress";
-import ChooseCVStyle from "./_components/choose-cv-style";
+import CvMakingForm from "./_components/cv-making-form";
 
 const page = () => {
   return (
-    <div className="container p-4 space-y-5">
+    <div className="container p-4 space-y-6">
       <TitleProgress />
-      <ChooseCVStyle />
+      <CvMakingForm />
     </div>
   );
 };
