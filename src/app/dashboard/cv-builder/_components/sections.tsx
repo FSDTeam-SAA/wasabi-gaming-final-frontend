@@ -62,7 +62,7 @@ const Sections = () => {
         {items.map((item, index) => (
           <button
             key={index}
-            className={`flex items-center w-full gap-4 px-5 py-3 border border-gray-200 text-black/80 rounded-3xl ${isActive === item.label && "bg-[#fcf9c2]"}`}
+            className={`flex items-center w-full gap-4 px-5 py-3 border border-gray-200 text-black/80 rounded-3xl ${isActive === item.label && "bg-[#f9ff04]"}`}
             onClick={() => setIsActive(item?.label)}
           >
             {isActive === item?.label ? (
