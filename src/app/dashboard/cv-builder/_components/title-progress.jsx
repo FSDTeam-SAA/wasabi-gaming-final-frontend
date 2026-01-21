@@ -4,7 +4,7 @@ import React from "react";
 
 const TitleProgress = () => {
   return (
-    <div>
+    <div className="space-y-5">
       <div>
         <h1 className="text-3xl font-bold">CV Builder</h1>
         <p className="text-gray-600">
@@ -12,7 +12,7 @@ const TitleProgress = () => {
         </p>
       </div>
 
-      <div className="p-4 mt-5 border rounded-xl border-primary">
+      <div className="p-4 border-2 rounded-xl border-primary">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold">CV Completion</h1>
