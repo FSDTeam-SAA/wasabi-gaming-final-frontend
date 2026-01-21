@@ -1,24 +1,8 @@
 import { create } from "zustand";
 
 interface IFormState {
-  isActive:
-    | "Personal Information"
-    | "Summary"
-    | "Legal Work Experience"
-    | "Non Legal Work Experience"
-    | "Education Level"
-    | "Leadership Experience"
-    | "Achievements";
-  setIsActive: (
-    value:
-      | "Personal Information"
-      | "Summary"
-      | "Legal Work Experience"
-      | "Non Legal Work Experience"
-      | "Education Level"
-      | "Leadership Experience"
-      | "Achievements",
-  ) => void;
+  isActive: string;
+  setIsActive: (value: string) => void;
 }
 
 const initialState: Omit<IFormState, "setIsActive"> = {
