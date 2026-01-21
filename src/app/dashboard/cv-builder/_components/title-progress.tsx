@@ -3,6 +3,8 @@ import { Progress } from "@/components/ui/progress";
 import React from "react";
 
 const TitleProgress = () => {
+  const value: number = 33;
+
   return (
     <div className="space-y-5">
       <div>
@@ -25,7 +27,7 @@ const TitleProgress = () => {
         </div>
 
         <div className="mt-5">
-          <Progress value={33} />
+          <Progress value={value} />
         </div>
       </div>
     </div>
