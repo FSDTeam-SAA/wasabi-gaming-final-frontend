@@ -1,0 +1,993 @@
+import React, { useState, useEffect } from "react";
+import { NavLink, useLocation, Link, useNavigate } from "react-router-dom";
+import Logo from "./logo/Logo";
+import { ActiveSection } from "../../constant/navConstant";
+import { secureStorage } from "../../utils/secureStorage";
+import { Building2 } from "lucide-react";
+
+const Navbar = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isContactPage = location.pathname === "/contact-us";
+
+  const [activeSection, setActiveSection] = useState(
+    secureStorage.getItem("activeSection") || ActiveSection.Students
+  );
+  const [cvBuilderSelection, setCvBuilderSelection] = useState(
+    secureStorage.getItem("cvBuilderSelection") || "CV Builder"
+  );
+  const [isCvBuilderOpen, setIsCvBuilderOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!secureStorage.getItem("token")
+  );
+
+  useEffect(() => {
+    secureStorage.setItem("activeSection", activeSection);
+    secureStorage.setItem("cvBuilderSelection", cvBuilderSelection);
+  }, [activeSection, cvBuilderSelection]);
+
+  const navItemsData =
+    activeSection === ActiveSection.Students
+      ? [
+          { name: "Application Tracker", to: "/dashboard/application-tracker" },
+          { name: "Law Firm Profiles", to: "/dashboard/law-firm-profiles" },
+          { name: "Portfolio", to: "/portfolio" },
+          { name: "Courses", to: "/dashboard/courses" },
+          { name: "Mock Interviews", to: "/dashboard/mock-interview" },
+        ]
+      : [
+          { name: "Manage Students", to: "/manage-students" },
+          { name: "Invite Students", to: "/invite-students" },
+          { name: "Premium Features", to: "/premium-features" },
+        ];
+
+  const moreItems = [
+    {
+      name: "About us",
+      to: `/about-us${
+        activeSection === ActiveSection.Students ? "/student" : "/school"
+      }`,
+    },
+    { name: "Contact us", to: "/contact-us" },
+  ];
+
+  const handleCvSelection = (option) => {
+    setCvBuilderSelection(option);
+    setIsCvBuilderOpen(false);
+    if (option === "CV Builder") {
+      navigate("/dashboard/cv-builder");
+    } else if (option === "Cover Letter Builder") {
+      navigate("/dashboard/cover-letter");
+    }
+  };
+
+  const handleMobileCvSelection = (option) => {
+    setCvBuilderSelection(option);
+    setIsCvBuilderOpen(false);
+    setIsMobileMenuOpen(false);
+    if (option === "CV Builder") {
+      navigate("/dashboard/cv-builder");
+    } else if (option === "Cover Letter Builder") {
+      navigate("/dashboard/cover-letter");
+    }
+  };
+
+  const handleLogout = () => {
+    secureStorage.removeItem("token");
+    secureStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setIsMobileMenuOpen(false);
+  };
+
+  // Check if we should show the Profile button (only for logged-in School users)
+  const showProfileButton =
+    isLoggedIn && activeSection === ActiveSection.School;
+
+  return (
+    <nav className="relative z-50 w-full">
+      {/* Top Section - Optimized for all screens */}
+      <div
+        className={`flex items-center justify-center md:justify-start ${
+          isContactPage ? "" : "bg-gradient-to-r from-[#FEE900] to-[#FEE900]"
+        } p-1 sm:p-2 md:p-3 lg:p-3 xl:p-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-2xl neuton`}
+      >
+        <Link to="/">
+          <button
+            className={`py-1 md:py-2 lg:py-2 px-3 md:px-4 lg:px-4 xl:px-4 ${
+              activeSection === ActiveSection.Students
+                ? "border-b-2 border-[#FDC700] font-semibold"
+                : "text-gray-700"
+            }`}
+            onClick={() => setActiveSection(ActiveSection.Students)}
+          >
+            Students
+          </button>
+        </Link>
+        <span className="mx-1 sm:mx-2 md:mx-2 lg:mx-2 xl:mx-2 text-gray-500">
+          |
+        </span>
+        <Link to="/">
+          <button
+            className={`px-2 py-1 sm:px-3 sm:py-1 md:px-4 md:py-2 lg:px-4 lg:py-2 ${
+              activeSection === ActiveSection.School
+                ? "border-b-2 border-[#FDC700] font-semibold"
+                : "text-gray-700"
+            }`}
+            onClick={() => setActiveSection(ActiveSection.School)}
+          >
+            School
+          </button>
+        </Link>
+      </div>
+
+      {/* Main Navbar - Responsive for all breakpoints */}
+      <div
+        className={`flex items-center justify-between p-2 md:p-3 lg:p-4 px-4 md:px-8 lg:px-2 xl:px-16 ${
+          isContactPage
+            ? ""
+            : activeSection === ActiveSection.Students &&
+              `bg-gradient-to-r from-[#FEF26D] to-[#FEF9C2]`
+        }`}
+      >
+        {/* Logo - Responsive sizing */}
+        <NavLink to="/">
+          <div className="w-auto">
+            <Logo height={120} mobileHeight={80} name="logo" />
+          </div>
+        </NavLink>
+
+        {/* Desktop Navbar Items - Optimized for LG and XL */}
+        <div className="hidden lg:flex flex-1 items-center justify-center">
+          <div className="flex items-center space-x-2 lg:space-x-3 xl:space-x-6">
+            <div
+              className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-6 py-2 ${
+                isContactPage ? `lg:bg-[#bababb8e]` : `lg:bg-[#FEFACA]`
+              }`}
+            >
+              {navItemsData.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.to}
+                  className={({ isActive }) => `
+                    px-2 lg:px-3 xl:px-4 text-center py-1 font-medium transition-colors duration-200 
+                    text-xs sm:text-base md:text-lg lg:text-sm xl:text-lg
+                    ${
+                      isActive
+                        ? "yellow text-black rounded-3xl px-3 lg:px-4 xl:px-4 py-2"
+                        : isContactPage
+                        ? "text-black"
+                        : "text-[#505050] hover:text-black"
+                    }
+                  `}
+                >
+                  {item.name}
+                </NavLink>
+              ))}
+
+              {/* More Dropdown - Improved for LG */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsMoreOpen(!isMoreOpen)}
+                  className={`flex items-center px-2 lg:px-3 xl:px-4 py-1 ${
+                    isContactPage ? `text-black` : `text-[#505050]`
+                  } font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-lg`}
+                >
+                  More
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12"
+                    height="12"
+                    className={`ml-1 lg:ml-2 transform transition-transform duration-200 ${
+                      isMoreOpen ? "rotate-180" : ""
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M11.475 14.475L7.84995 10.85C7.79995 10.8 7.76262 10.746 7.73795 10.688C7.71328 10.63 7.70062 10.5673 7.69995 10.5C7.69995 10.3667 7.74595 10.25 7.83795 10.15C7.92995 10.05 8.05062 10 8.19995 10H15.8C15.95 10 16.071 10.05 16.163 10.15C16.255 10.25 16.3006 10.3667 16.3 10.5C16.3 10.5333 16.25 10.65 16.15 10.85L12.525 14.475C12.4416 14.5583 12.3583 14.6167 12.275 14.65C12.1916 14.6833 12.1 14.7 12 14.7C11.9 14.7 11.8083 14.6833 11.725 14.65C11.6416 14.6167 11.5583 14.5583 11.475 14.475Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+                {isMoreOpen && (
+                  <div className="absolute top-full right-0 mt-2 lg:mt-4 xl:mt-2 w-40 lg:w-44 xl:w-48 z-10 flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
+                    {moreItems.map((item, idx) => (
+                      <React.Fragment key={item.name}>
+                        <NavLink
+                          to={item.to}
+                          onClick={() => setIsMoreOpen(false)}
+                          className={({ isActive }) =>
+                            `w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${
+                              isActive
+                                ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
+                                : "hover:bg-gray-100"
+                            }`
+                          }
+                        >
+                          {item.name}
+                        </NavLink>
+                        {idx < moreItems.length - 1 && (
+                          <div className="w-full border-b border-gray-200" />
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Section - Responsive buttons for LG and XL */}
+        <div className="hidden lg:flex items-center space-x-2 lg:space-x-3 xl:space-x-3">
+          {/* CV Builder - Responsive */}
+          <div className="relative neuton">
+            <button
+              className="flex items-center space-x-1 lg:space-x-2 bg-[#FFFF00] border-2 border-[#E5E500] text-black px-2 lg:px-3 xl:px-4 py-1 lg:py-2 rounded-full font-semibold text-xs lg:text-sm xl:text-base"
+              onClick={() => setIsCvBuilderOpen(!isCvBuilderOpen)}
+            >
+              <span className="truncate max-w-[80px] lg:max-w-[90px] xl:max-w-none">
+                {cvBuilderSelection}
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                className="lg:w-4 lg:h-4 xl:w-4 xl:h-4 ml-1 transform transition-transform duration-200"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M11.475 14.475L7.84995 10.85C7.79995 10.8 7.76262 10.746 7.73795 10.688C7.71328 10.63 7.70062 10.5673 7.69995 10.5C7.69995 10.3667 7.74595 10.25 7.83795 10.15C7.92995 10.05 8.05062 10 8.19995 10H15.8C15.95 10 16.071 10.05 16.163 10.15C16.255 10.25 16.3006 10.3667 16.3 10.5C16.3 10.5333 16.25 10.65 16.15 10.85L12.525 14.475C12.4416 14.5583 12.3583 14.6167 12.275 14.65C12.1916 14.6833 12.1 14.7 12 14.7C11.9 14.7 11.8083 14.6833 11.725 14.65C11.6416 14.6167 11.5583 14.5583 11.475 14.475Z"
+                  fill="#000000"
+                />
+              </svg>
+            </button>
+            {isCvBuilderOpen && (
+              <div className="absolute top-full right-0 mt-2 w-36 lg:w-40 xl:w-48 z-10 flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
+                {["CV Builder", "Cover Letter Builder"].map((option, idx) => (
+                  <React.Fragment key={option}>
+                    <button
+                      className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${
+                        cvBuilderSelection === option
+                          ? "bg-[#FFFF85]"
+                          : "hover:bg-gray-100"
+                      }`}
+                      onClick={() => handleCvSelection(option)}
+                    >
+                      {option}
+                    </button>
+                    {idx === 0 && (
+                      <div className="w-full border-b border-gray-200" />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Elegant Profile Button - Only for logged-in School users */}
+          {showProfileButton && (
+            <Link to="/school-profile">
+              <button
+                className="
+                  flex items-center gap-1 lg:gap-2
+                  px-2 lg:px-3 xl:px-3 py-1 lg:py-1.5 xl:py-1.5
+                  rounded-full
+                  border border-[#E5E5E5]
+                  bg-white
+                  text-[#1F2937]
+                  text-xs lg:text-sm xl:text-sm
+                  font-medium
+                  shadow-sm
+                  hover:bg-gray-50
+                  hover:shadow-md
+                  transition-all
+                  duration-200
+                  min-w-[fit-content]
+                "
+              >
+                {/* Avatar-style identity */}
+                <div className="w-6 h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                  <Building2
+                    size={12}
+                    className="lg:w-4 lg:h-4 xl:w-4 xl:h-4 text-black"
+                  />
+                </div>
+
+                <span className="whitespace-nowrap truncate max-w-[80px] lg:max-w-[90px] xl:max-w-none">
+                  School Profile
+                </span>
+              </button>
+            </Link>
+          )}
+
+          {/* Auth Buttons - Responsive */}
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="border-2 border-[#E5E500] text-[#A6A600] px-2 lg:px-3 xl:px-4 py-1 lg:py-2 rounded-full font-semibold neuton hover:bg-[#ffff00]/10 transition text-xs lg:text-sm xl:text-base"
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link to={"/login"}>
+                <button className="border-2 border-[#E5E500] text-[#A6A600] px-2 lg:px-3 xl:px-4 py-1 lg:py-2 rounded-full font-semibold neuton text-xs lg:text-sm xl:text-base">
+                  Login
+                </button>
+              </Link>
+              <Link to={"/signup"}>
+                <button className="bg-[#FFFF00] border-2 border-[#E5E500] text-black px-2 lg:px-3 xl:px-4 py-1 lg:py-2 rounded-full font-semibold neuton text-xs lg:text-sm xl:text-base">
+                  Sign up
+                </button>
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Toggle - Shows on LG and below */}
+        <div className="lg:hidden">
+          <button
+            className="text-black p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu - Improved for smaller LG screens */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-[#FEF9BE] p-4 flex flex-col space-y-3">
+          {navItemsData.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.to}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 text-sm"
+            >
+              {item.name}
+            </NavLink>
+          ))}
+
+          {/* More Dropdown for Mobile */}
+          <div className="relative">
+            <button
+              onClick={() => setIsMoreOpen(!isMoreOpen)}
+              className="flex justify-between items-center w-full px-3 py-2 text-[#505050] font-medium rounded transition-colors duration-200 text-sm"
+            >
+              More{" "}
+              <span
+                className={`${
+                  isMoreOpen ? "rotate-180" : ""
+                } inline-block text-5xl`}
+              >
+                ▼
+              </span>
+            </button>
+            {isMoreOpen && (
+              <div className="mt-1 ml-4 flex flex-col space-y-1 border-gray-200 rounded-lg shadow-lg p-1">
+                {moreItems.map((item, idx) => (
+                  <React.Fragment key={item.name}>
+                    <NavLink
+                      to={item.to}
+                      onClick={() => {
+                        setIsMoreOpen(false);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={({ isActive }) =>
+                        `px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 text-sm ${
+                          isActive
+                            ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
+                            : ""
+                        }`
+                      }
+                    >
+                      {item.name}
+                    </NavLink>
+                    {idx < moreItems.length - 1 && (
+                      <div className="w-full border-b border-gray-200" />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile CV Builder */}
+          <div className="relative">
+            <button
+              onClick={() => setIsCvBuilderOpen(!isCvBuilderOpen)}
+              className="flex justify-between items-center w-full px-3 py-2 bg-[#FFFF00] border-2 border-[#E5E500] text-black rounded font-semibold text-sm"
+            >
+              {cvBuilderSelection}{" "}
+              <span
+                className={`${
+                  isCvBuilderOpen ? "rotate-180" : ""
+                } inline-block`}
+              >
+                ▼
+              </span>
+            </button>
+            {isCvBuilderOpen && (
+              <div className="mt-1 ml-4 flex flex-col space-y-1 border-gray-200 rounded-lg shadow-lg p-1">
+                {["CV Builder", "Cover Letter Builder"].map((option, idx) => (
+                  <React.Fragment key={option}>
+                    <button
+                      onClick={() => handleMobileCvSelection(option)}
+                      className={`text-start px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 w-full text-sm ${
+                        cvBuilderSelection === option ? "bg-[#FFFF85]" : ""
+                      }`}
+                    >
+                      {option}
+                    </button>
+                    {idx === 0 && (
+                      <div className="w-full border-b border-gray-200" />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Profile Button */}
+          {showProfileButton && (
+            <Link
+              to="/school-profile"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <button
+                className="
+                  w-full
+                  flex items-center gap-3
+                  px-4 py-2
+                  rounded-lg
+                  border border-[#E5E5E5]
+                  bg-white
+                  text-[#1F2937]
+                  text-sm
+                  font-medium
+                  shadow-sm
+                  hover:bg-gray-50
+                  transition-all
+                "
+              >
+                <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
+                  <Building2 size={18} className="text-black" />
+                </div>
+                School Profile
+              </button>
+            </Link>
+          )}
+
+          {/* Mobile Auth Buttons */}
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="border-2 border-[#E5E500] text-[#A6A600] px-4 py-2 rounded-full font-semibold w-full hover:bg-[#ffff00]/10 transition text-sm"
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link to={"/login"} onClick={() => setIsMobileMenuOpen(false)}>
+                <button className="border-2 border-[#E5E500] text-black px-4 py-2 rounded-full font-semibold w-full text-sm">
+                  Login
+                </button>
+              </Link>
+              <Link to={"/signup"} onClick={() => setIsMobileMenuOpen(false)}>
+                <button className="bg-[#FFFF00] border-2 border-[#E5E500] text-black px-4 py-2 rounded-full font-semibold w-full text-sm">
+                  Sign up
+                </button>
+              </Link>
+            </>
+          )}
+        </div>
+      )}
+    </nav>
+  );
+};
+
+export default Navbar;
+
+
+
+// import React, { useState, useEffect } from "react";
+// import { NavLink, useLocation, Link, useNavigate } from "react-router-dom";
+// import Logo from "./logo/Logo";
+// import { ActiveSection } from "../../constant/navConstant";
+// import { secureStorage } from "../../utils/secureStorage";
+// import { Building2 } from "lucide-react";
+
+// const Navbar = () => {
+//   const location = useLocation();
+//   const navigate = useNavigate();
+//   const isContactPage = location.pathname === "/contact-us";
+
+//   const [activeSection, setActiveSection] = useState(
+//     secureStorage.getItem("activeSection") || ActiveSection.Students
+//   );
+//   const [cvBuilderSelection, setCvBuilderSelection] = useState(
+//     secureStorage.getItem("cvBuilderSelection") || "CV Builder"
+//   );
+//   const [isCvBuilderOpen, setIsCvBuilderOpen] = useState(false);
+//   const [isMoreOpen, setIsMoreOpen] = useState(false);
+//   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+//   const [isLoggedIn, setIsLoggedIn] = useState(
+//     !!secureStorage.getItem("token")
+//   );
+
+//   useEffect(() => {
+//     secureStorage.setItem("activeSection", activeSection);
+//     secureStorage.setItem("cvBuilderSelection", cvBuilderSelection);
+//   }, [activeSection, cvBuilderSelection]);
+
+//   const navItemsData =
+//     activeSection === ActiveSection.Students
+//       ? [
+//           { name: "Application Tracker", to: "/dashboard/application-tracker" },
+//           { name: "Law Firm Profiles", to: "/dashboard/law-firm-profiles" },
+//           { name: "Portfolio", to: "/portfolio" },
+//           { name: "Courses", to: "/dashboard/courses" },
+//           { name: "Mock Interviews", to: "/dashboard/mock-interview" },
+//         ]
+//       : [
+//           { name: "Manage Students", to: "/manage-students" },
+//           { name: "Invite Students", to: "/invite-students" },
+//           { name: "Premium Features", to: "/premium-features" },
+//         ];
+
+//   const moreItems = [
+//     {
+//       name: "About us",
+//       to: `/about-us${
+//         activeSection === ActiveSection.Students ? "/student" : "/school"
+//       }`,
+//     },
+//     { name: "Contact us", to: "/contact-us" },
+//   ];
+
+//   const handleCvSelection = (option) => {
+//     setCvBuilderSelection(option);
+//     setIsCvBuilderOpen(false);
+//     if (option === "CV Builder") {
+//       navigate("/dashboard/cv-builder");
+//     } else if (option === "Cover Letter Builder") {
+//       navigate("/dashboard/cover-letter");
+//     }
+//   };
+
+//   const handleMobileCvSelection = (option) => {
+//     setCvBuilderSelection(option);
+//     setIsCvBuilderOpen(false);
+//     setIsMobileMenuOpen(false);
+//     if (option === "CV Builder") {
+//       navigate("/dashboard/cv-builder");
+//     } else if (option === "Cover Letter Builder") {
+//       navigate("/dashboard/cover-letter");
+//     }
+//   };
+
+//   const handleLogout = () => {
+//     secureStorage.removeItem("token");
+//     secureStorage.removeItem("user");
+//     setIsLoggedIn(false);
+//     setIsMobileMenuOpen(false);
+//   };
+
+//   // Check if we should show the Profile button (only for logged-in School users)
+//   const showProfileButton =
+//     isLoggedIn && activeSection === ActiveSection.School;
+
+//   return (
+//     <nav className="relative z-50 w-full">
+//       {/* Top Section */}
+//       <div
+//         className={`flex items-center justify-center md:justify-start ${
+//           isContactPage ? "" : "bg-gradient-to-r from-[#FEE900] to-[#FEE900]"
+//         } p-1 sm:p-2 md:p-3 lg:p-4 text-xs sm:text-sm md:text-base lg:text-2xl neuton`}
+//       >
+//         <Link to="/">
+//           <button
+//             className={`py-1 md:py-2 px-4 md:px-4 ${
+//               activeSection === ActiveSection.Students
+//                 ? "border-b-2 border-[#FDC700] font-semibold"
+//                 : "text-gray-700"
+//             }`}
+//             onClick={() => setActiveSection(ActiveSection.Students)}
+//           >
+//             Students
+//           </button>
+//         </Link>
+//         <span className="mx-1 sm:mx-2 text-gray-500">|</span>
+//         <Link to="/">
+//           <button
+//             className={`px-2 py-1 sm:px-3 sm:py-1 md:px-4 md:py-2 ${
+//               activeSection === ActiveSection.School
+//                 ? "border-b-2 border-[#FDC700] font-semibold"
+//                 : "text-gray-700"
+//             }`}
+//             onClick={() => setActiveSection(ActiveSection.School)}
+//           >
+//             School
+//           </button>
+//         </Link>
+//       </div>
+
+//       {/* Main Navbar */}
+//       <div
+//         className={`flex items-center justify-between p-2 md:p-3 lg:p-6 px-4 md:px-8 lg:px-16 ${
+//           isContactPage
+//             ? ""
+//             : activeSection === ActiveSection.Students &&
+//               `bg-gradient-to-r from-[#FEF26D] to-[#FEF9C2]`
+//         }`}
+//       >
+//         {/* Logo */}
+//         <NavLink to="/">
+//           <Logo height={120} mobileHeight={70} name="logo" />
+//         </NavLink>
+
+//         {/* Desktop Navbar Items */}
+//         <ul
+//           className={`inter lg:ml-[10%] hidden lg:flex items-center space-x-6 lg:border lg:border-[#E6E6E6] lg:rounded-full lg:px-6 lg:py-3 w-auto ${
+//             isContactPage ? `lg:bg-[#bababb8e]` : `lg:bg-[#FEFACA]`
+//           }`}
+//         >
+//           {navItemsData.map((item) => (
+//             <li key={item.name}>
+//               <NavLink
+//                 to={item.to}
+//                 className={`px-2 py-1 sm:px-4 sm:py-2 border font-medium transition-colors duration-200 text-sm sm:text-base md:text-lg border-none ${
+//                   location.pathname === item.to
+//                     ? "yellow text-black rounded-3xl"
+//                     : isContactPage
+//                     ? "text-black"
+//                     : "text-[#505050]"
+//                 }`}
+//               >
+//                 {item.name}
+//               </NavLink>
+//             </li>
+//           ))}
+
+//           {/* More Dropdown */}
+//           <li className="relative">
+//             <button
+//               onClick={() => setIsMoreOpen(!isMoreOpen)}
+//               className="flex items-center px-2 py-1 sm:px-4 sm:py-2 text-[#505050] font-medium hover:text-gray-700 transition-colors duration-200 text-sm sm:text-base md:text-lg"
+//             >
+//               More
+//               <svg
+//                 xmlns="http://www.w3.org/2000/svg"
+//                 width="16"
+//                 height="16"
+//                 viewBox="0 0 24 24"
+//                 fill="none"
+//                 className={`ml-2 transform transition-transform duration-200 ${
+//                   isMoreOpen ? "rotate-180" : ""
+//                 }`}
+//               >
+//                 <path
+//                   d="M11.475 14.475L7.84995 10.85C7.79995 10.8 7.76262 10.746 7.73795 10.688C7.71328 10.63 7.70062 10.5673 7.69995 10.5C7.69995 10.3667 7.74595 10.25 7.83795 10.15C7.92995 10.05 8.05062 10 8.19995 10H15.8C15.95 10 16.071 10.05 16.163 10.15C16.255 10.25 16.3006 10.3667 16.3 10.5C16.3 10.5333 16.25 10.65 16.15 10.85L12.525 14.475C12.4416 14.5583 12.3583 14.6167 12.275 14.65C12.1916 14.6833 12.1 14.7 12 14.7C11.9 14.7 11.8083 14.6833 11.725 14.65C11.6416 14.6167 11.5583 14.5583 11.475 14.475Z"
+//                   fill="#000000"
+//                 />
+//               </svg>
+//             </button>
+//             {isMoreOpen && (
+//               <div className="absolute top-full right-0 mt-3 w-48 z-10 flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
+//                 {moreItems.map((item, idx) => (
+//                   <React.Fragment key={item.name}>
+//                     <NavLink
+//                       key={item.name}
+//                       to={item.to}
+//                       onClick={() => setIsMoreOpen(false)}
+//                       className={({ isActive }) =>
+//                         `w-full text-left px-4 py-2 text-[#505050] font-medium hover:bg-gray-100 transition-colors duration-200 ${
+//                           isActive
+//                             ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
+//                             : ""
+//                         }`
+//                       }
+//                     >
+//                       {item.name}
+//                     </NavLink>
+//                     {idx < moreItems.length - 1 && (
+//                       <div className="w-full border-b border-gray-200" />
+//                     )}
+//                   </React.Fragment>
+//                 ))}
+//               </div>
+//             )}
+//           </li>
+//         </ul>
+
+//         {/* Right Section - CV Builder + Auth + Profile (School only) */}
+//         <div className="hidden lg:flex items-center space-x-3">
+//           {/* CV Builder */}
+//           <div className="relative neuton">
+//             <button
+//               className="flex items-center space-x-2 bg-[#FFFF00] border-2 border-[#E5E500] text-black px-4 py-2 rounded-full font-semibold"
+//               onClick={() => setIsCvBuilderOpen(!isCvBuilderOpen)}
+//             >
+//               <span>{cvBuilderSelection}</span>
+//               <svg
+//                 xmlns="http://www.w3.org/2000/svg"
+//                 width="16"
+//                 height="16"
+//                 viewBox="0 0 24 24"
+//                 fill="none"
+//                 className={`ml-2 transform transition-transform duration-200 ${
+//                   isCvBuilderOpen ? "rotate-180" : ""
+//                 }`}
+//               >
+//                 <path
+//                   d="M11.475 14.475L7.84995 10.85C7.79995 10.8 7.76262 10.746 7.73795 10.688C7.71328 10.63 7.70062 10.5673 7.69995 10.5C7.69995 10.3667 7.74595 10.25 7.83795 10.15C7.92995 10.05 8.05062 10 8.19995 10H15.8C15.95 10 16.071 10.05 16.163 10.15C16.255 10.25 16.3006 10.3667 16.3 10.5C16.3 10.5333 16.25 10.65 16.15 10.85L12.525 14.475C12.4416 14.5583 12.3583 14.6167 12.275 14.65C12.1916 14.6833 12.1 14.7 12 14.7C11.9 14.7 11.8083 14.6833 11.725 14.65C11.6416 14.6167 11.5583 14.5583 11.475 14.475Z"
+//                   fill="#000000"
+//                 />
+//               </svg>
+//             </button>
+//             {isCvBuilderOpen && (
+//               <div className="absolute top-full right-0 mt-2 w-48 z-10 flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
+//                 {["CV Builder", "Cover Letter Builder"].map((option, idx) => (
+//                   <React.Fragment key={option}>
+//                     <button
+//                       className={`w-full text-left px-4 py-2 text-[#505050] font-medium transition-colors duration-200 ${
+//                         cvBuilderSelection === option
+//                           ? "bg-[#FFFF85]"
+//                           : "hover:bg-gray-100"
+//                       }`}
+//                       onClick={() => handleCvSelection(option)}
+//                     >
+//                       {option}
+//                     </button>
+//                     {idx === 0 && (
+//                       <div className="w-full border-b border-gray-200" />
+//                     )}
+//                   </React.Fragment>
+//                 ))}
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Elegant Profile Button - Only for logged-in School users */}
+//           {showProfileButton && (
+//             <Link to="/school-profile">
+//               <button
+//                 className="
+//         flex items-center gap-2
+//         px-3 py-1.5
+//         rounded-full
+//         border border-[#E5E5E5]
+//         bg-white
+//         text-[#1F2937]
+//         text-sm
+//         font-medium
+//         shadow-sm
+//         hover:bg-gray-50
+//         hover:shadow-md
+//         transition-all
+//         duration-200
+//       "
+//               >
+//                 {/* Avatar-style identity */}
+//                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+//                   <Building2 size={16} className="text-black" />
+//                 </div>
+
+//                 <span className="whitespace-nowrap">School Profile</span>
+//               </button>
+//             </Link>
+//           )}
+
+//           {/* Auth Buttons */}
+//           {isLoggedIn ? (
+//             <button
+//               onClick={handleLogout}
+//               className="border-2 border-[#E5E500] text-[#A6A600] px-4 py-2 rounded-full font-semibold neuton hover:bg-[#ffff00]/10 transition"
+//             >
+//               Logout
+//             </button>
+//           ) : (
+//             <>
+//               <Link to={"/login"}>
+//                 <button className="border-2 border-[#E5E500] text-[#A6A600] px-4 py-2 rounded-full font-semibold neuton">
+//                   Login
+//                 </button>
+//               </Link>
+//               <Link to={"/signup"}>
+//                 <button className="bg-[#FFFF00] border-2 border-[#E5E500] text-black px-4 py-2 rounded-full font-semibold neuton">
+//                   Sign up
+//                 </button>
+//               </Link>
+//             </>
+//           )}
+//         </div>
+
+//         {/* Mobile Toggle */}
+//         <div className="lg:hidden">
+//           <button
+//             className="text-black p-2"
+//             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+//           >
+//             <svg
+//               className="w-6 h-6"
+//               fill="none"
+//               stroke="currentColor"
+//               viewBox="0 0 24 24"
+//             >
+//               <path
+//                 strokeLinecap="round"
+//                 strokeLinejoin="round"
+//                 strokeWidth="2"
+//                 d="M4 6h16M4 12h16M4 18h16"
+//               />
+//             </svg>
+//           </button>
+//         </div>
+//       </div>
+
+//       {/* Mobile Menu - Profile button also added here */}
+//       {isMobileMenuOpen && (
+//         <div className="lg:hidden bg-[#FEF9BE] p-4 flex flex-col space-y-2">
+//           {navItemsData.map((item) => (
+//             <NavLink
+//               key={item.name}
+//               to={item.to}
+//               onClick={() => setIsMobileMenuOpen(false)}
+//               className="px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200"
+//             >
+//               {item.name}
+//             </NavLink>
+//           ))}
+
+//           {/* More Dropdown */}
+//           <div className="relative">
+//             <button
+//               onClick={() => setIsMoreOpen(!isMoreOpen)}
+//               className="flex justify-between items-center w-full px-3 py-2 text-[#505050] font-medium rounded transition-colors duration-200"
+//             >
+//               More{" "}
+//               <span
+//                 className={`${isMoreOpen ? "rotate-180" : ""} inline-block`}
+//               >
+//                 ▼
+//               </span>
+//             </button>
+//             {isMoreOpen && (
+//               <div className="mt-1 ml-4 flex flex-col space-y-1 border-gray-200 rounded-lg shadow-lg p-1">
+//                 {moreItems.map((item, idx) => (
+//                   <React.Fragment key={item.name}>
+//                     <NavLink
+//                       key={item.name}
+//                       to={item.to}
+//                       onClick={() => setIsMobileMenuOpen(false)}
+//                       className={({ isActive }) =>
+//                         `px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 ${
+//                           isActive
+//                             ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
+//                             : ""
+//                         }`
+//                       }
+//                     >
+//                       {item.name}
+//                     </NavLink>
+//                     {idx < moreItems.length - 1 && (
+//                       <div className="w-full border-b border-gray-200" />
+//                     )}
+//                   </React.Fragment>
+//                 ))}
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Mobile CV Builder */}
+//           <div className="relative">
+//             <button
+//               onClick={() => setIsCvBuilderOpen(!isCvBuilderOpen)}
+//               className="flex justify-between items-center w-full px-3 py-2 bg-[#FFFF00] border-2 border-[#E5E500] text-black rounded font-semibold"
+//             >
+//               {cvBuilderSelection}{" "}
+//               <span
+//                 className={`${
+//                   isCvBuilderOpen ? "rotate-180" : ""
+//                 } inline-block`}
+//               >
+//                 ▼
+//               </span>
+//             </button>
+//             {isCvBuilderOpen && (
+//               <div className="mt-1 ml-4 flex flex-col space-y-1 border-gray-200 rounded-lg shadow-lg p-1">
+//                 {["CV Builder", "Cover Letter Builder"].map((option, idx) => (
+//                   <React.Fragment key={option}>
+//                     <button
+//                       onClick={() => handleMobileCvSelection(option)}
+//                       className={`text-start px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 w-full ${
+//                         cvBuilderSelection === option ? "bg-[#FFFF85]" : ""
+//                       }`}
+//                     >
+//                       {option}
+//                     </button>
+//                     {idx === 0 && (
+//                       <div className="w-full border-b border-gray-200" />
+//                     )}
+//                   </React.Fragment>
+//                 ))}
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Mobile Profile Button - Elegant Design */}
+//           {showProfileButton && (
+//             <Link
+//               to="/school-profile"
+//               onClick={() => setIsMobileMenuOpen(false)}
+//             >
+//               <button
+//                 className="
+//         w-full
+//         flex items-center gap-3
+//         px-4 py-2
+//         rounded-lg
+//         border border-[#E5E5E5]
+//         bg-white
+//         text-[#1F2937]
+//         text-sm
+//         font-medium
+//         shadow-sm
+//         hover:bg-gray-50
+//         transition-all
+//       "
+//               >
+//                 <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
+//                   <Building2 size={18} className="text-black" />
+//                 </div>
+//                 School Profile
+//               </button>
+//             </Link>
+//           )}
+
+//           {/* Mobile Auth Buttons */}
+//           {isLoggedIn ? (
+//             <button
+//               onClick={handleLogout}
+//               className="border-2 border-[#E5E500] text-[#A6A600] px-4 py-2 rounded-full font-semibold w-full hover:bg-[#ffff00]/10 transition"
+//             >
+//               Logout
+//             </button>
+//           ) : (
+//             <>
+//               <Link to={"/login"} onClick={() => setIsMobileMenuOpen(false)}>
+//                 <button className="border-2 border-[#E5E500] text-black px-4 py-2 rounded-full font-semibold w-full">
+//                   Login
+//                 </button>
+//               </Link>
+//               <Link to={"/signup"} onClick={() => setIsMobileMenuOpen(false)}>
+//                 <button className="bg-[#FFFF00] border-2 border-[#E5E500] text-black px-4 py-2 rounded-full font-semibold w-full">
+//                   Sign up
+//                 </button>
+//               </Link>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </nav>
+//   );
+// };
+
+// export default Navbar;
