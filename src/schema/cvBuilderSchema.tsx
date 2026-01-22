@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-
 export const educationSchema = z.object({
   educationLevel: z.string().min(1, "Education level is required"),
   institution: z.string().min(1, "Institution is required"),
@@ -22,12 +21,11 @@ export const achievementSchema = z.object({
   recommendedSkills: z.array(z.string()).default([]),
 });
 
-
 export const cvBuilderSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  profession: z.string().optional(),
-  email: z.string().email("Invalid email address"),
+  profession: z.string({ required_error: "Profession is required" }).min(1, "Profession is required"),
+  email: z.string({ required_error: "Email is required" }).email("Invalid email address"),
   phone: z.string().optional(),
   location: z.string().optional(),
 

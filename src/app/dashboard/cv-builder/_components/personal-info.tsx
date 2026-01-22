@@ -13,12 +13,33 @@ import { User } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { CvBuilderFormType } from "./cv-making-form";
 import { Button } from "@/components/ui/button";
+import { useFormState } from "./state/useFormState";
 
 type PersonalInfoProps = {
   form: UseFormReturn<CvBuilderFormType>;
 };
 
 const PersonalInfo = ({ form }: PersonalInfoProps) => {
+  const { setIsActive } = useFormState();
+  
+  const personalInfoFields: (keyof CvBuilderFormType)[] = [
+    "firstName",
+    "lastName",
+    "profession",
+    "email",
+    "phone",
+    "location",
+  ];
+  
+  const handleNext = async () => {
+  const isStepValid = await form.trigger(personalInfoFields);
+
+  if (isStepValid) {
+    setIsActive("Legal Work Experience");
+  }
+};
+
+
   return (
     <div className="w-full p-4 border border-gray-300 rounded-xl">
       <div className="flex items-center gap-3 mb-8">
@@ -167,7 +188,11 @@ const PersonalInfo = ({ form }: PersonalInfoProps) => {
           )}
         />
 
-        <Button type="button" className="w-24 rounded-3xl">
+        <Button
+          onClick={handleNext}
+          type="button"
+          className="w-24 rounded-3xl"
+        >
           Next
         </Button>
       </div>

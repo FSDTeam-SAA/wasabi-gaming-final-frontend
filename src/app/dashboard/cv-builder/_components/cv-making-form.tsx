@@ -18,6 +18,7 @@ const CvMakingForm = () => {
 
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
+    mode: 'onChange',
     defaultValues: {
       firstName: "",
       lastName: "",

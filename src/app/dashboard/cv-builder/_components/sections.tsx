@@ -21,11 +21,6 @@ const items = [
   },
   {
     circle: Circle,
-    icon: BookText,
-    label: "Summary",
-  },
-  {
-    circle: Circle,
     icon: Package,
     label: "Legal Work Experience",
   },
@@ -48,6 +43,11 @@ const items = [
     circle: Circle,
     icon: Trophy,
     label: "Achievements",
+  },
+  {
+    circle: Circle,
+    icon: BookText,
+    label: "Summary",
   },
 ];
 
