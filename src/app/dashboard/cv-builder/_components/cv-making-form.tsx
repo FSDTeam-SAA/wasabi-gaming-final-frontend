@@ -4,12 +4,12 @@ import ChooseCvStyle from "./choose-cv-style";
 import Sections from "./sections";
 import PersonalInfo from "./personal-info";
 import { useFormState } from "./state/useFormState";
-import LegalWorkExperience from "./legal-work-experience";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { cvBuilderSchema } from "@/schema/cvBuilderSchema";
+import LegalWorkExperience from "./legal-work-experience";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
@@ -18,7 +18,7 @@ const CvMakingForm = () => {
 
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -44,7 +44,9 @@ const CvMakingForm = () => {
               {isActive === "Personal Information" && (
                 <PersonalInfo form={form} />
               )}
-              {isActive === "Legal Work Experience" && <LegalWorkExperience />}
+              {isActive === "Legal Work Experience" && (
+                <LegalWorkExperience form={form} />
+              )}
               {isActive === "Summary" && <div>Summary Component</div>}
               {isActive === "Non Legal Work Experience" && (
                 <div>Non Legal Work Experience Component</div>
