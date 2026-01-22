@@ -11,10 +11,12 @@ import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { cvBuilderSchema } from "@/schema/cvBuilderSchema";
 
+export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
+
 const CvMakingForm = () => {
   const { isActive } = useFormState();
 
-  const form = useForm<z.infer<typeof cvBuilderSchema>>({
+  const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
     defaultValues: {
       firstName: "",
@@ -22,7 +24,7 @@ const CvMakingForm = () => {
     },
   });
 
-  function onSubmit(data: z.infer<typeof cvBuilderSchema>) {
+  function onSubmit(data: CvBuilderFormType) {
     console.log(data);
   }
 
@@ -38,7 +40,9 @@ const CvMakingForm = () => {
             </div>
 
             <div className="flex flex-1">
-              {isActive === "Personal Information" && <PersonalInfo />}
+              {isActive === "Personal Information" && (
+                <PersonalInfo form={form} />
+              )}
               {isActive === "Legal Work Experience" && <LegalWorkExperience />}
               {isActive === "Summary" && <div>Summary Component</div>}
               {isActive === "Non Legal Work Experience" && (
