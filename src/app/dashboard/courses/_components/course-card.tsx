@@ -48,7 +48,7 @@ export default function CourseCard() {
 
 
     const payMutation = useMutation({
-        mutationFn: async (courseId : string) => {
+        mutationFn: async (courseId: string) => {
             if (!token) throw new Error("Authentication token missing");
 
             const response = await fetch(
