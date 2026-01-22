@@ -5,38 +5,57 @@ import Sections from "./sections";
 import PersonalInfo from "./personal-info";
 import { useFormState } from "./state/useFormState";
 import LegalWorkExperience from "./legal-work-experience";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Form } from "@/components/ui/form";
+import { cvBuilderSchema } from "@/schema/cvBuilderSchema";
 
 const CvMakingForm = () => {
   const { isActive } = useFormState();
 
-  console.log("isActive: ", isActive);
+  const form = useForm<z.infer<typeof cvBuilderSchema>>({
+    resolver: zodResolver(cvBuilderSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof cvBuilderSchema>) {
+    console.log(data);
+  }
 
   return (
-    <div className="space-y-6">
-      <ChooseCvStyle />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="space-y-6">
+          <ChooseCvStyle />
 
-      <div className="flex items-start gap-5">
-        <div className="lg:w-[30%]">
-          <Sections />
-        </div>
+          <div className="flex items-start gap-5">
+            <div className="lg:w-[30%]">
+              <Sections />
+            </div>
 
-        <div className="flex flex-1">
-          {isActive === "Personal Information" && <PersonalInfo />}
-          {isActive === "Legal Work Experience" && <LegalWorkExperience />}
-          {isActive === "Summary" && <div>Summary Component</div>}
-          {isActive === "Non Legal Work Experience" && (
-            <div>Non Legal Work Experience Component</div>
-          )}
-          {isActive === "Education Level" && (
-            <div>Education Level Component</div>
-          )}
-          {isActive === "Leadership Experience" && (
-            <div>Leadership Experience Component</div>
-          )}
-          {isActive === "Achievements" && <div>Achievements Component</div>}
+            <div className="flex flex-1">
+              {isActive === "Personal Information" && <PersonalInfo />}
+              {isActive === "Legal Work Experience" && <LegalWorkExperience />}
+              {isActive === "Summary" && <div>Summary Component</div>}
+              {isActive === "Non Legal Work Experience" && (
+                <div>Non Legal Work Experience Component</div>
+              )}
+              {isActive === "Education Level" && (
+                <div>Education Level Component</div>
+              )}
+              {isActive === "Leadership Experience" && (
+                <div>Leadership Experience Component</div>
+              )}
+              {isActive === "Achievements" && <div>Achievements Component</div>}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </form>
+    </Form>
   );
 };
 
