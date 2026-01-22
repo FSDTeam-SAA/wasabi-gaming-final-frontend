@@ -1,9 +1,7 @@
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+"use client";
 import { Award, BookOpen, CircleCheckBig, GraduationCap, Search, Star, TrendingUp, Users } from 'lucide-react'
-import Link from 'next/link'
-import { Suspense } from 'react'
 import CourseCard from './course-card'
+
 
 export const metadata = {
     title: 'CourseHub - Learn from Expert-Led Courses',
@@ -19,44 +17,6 @@ export default function AllCourse() {
         { label: 'Certificates', value: 0, icon: Award, bg: "#FEF9C2", textCOlor: "#D08700" },
     ]
 
-    const courses = [
-        {
-            id: 1,
-            title: 'Resume Writing Mastery',
-            category: 'Career Development',
-            level: 'Beginner',
-            duration: '2h 30m',
-            rating: 4.8,
-            progress: 33,
-            tag: 'FREE',
-            image:
-                'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop',
-        },
-        {
-            id: 2,
-            title: 'Interview Skills Bootcamp',
-            category: 'Interview Prep',
-            level: 'Intermediate',
-            duration: '3h 45m',
-            rating: 4.9,
-            progress: 0,
-            tag: 'FREE',
-            image:
-                'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=500&h=300&fit=crop',
-        },
-        {
-            id: 3,
-            title: 'LinkedIn Profile Optimization',
-            category: 'Personal Branding',
-            level: 'Beginner',
-            duration: '2h 10m',
-            rating: 4.7,
-            progress: 0,
-            tag: 'FREE',
-            image:
-                'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&h=300&fit=crop',
-        },
-    ]
 
     return (
         <div className="min-h-screen bg-background">
@@ -109,39 +69,8 @@ export default function AllCourse() {
                         ))}
                     </div>
                 </section>
-
-                {/* SEARCH + FILTER */}
-                <section className="mb-8">
-                    <div className="flex flex-col md:flex-row gap-3 items-center">
-                        <div className="relative flex-1 w-full">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <input
-                                placeholder="Search courses..."
-                                className="w-full bg-[#F3F3F5] rounded-full border px-10 py-2 text-sm outline-none"
-                            />
-                        </div>
-
-                        <div className="flex gap-2 flex-wrap">
-                            {['All', 'Career Development', 'Interview Prep', 'Personal Branding'].map(
-                                (t, i) => (
-                                    <button
-                                        key={i}
-                                        className={`px-4 py-1.5 rounded-full text-xs border
-                    ${i === 0
-                                                ? 'bg-[#FFFF00] border-[#FFFF00]'
-                                                : 'bg-white'
-                                            }`}
-                                    >
-                                        {t}
-                                    </button>
-                                )
-                            )}
-                        </div>
-                    </div>
-                </section>
-
                 {/* COURSES */}
-                <CourseCard/>
+                <CourseCard />
             </main>
         </div>
     )

@@ -1,10 +1,10 @@
 import React from 'react'
 import SingelCourse from './_components/singelCourse'
 
-const page = () => {
+const page = ({ params }: { params: { id: string }}) => {
     return (
         <div>
-            <SingelCourse />
+            <SingelCourse id={params.id} />
         </div>
     )
 }
