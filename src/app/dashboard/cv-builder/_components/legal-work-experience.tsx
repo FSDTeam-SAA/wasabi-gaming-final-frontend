@@ -20,7 +20,7 @@ type PersonalInfoProps = {
 };
 
 const LegalWorkExperience = ({ form }: PersonalInfoProps) => {
-  const { setIsActive } = useFormState();
+  const { setIsActive, markStepCompleted } = useFormState();
 
   const legalWorkExperienceField: (keyof CvBuilderFormType)[] = [
     "ligleJobTitle",
@@ -35,6 +35,7 @@ const LegalWorkExperience = ({ form }: PersonalInfoProps) => {
 
     if (isStepValid) {
       setIsActive("Non Legal Work Experience");
+      markStepCompleted("Legal Work Experience");
     }
   };
 
@@ -166,7 +167,7 @@ const LegalWorkExperience = ({ form }: PersonalInfoProps) => {
           <Button
             onClick={() => setIsActive("Personal Information")}
             type="button"
-            className="w-24 bg-gray-300 rounded-3xl hover:bg-gray-400"
+            className="w-24 bg-gray-300 rounded-3xl hover:bg-gray-400/55"
           >
             Previous
           </Button>

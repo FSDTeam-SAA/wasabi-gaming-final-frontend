@@ -20,8 +20,8 @@ type PersonalInfoProps = {
 };
 
 const PersonalInfo = ({ form }: PersonalInfoProps) => {
-  const { setIsActive } = useFormState();
-  
+  const { setIsActive, markStepCompleted } = useFormState();
+
   const personalInfoFields: (keyof CvBuilderFormType)[] = [
     "firstName",
     "lastName",
@@ -30,15 +30,15 @@ const PersonalInfo = ({ form }: PersonalInfoProps) => {
     "phone",
     "location",
   ];
-  
+
   const handleNext = async () => {
-  const isStepValid = await form.trigger(personalInfoFields);
+    const isStepValid = await form.trigger(personalInfoFields);
 
-  if (isStepValid) {
-    setIsActive("Legal Work Experience");
-  }
-};
-
+    if (isStepValid) {
+      setIsActive("Legal Work Experience");
+      markStepCompleted("Personal Information");
+    }
+  };
 
   return (
     <div className="w-full p-4 border border-gray-300 rounded-xl">
@@ -188,11 +188,7 @@ const PersonalInfo = ({ form }: PersonalInfoProps) => {
           )}
         />
 
-        <Button
-          onClick={handleNext}
-          type="button"
-          className="w-24 rounded-3xl"
-        >
+        <Button onClick={handleNext} type="button" className="w-24 rounded-3xl">
           Next
         </Button>
       </div>
