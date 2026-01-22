@@ -10,6 +10,7 @@ import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { cvBuilderSchema } from "@/schema/cvBuilderSchema";
 import LegalWorkExperience from "./legal-work-experience";
+import NonLegalWorkExperience from "./non-legal-work-experience";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
@@ -27,6 +28,15 @@ const CvMakingForm = () => {
       phone: "",
       location: "",
       legalWorkExperience: [
+        {
+          jobTitle: "",
+          organization: "",
+          keyResponsibilities: "",
+          startYear: "",
+          endYear: "",
+        },
+      ],
+      nonLegalWorkExperienceSchema: [
         {
           jobTitle: "",
           organization: "",
@@ -61,9 +71,7 @@ const CvMakingForm = () => {
                 <LegalWorkExperience form={form} />
               )}
               {isActive === "Summary" && <div>Summary Component</div>}
-              {isActive === "Non Legal Work Experience" && (
-                <div>Non Legal Work Experience Component</div>
-              )}
+              {isActive === "Non Legal Work Experience" && <NonLegalWorkExperience form={form} />}
               {isActive === "Education Level" && (
                 <div>Education Level Component</div>
               )}

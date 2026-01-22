@@ -29,6 +29,14 @@ export const legalWorkExperienceSchema = z.object({
   endYear: z.string().optional(),
 });
 
+export const nonLegalWorkExperienceSchema = z.object({
+  jobTitle: z.string().min(1, "Job title is required"),
+  organization: z.string().min(1, "Organization is required"),
+  keyResponsibilities: z.string().min(1, "Responsibilities are required"),
+  startYear: z.string().min(1, "Start year is required"),
+  endYear: z.string().optional(),
+});
+
 export const cvBuilderSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
@@ -41,12 +49,9 @@ export const cvBuilderSchema = z.object({
   phone: z.string().optional(),
   location: z.string().optional(),
   legalWorkExperience: z.array(legalWorkExperienceSchema).default([]),
-  notLigleJobTitle: z.string().optional(),
-  notLigleOrganization: z.string().optional(),
-  notLigleKeyResponsibilities: z.string().optional(),
-  notLigleStartYear: z.string().optional(),
-  notLigleEndYear: z.string().optional(),
-  notLigleEducation: z.string().optional(),
+  nonLegalWorkExperienceSchema: z
+    .array(nonLegalWorkExperienceSchema)
+    .default([]),
 
   educationLevel: z.array(educationSchema).default([]),
   leadership: z.array(leadershipSchema).default([]),
