@@ -22,6 +22,19 @@ const CvMakingForm = () => {
     defaultValues: {
       firstName: "",
       lastName: "",
+      profession: "",
+      email: "",
+      phone: "",
+      location: "",
+      legalWorkExperience: [
+        {
+          jobTitle: "",
+          organization: "",
+          keyResponsibilities: "",
+          startYear: "",
+          endYear: "",
+        },
+      ],
     },
   });
 

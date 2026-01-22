@@ -21,21 +21,26 @@ export const achievementSchema = z.object({
   recommendedSkills: z.array(z.string()).default([]),
 });
 
+export const legalWorkExperienceSchema = z.object({
+  jobTitle: z.string().min(1, "Job title is required"),
+  organization: z.string().min(1, "Organization is required"),
+  keyResponsibilities: z.string().min(1, "Responsibilities are required"),
+  startYear: z.string().min(1, "Start year is required"),
+  endYear: z.string().optional(),
+});
+
 export const cvBuilderSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  profession: z.string({ required_error: "Profession is required" }).min(1, "Profession is required"),
-  email: z.string({ required_error: "Email is required" }).email("Invalid email address"),
+  profession: z
+    .string({ required_error: "Profession is required" })
+    .min(1, "Profession is required"),
+  email: z
+    .string({ required_error: "Email is required" })
+    .email("Invalid email address"),
   phone: z.string().optional(),
   location: z.string().optional(),
-
-  ligleJobTitle: z.string().optional(),
-  ligleOrganization: z.string().optional(),
-  ligleKeyResponsibilities: z.string().optional(),
-  ligleStartYear: z.string().optional(),
-  ligleEndYear: z.string().optional(),
-  ligleEducation: z.string().optional(),
-
+  legalWorkExperience: z.array(legalWorkExperienceSchema).default([]),
   notLigleJobTitle: z.string().optional(),
   notLigleOrganization: z.string().optional(),
   notLigleKeyResponsibilities: z.string().optional(),
