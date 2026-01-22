@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { CvBuilderFormType } from "./cv-making-form";
 import { useFormState } from "./state/useFormState";
@@ -10,26 +10,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Gavel, Plus } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Award, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type LegalWorkExperienceProps = {
+type LeadershipExperienceProps = {
   form: UseFormReturn<CvBuilderFormType>;
 };
 
-const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
+const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
   const { setIsActive, markStepCompleted } = useFormState();
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "legalWorkExperience",
+    name: "leadership",
   });
 
   const handleNext = async () => {
-    const isStepValid = await form.trigger("legalWorkExperience");
+    const isStepValid = await form.trigger("leadership");
     if (isStepValid) {
-      setIsActive("Non Legal Work Experience");
-      markStepCompleted("Legal Work Experience");
+      setIsActive("Achievements");
+      markStepCompleted("Leadership Experience");
     }
   };
 
@@ -37,11 +38,11 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
     <div className="w-full p-4 border border-gray-300 rounded-xl">
       <div className="flex items-center gap-3 mb-8">
         <div className="flex items-center justify-center rounded-full h-14 w-14 bg-primary">
-          <Gavel className="h-8" />
+          <Award className="h-8" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold">Legal Work Experience</h1>
-          <p className="text-gray-600">Add your legal work experiences</p>
+          <h1 className="text-xl font-semibold">Leadership Experience</h1>
+          <p className="text-gray-600">Add your professional experience</p>
         </div>
       </div>
 
@@ -51,16 +52,18 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
             key={item.id}
             className="relative p-4 space-y-4 border border-gray-200 rounded-xl"
           >
-            {/* Job Title */}
+            {/* Find Type (Role/Position) */}
             <FormField
               control={form.control}
-              name={`legalWorkExperience.${index}.jobTitle`}
+              name={`leadership.${index}.findType`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Job Title / Role</FormLabel>
+                  <FormLabel>
+                    Field Type Purpose / Example Title / Name of Achievement
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="LLB in Law"
+                      placeholder="Senior Developer"
                       {...field}
                       className="h-[48px] rounded-3xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500"
                     />
@@ -70,56 +73,18 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
               )}
             />
 
-            {/* Organization */}
-            <FormField
-              control={form.control}
-              name={`legalWorkExperience.${index}.organization`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization / Firm Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="University of Technology"
-                      {...field}
-                      className="h-[48px] rounded-3xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Responsibilities */}
-            <FormField
-              control={form.control}
-              name={`legalWorkExperience.${index}.keyResponsibilities`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Key Responsibilities</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter your responsibilities"
-                      {...field}
-                      className="h-[48px] rounded-3xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Start and End Year */}
-            <div className="flex items-center gap-5">
-              <div className="w-1/2">
+            <div className="flex items-center w-full gap-5">
+              <div className="w-full lg:w-1/2">
+                {/* Organization */}
                 <FormField
                   control={form.control}
-                  name={`legalWorkExperience.${index}.startYear`}
+                  name={`leadership.${index}.organization`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Start Year</FormLabel>
+                      <FormLabel>Organization / Issuing Body</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="2015"
+                          placeholder="Jan 2022"
                           {...field}
                           className="h-[48px] rounded-3xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500"
                         />
@@ -129,16 +94,18 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
                   )}
                 />
               </div>
-              <div className="w-1/2">
+
+              <div className="w-full lg:w-1/2">
+                {/* Date/Year */}
                 <FormField
                   control={form.control}
-                  name={`legalWorkExperience.${index}.endYear`}
+                  name={`leadership.${index}.dateYear`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>End Year / Currently Working</FormLabel>
+                      <FormLabel>Date / Year</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Currently working"
+                          placeholder="Present"
                           {...field}
                           className="h-[48px] rounded-3xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500"
                         />
@@ -149,6 +116,25 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
                 />
               </div>
             </div>
+
+            {/* Description */}
+            <FormField
+              control={form.control}
+              name={`leadership.${index}.description`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description / Details</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe your responsibilities, achievements, and impact in this role..."
+                      {...field}
+                      className="min-h-[100px] rounded-2xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500 resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {fields.length > 1 && (
               <Button
@@ -163,27 +149,26 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
           </div>
         ))}
 
-        {/* Add Another Experience */}
+        {/* Add Another Leadership Role */}
         <button
           type="button"
           className="flex items-center justify-center w-full gap-2 py-2 border border-gray-400 border-dashed rounded-xl"
           onClick={() =>
             append({
-              jobTitle: "",
+              findType: "",
               organization: "",
-              keyResponsibilities: "",
-              startYear: "",
-              endYear: "",
+              dateYear: "",
+              description: "",
             })
           }
         >
-          <Plus className="w-4 h-4" /> Add Another Form of Experience
+          <Plus className="w-4 h-4" /> Add Another Leadership Role
         </button>
 
         {/* Navigation Buttons */}
         <div className="mt-4 space-x-4">
           <Button
-            onClick={() => setIsActive("Personal Information")}
+            onClick={() => setIsActive("Education Level")} // Change to previous step
             type="button"
             className="w-24 bg-gray-300 rounded-3xl hover:bg-gray-400/55"
           >
@@ -202,4 +187,4 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
   );
 };
 
-export default LegalWorkExperience;
+export default LeadershipExperience;

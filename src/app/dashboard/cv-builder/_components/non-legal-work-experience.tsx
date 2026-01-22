@@ -13,23 +13,23 @@ import { Input } from "@/components/ui/input";
 import { Gavel, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type LegalWorkExperienceProps = {
+type NonLegalWorkExperienceProps = {
   form: UseFormReturn<CvBuilderFormType>;
 };
 
-const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
+const NonLegalWorkExperience = ({ form }: NonLegalWorkExperienceProps) => {
   const { setIsActive, markStepCompleted } = useFormState();
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "legalWorkExperience",
+    name: "nonLegalWorkExperienceSchema",
   });
 
   const handleNext = async () => {
-    const isStepValid = await form.trigger("legalWorkExperience");
+    const isStepValid = await form.trigger("nonLegalWorkExperienceSchema");
     if (isStepValid) {
-      setIsActive("Non Legal Work Experience");
-      markStepCompleted("Legal Work Experience");
+      setIsActive("Education Level");
+      markStepCompleted("Non Legal Work Experience");
     }
   };
 
@@ -40,8 +40,8 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
           <Gavel className="h-8" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold">Legal Work Experience</h1>
-          <p className="text-gray-600">Add your legal work experiences</p>
+          <h1 className="text-xl font-semibold">Non Legal Work Experience</h1>
+          <p className="text-gray-600">Add your non-legal work experiences</p>
         </div>
       </div>
 
@@ -54,7 +54,7 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
             {/* Job Title */}
             <FormField
               control={form.control}
-              name={`legalWorkExperience.${index}.jobTitle`}
+              name={`nonLegalWorkExperienceSchema.${index}.jobTitle`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Job Title / Role</FormLabel>
@@ -73,7 +73,7 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
             {/* Organization */}
             <FormField
               control={form.control}
-              name={`legalWorkExperience.${index}.organization`}
+              name={`nonLegalWorkExperienceSchema.${index}.organization`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Organization / Firm Name</FormLabel>
@@ -92,7 +92,7 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
             {/* Responsibilities */}
             <FormField
               control={form.control}
-              name={`legalWorkExperience.${index}.keyResponsibilities`}
+              name={`nonLegalWorkExperienceSchema.${index}.keyResponsibilities`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Key Responsibilities</FormLabel>
@@ -113,7 +113,7 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
               <div className="w-1/2">
                 <FormField
                   control={form.control}
-                  name={`legalWorkExperience.${index}.startYear`}
+                  name={`nonLegalWorkExperienceSchema.${index}.startYear`}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Start Year</FormLabel>
@@ -132,7 +132,7 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
               <div className="w-1/2">
                 <FormField
                   control={form.control}
-                  name={`legalWorkExperience.${index}.endYear`}
+                  name={`nonLegalWorkExperienceSchema.${index}.endYear`}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>End Year / Currently Working</FormLabel>
@@ -183,7 +183,7 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
         {/* Navigation Buttons */}
         <div className="mt-4 space-x-4">
           <Button
-            onClick={() => setIsActive("Personal Information")}
+            onClick={() => setIsActive("Legal Work Experience")}
             type="button"
             className="w-24 bg-gray-300 rounded-3xl hover:bg-gray-400/55"
           >
@@ -202,4 +202,4 @@ const LegalWorkExperience = ({ form }: LegalWorkExperienceProps) => {
   );
 };
 
-export default LegalWorkExperience;
+export default NonLegalWorkExperience;
