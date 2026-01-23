@@ -63,6 +63,5 @@ export const cvBuilderSchema = z.object({
 
   summary: z.string().optional(),
 
-  createBy: z.string().min(1, "User ID is required"),
   cvformet: z.string().optional(),
 });
