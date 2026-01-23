@@ -13,13 +13,21 @@ import { UseFormReturn } from "react-hook-form";
 import { CvBuilderFormType } from "./cv-making-form";
 import { Button } from "@/components/ui/button";
 import { useFormState } from "./state/useFormState";
+import { useEffect } from "react";
 
 type SummaryProps = {
   form: UseFormReturn<CvBuilderFormType>;
 };
 
 const Summary = ({ form }: SummaryProps) => {
-  const { setIsActive } = useFormState();
+  const { setIsActive, markStepCompleted } = useFormState();
+
+  useEffect(() => {
+  const summary = form.watch("summary");
+  if (summary?.length === 10) {
+    markStepCompleted("Summary");
+  }
+}, [form.watch("summary")]);
 
   return (
     <div className="w-full p-4 border border-gray-300 rounded-xl">
