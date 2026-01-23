@@ -24,6 +24,7 @@ export interface Quiz {
 
 export interface CourseVideo {
   _id: string
+  attempted: boolean
   title: string
   url: string
   time: string
@@ -63,9 +64,7 @@ export interface SingleCourse {
   description: string
   gradeLevel: string
   category: string
-
   courseVideo: CourseVideo[]
-
   createdBy: string
   status: "active" | "inactive"
 

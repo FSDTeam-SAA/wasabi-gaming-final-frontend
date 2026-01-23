@@ -19,6 +19,7 @@ export default function CourseCard() {
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     const [selectedCategory, setSelectedCategory] = useState("All");
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzA1Y2I1NzI0OTlhOWZiOWFiNjg1YSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzdHVkZW50QGdtYWlsLmNvbSIsImlhdCI6MTc2OTA4MDYzOCwiZXhwIjoxNzY5Njg1NDM4fQ.NjhIlFr8TveXONsSf4snTaBX7HhKO_M_vKyPuHOA4tI";
+    const id = "69705cb572499a9fb9ab685a"
 
     useEffect(() => {
         const handler = setTimeout(() => setDebouncedSearchTerm(searchTerm), 500);
@@ -70,6 +71,8 @@ export default function CourseCard() {
 
             return response.json();
         },
+
+    
 
         onSuccess: (data: any) => {
             console.log(data.data)
@@ -197,28 +200,32 @@ export default function CourseCard() {
                         </CardContent>
 
                         <CardFooter className="pb-6">
-
-                            {
-                                course.coursePrice ? (
-                                    <Button
-                                        onClick={() => payMutation.mutate(course?._id)}
-                                        className="w-full flex items-center justify-center hover:bg-[#FFFF00]/5 bg-transparent gap-3  border border-[#0000001A] text-slate-900 py-2 rounded-xl transition-all"
-                                    >
-                                        <Lock className="ml-2 w-3 h-3" />
-                                        Enroll Now - {course.coursePrice}
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        onClick={() => router.push(`/dashboard/courses/${course._id}`)}
-                                        className="w-full bg-[#FFFF00] hover:bg-[#FFFF00]/80 text-slate-900 py-2 rounded-xl  transition-all"
-                                    >
-                                        Continue Learning
-                                        <ChevronRight className="ml-2 w-5 h-5" />
-                                    </Button>
-                                )
-
-                            }
+                            {course.enrolledStudents?.includes(id) ? (
+                                <Button
+                                    onClick={() => router.push(`/dashboard/courses/${course._id}`)}
+                                    className="w-full bg-[#FFFF00] hover:bg-[#FFFF00]/80 text-slate-900 py-2 rounded-xl transition-all flex items-center justify-center"
+                                >
+                                    Continue Learning
+                                    <ChevronRight className="ml-2 w-5 h-5" />
+                                </Button>
+                            ) : course.coursePrice ? (
+                                <Button
+                                    onClick={() => payMutation.mutate(course._id)}
+                                    className="w-full flex items-center justify-center hover:bg-[#FFFF00]/5 bg-transparent gap-3 border border-[#0000001A] text-slate-900 py-2 rounded-xl transition-all"
+                                >
+                                    <Lock className="ml-2 w-3 h-3" />
+                                    Enroll Now - {course.coursePrice}
+                                </Button>
+                            ) : (
+                                <Button
+                                    onClick={() => router.push(`/dashboard/courses/${course._id}`)}
+                                    className="w-full bg-[#FFFF00] hover:bg-[#FFFF00]/80 text-slate-900 py-2 rounded-xl transition-all flex items-center justify-center"
+                                >
+                                    Continue Learning
+                                </Button>
+                            )}
                         </CardFooter>
+
                     </Card>
                 ))}
             </div>
