@@ -13,6 +13,7 @@ import LegalWorkExperience from "./legal-work-experience";
 import NonLegalWorkExperience from "./non-legal-work-experience";
 import EducationLevel from "./education-level";
 import LeadershipExperience from "./leadership-experience";
+import Achievements from "./achievements";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
@@ -65,6 +66,10 @@ const CvMakingForm = () => {
           organization: "",
         },
       ],
+      achievements: {
+        skills: [],
+        recommendedSkills: [],
+      },
     },
   });
 
@@ -98,7 +103,7 @@ const CvMakingForm = () => {
               {isActive === "Leadership Experience" && (
                 <LeadershipExperience form={form} />
               )}
-              {isActive === "Achievements" && <div>Achievements Component</div>}
+              {isActive === "Achievements" && <Achievements form={form} />}
             </div>
           </div>
         </div>
