@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ChevronRight, CheckCircle2, Award, X, XCircle } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 type Quiz = {
@@ -58,6 +58,7 @@ export default function QuizModal({
         total: number;
         results: QuizResult[];
     } | null>(null);
+    const queryClient = useQueryClient();
 
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzA1Y2I1NzI0OTlhOWZiOWFiNjg1YSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzdHVkZW50QGdtYWlsLmNvbSIsImlhdCI6MTc2OTA4MDYzOCwiZXhwIjoxNzY5Njg1NDM4fQ.NjhIlFr8TveXONsSf4snTaBX7HhKO_M_vKyPuHOA4tI";
 
@@ -116,6 +117,7 @@ export default function QuizModal({
                 total: questions.length,
                 results,
             });
+            queryClient.invalidateQueries({ queryKey: ["single-course"] });
 
             setOpen(false); // close quiz modal
             setSuccessModalOpen(true); // open success modal
@@ -203,8 +205,8 @@ export default function QuizModal({
                                         key={option}
                                         onClick={() => handleSelect(option)}
                                         className={`w-full text-left p-4 rounded-xl text-xs border transition-all ${userAnswers[currentQuestion._id] === option
-                                                ? "border-[#FFFF00] bg-[#FFFEF0] shadow-sm ring-1 ring-[#FFFF00]"
-                                                : "border-slate-100 bg-[#FFFFFF] hover:border-slate-200 text-slate-600"
+                                            ? "border-[#FFFF00] bg-[#FFFEF0] shadow-sm ring-1 ring-[#FFFF00]"
+                                            : "border-slate-100 bg-[#FFFFFF] hover:border-slate-200 text-slate-600"
                                             }`}
                                     >
                                         {option}
@@ -288,20 +290,20 @@ export default function QuizModal({
                                         key={q.quiz}
                                         className="flex items-center gap-3 p-4 bg-[#F0FFF4] border-2 border-[#B9F8CF] rounded-2xl"
                                     >
-                                        
+
                                         {q.isCorrect ? (
-                                              <CheckCircle2
-                                            className={`w-5 h-5 shrink-0 text-[#22C55E] `}
-                                        />
-                                        ):( 
+                                            <CheckCircle2
+                                                className={`w-5 h-5 shrink-0 text-[#22C55E] `}
+                                            />
+                                        ) : (
                                             <XCircle
                                                 className={`w-5 h-5 shrink-0 text-[#EF4444] `}
                                             />
                                         )
-                                            
-                                        }    
-                                        
-                                      
+
+                                        }
+
+
                                         <p className="text-[13px] text-slate-600 font-medium truncate">
                                             {q.questionTitle}: {q.userAnswer} ({q.isCorrect ? "Correct" : "Wrong"})
                                         </p>
