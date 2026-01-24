@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Source_Sans_3 } from 'next/font/google'
 import Providers from './providers';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
     title: 'Wasabi Gaming Client',
@@ -23,7 +24,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={sourceSans.className}>
-                <Providers>{children}</Providers>
+                <Providers>{children}
+
+                    <Toaster />
+                </Providers>
             </body>
         </html>
     );
