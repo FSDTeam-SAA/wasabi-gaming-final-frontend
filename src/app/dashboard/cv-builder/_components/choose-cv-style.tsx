@@ -1,7 +1,12 @@
 import { PocketKnife } from "lucide-react";
 import React from "react";
 
-const ChooseCvStyle = () => {
+interface Props {
+  cvFormat: string;
+  setCvFormat: (value: string) => void;
+}
+
+const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
   return (
     <div className="p-4 border border-gray-200 rounded-xl">
       <div className="items-center justify-between lg:flex">
@@ -18,7 +23,10 @@ const ChooseCvStyle = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-5 mt-5 lg:grid-cols-3 lg:flex-row">
-        <div className="p-4 border border-gray-200 h-[500px] rounded-xl cursor-pointer">
+        <div
+          onClick={() => setCvFormat("Modern")}
+          className={`p-4  h-[500px] rounded-xl cursor-pointer ${cvFormat === "Modern" ? "border-2 border-primary shadow-lg" : "border border-gray-200"}`}
+        >
           <div className="h-[420px] border-b">
             <h1>Image needed</h1>
           </div>
@@ -29,7 +37,10 @@ const ChooseCvStyle = () => {
           </div>
         </div>
 
-        <div className="p-4 border border-gray-200 h-[500px] rounded-xl cursor-pointer">
+        <div
+          onClick={() => setCvFormat("Classic")}
+          className={`p-4  h-[500px] rounded-xl cursor-pointer ${cvFormat === "Classic" ? "border-2 border-primary shadow-lg" : "border border-gray-200"}`}
+        >
           <div className="h-[420px] border-b">
             <h1>Image needed</h1>
           </div>
@@ -42,7 +53,10 @@ const ChooseCvStyle = () => {
           </div>
         </div>
 
-        <div className="p-4 border border-gray-200 h-[500px] rounded-xl cursor-pointer">
+        <div
+          onClick={() => setCvFormat("Creative")}
+          className={`p-4  h-[500px] rounded-xl cursor-pointer ${cvFormat === "Creative" ? "border-2 border-primary shadow-lg" : "border border-gray-200"}`}
+        >
           <div className="h-[420px] border-b">
             <h1>Image needed</h1>
           </div>

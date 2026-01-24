@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import ChooseCvStyle from "./choose-cv-style";
 import Sections from "./sections";
 import PersonalInfo from "./personal-info";
@@ -16,65 +16,18 @@ import LeadershipExperience from "./leadership-experience";
 import Achievements from "./achievements";
 import Summary from "./summary";
 import TitleProgress from "./title-progress";
+import { defaultValues } from "@/utils/cvBuilderDefaultValues";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
 const CvMakingForm = () => {
   const { isActive } = useFormState();
+  const [cvFormat, setCvFormat] = useState("Modern");
 
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
     mode: "onChange",
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      profession: "",
-      email: "",
-      phone: "",
-      location: "",
-      legalWorkExperience: [
-        {
-          jobTitle: "",
-          organization: "",
-          keyResponsibilities: "",
-          startYear: "",
-          endYear: "",
-        },
-      ],
-      nonLegalWorkExperienceSchema: [
-        {
-          jobTitle: "",
-          organization: "",
-          keyResponsibilities: "",
-          startYear: "",
-          endYear: "",
-        },
-      ],
-      educationLevel: [
-        {
-          subject: "",
-          institution: "",
-          educationLevel: "",
-          startYear: "",
-          endYear: "",
-          grade: "",
-        },
-      ],
-      leadership: [
-        {
-          dateYear: "",
-          description: "",
-          findType: "",
-          organization: "",
-        },
-      ],
-      achievements: {
-        skills: [],
-        recommendedSkills: [],
-      },
-      summary: "",
-      cvformet: "",
-    },
+    defaultValues: defaultValues,
   });
 
   function onSubmit(data: CvBuilderFormType) {
@@ -85,8 +38,8 @@ const CvMakingForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-6">
-          <TitleProgress form={form}  />
-          <ChooseCvStyle />
+          <TitleProgress form={form} />
+          <ChooseCvStyle cvFormat={cvFormat} setCvFormat={setCvFormat} />
 
           <div className="flex items-start gap-5">
             <div className="lg:w-[30%]">
