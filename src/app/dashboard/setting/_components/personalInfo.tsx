@@ -1,13 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Globe, Linkedin, Github, CheckCircle2 } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function ProfileForm() {
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzA1Y2I1NzI0OTlhOWZiOWFiNjg1YSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzdHVkZW50QGdtYWlsLmNvbSIsImlhdCI6MTc2OTI2MTc1MywiZXhwIjoxNzY5ODY2NTUzfQ.RIx6uLjYZy6Tam_iWQMRjK0DyocjNU95n4CMC6A-3d8";
+
     const [profileData, setProfileData] = useState({
         firstName: "",
         lastName: "",
@@ -15,7 +19,7 @@ export default function ProfileForm() {
         phone: "",
         jobTitle: "",
         company: "",
-        location: "",
+        address: "",
         grade: "",
         bio: "",
         socials: {
@@ -25,6 +29,48 @@ export default function ProfileForm() {
         },
     });
 
+    const { data, isLoading } = useQuery({
+        queryKey: ["me"],
+        queryFn: async () => {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/profile`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!res.ok) throw new Error("Failed to load profile");
+            return res.json();
+        },
+    });
+
+    useEffect(() => {
+        if (data?.data) {
+            const user = data.data;
+
+            const getSocial = (name: string) =>
+                user.socileLinks?.find((s: any) => s.name === name)?.link || "";
+
+            setProfileData({
+                firstName: user.firstName || "",
+                lastName: user.lastName || "",
+                email: user.email || "",
+                phone: user.phone || "",
+                jobTitle: user.jobTitle || "",
+                company: user.company || "",
+                address: user.address || "",
+                grade: user.grade || "",
+                bio: user.bio || "",
+                socials: {
+                    website: getSocial("website"),
+                    linkedin: getSocial("linkedin"),
+                    github: getSocial("github"),
+                },
+            });
+        }
+    }, [data]);
+
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -32,9 +78,7 @@ export default function ProfileForm() {
         setProfileData((prev) => ({ ...prev, [id]: value }));
     };
 
-    const handleSocialChange = (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setProfileData((prev) => ({
             ...prev,
@@ -46,6 +90,39 @@ export default function ProfileForm() {
     };
 
 
+    const changeProfile = useMutation({
+        mutationFn: async () => {
+            const payload = {
+                ...profileData,
+                socileLinks: [
+                    { name: "website", link: profileData.socials.website },
+                    { name: "linkedin", link: profileData.socials.linkedin },
+                    { name: "github", link: profileData.socials.github },
+                ],
+            };
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/profile`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to update profile");
+            }
+            return data;
+        },
+        onSuccess: () => toast.success("Profile changed successfully"),
+        onError: (err: any) => toast.error(err.message),
+    });
+
     const calculateCompletion = () => {
         const requiredFields = [
             profileData.firstName,
@@ -54,6 +131,7 @@ export default function ProfileForm() {
             profileData.phone,
             profileData.jobTitle,
             profileData.company,
+            profileData.address,
             profileData.bio,
             profileData.socials.website,
             profileData.socials.linkedin,
@@ -68,18 +146,13 @@ export default function ProfileForm() {
     };
 
     const completionPercentage = calculateCompletion();
-    const isNearlyComplete = completionPercentage >= 80;
 
-
-    const handleSubmit = () => {
-        console.log("✅ FINAL SUBMITTED PROFILE DATA:", profileData);
-        alert("Check console for full submitted data");
-    };
+    if (isLoading) return <p>Loading...</p>;
 
     return (
         <div className="space-y-6">
             <div className="p-8 border rounded-3xl bg-white shadow-sm space-y-6">
-                <h3 className="text-xl  text-[#1E1E1E]">Basic Information</h3>
+                <h3 className="text-xl text-[#1E1E1E]">Basic Information</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[
@@ -88,18 +161,19 @@ export default function ProfileForm() {
                         ["email", "Email Address"],
                         ["phone", "Phone Number"],
                         ["jobTitle", "Job Title"],
-                        ["location", "Location"],
+                        ["address", "Location"],
                         ["grade", "Grade"],
                         ["company", "Company"],
                     ].map(([id, label]) => (
                         <div key={id} className="space-y-2">
-                            <Label htmlFor={id} className="text-[#364153]">{label}</Label>
+                            <Label htmlFor={id} className="text-[#364153]">
+                                {label}
+                            </Label>
                             <Input
                                 id={id}
                                 value={(profileData as any)[id]}
                                 onChange={handleInputChange}
-                                placeholder={`Enter your ${label.toLowerCase()}`}
-                                className="bg-slate-50 border-none h-12 rounded-xl placeholder:text-slate-400"
+                                className="bg-slate-50 border-none h-12 rounded-xl"
                             />
                         </div>
                     ))}
@@ -111,84 +185,50 @@ export default function ProfileForm() {
                         id="bio"
                         value={profileData.bio}
                         onChange={handleInputChange}
-                        placeholder="Tell us about yourself..."
-                        className="bg-slate-50 border-none min-h-[100px] rounded-xl placeholder:text-slate-400"
+                        className="bg-slate-50 border-none min-h-[100px] rounded-xl"
                     />
                 </div>
             </div>
 
             <div className="p-8 border rounded-3xl bg-white shadow-sm space-y-6">
-                <h3 className="text-xl  text-[#1E1E1E]">Social Links</h3>
+                <h3 className="text-xl text-[#1E1E1E]">Social Links</h3>
 
                 <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                        <Globe className="w-5 h-5 text-slate-400" />
-                        <Input
-                            id="website"
-                            value={profileData.socials.website}
-                            onChange={handleSocialChange}
-                            placeholder="Website"
-                            className="bg-slate-50 border-none h-12 rounded-xl placeholder:text-slate-400"
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <Linkedin className="w-5 h-5 text-slate-400" />
-                        <Input
-                            id="linkedin"
-                            value={profileData.socials.linkedin}
-                            onChange={handleSocialChange}
-                            placeholder="LinkedIn profile"
-                            className="bg-slate-50 border-none h-12 rounded-xl placeholder:text-slate-400"
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <Github className="w-5 h-5 text-slate-400" />
-                        <Input
-                            id="github"
-                            value={profileData.socials.github}
-                            onChange={handleSocialChange}
-                            placeholder="GitHub profile"
-                            className="bg-slate-50 border-none h-12 rounded-xl placeholder:text-slate-400"
-                        />
-                    </div>
+                    {[
+                        ["website", Globe],
+                        ["linkedin", Linkedin],
+                        ["github", Github],
+                    ].map(([id, Icon]: any) => (
+                        <div key={id} className="flex items-center gap-4">
+                            <Icon className="w-5 h-5 text-slate-400" />
+                            <Input
+                                id={id}
+                                value={(profileData.socials as any)[id]}
+                                onChange={handleSocialChange}
+                                className="bg-slate-50 border-none h-12 rounded-xl"
+                            />
+                        </div>
+                    ))}
                 </div>
             </div>
 
             <div className="p-6 bg-gradient-to-r from-[#F0FDF4] to-[#ECFDF5] border-[#B9F8CF] border-2 rounded-3xl flex items-start gap-4">
-                <div
-                    className={`p-2 rounded-xl ${isNearlyComplete ? "bg-[#00A63E]" : "bg-[#00A63E]"
-                        }`}
-                >
-                    <CheckCircle2 className="w-6 h-6 text-white" />
-                </div>
-
-                <div className="flex-1 space-y-2">
-                    <h4 className=" text-slate-800">Profile Completion</h4>
-
-                    <p className="text-sm text-slate-500">
-                        Complete your profile to unlock all features and improve your job matching
-                    </p>
-
-                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                <CheckCircle2 className="text-white bg-[#00A63E] rounded-xl p-1" />
+                <div className="flex-1">
+                    <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
                         <div
-                            className={`h-full transition-all duration-300 ${isNearlyComplete ? "bg-[#00A63E]" : "bg-[#FFFF00]"
-                                }`}
+                            className="h-full bg-[#00A63E]"
                             style={{ width: `${completionPercentage}%` }}
                         />
                     </div>
-
-                    <span className="text-sm  text-slate-700">
-                        {completionPercentage}% Complete
-                    </span>
+                    <span className="text-sm">{completionPercentage}% Complete</span>
                 </div>
             </div>
 
             <div className="flex justify-end pt-4">
                 <Button
-                    onClick={handleSubmit}
-                    className="bg-[#FFFF00] hover:bg-[#FFFF00]/80 text-black  px-6 py-6 rounded-2xl text-lg"
+                    onClick={() => changeProfile.mutate()}
+                    className="bg-[#FFFF00] hover:bg-[#FFFF00]/80 text-black px-6 py-6 rounded-2xl text-lg"
                 >
                     Submit All Data
                 </Button>

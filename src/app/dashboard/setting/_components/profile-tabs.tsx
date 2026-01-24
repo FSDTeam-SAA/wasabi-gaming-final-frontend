@@ -4,7 +4,7 @@ import { User, Settings, Lock, Briefcase, FileCheck } from "lucide-react";
 export default function ProfileTabs({ activeTab, setActiveTab }: any) {
     const tabs = [
         { id: "personal-info", label: "Personal Info", icon: User },
-        { id: "preferences", label: "Preferences", icon: Settings },
+        // { id: "preferences", label: "Preferences", icon: Settings },
         { id: "security", label: "Security", icon: Lock },
         { id: "invited", label: "Invited Jobs", icon: Briefcase },
         { id: "applied", label: "Applied Jobs", icon: FileCheck },

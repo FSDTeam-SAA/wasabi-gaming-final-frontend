@@ -23,6 +23,7 @@ const SingelCourse = ({ id }: { id: string }) => {
   const router = useRouter();
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzA1Y2I1NzI0OTlhOWZiOWFiNjg1YSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzdHVkZW50QGdtYWlsLmNvbSIsImlhdCI6MTc2OTE3MzA3NCwiZXhwIjoxNzY5Nzc3ODc0fQ.36x1EbnpCGOGwJUv4afIG8wAL9PCZ8foDIS_YJNW4CY";
+  const enrollid = "69705cb572499a9fb9ab685a"
 
   const { data, isLoading, isError } = useQuery<SingleCourseResponse>({
     queryKey: ["single-course", id],
@@ -39,6 +40,17 @@ const SingelCourse = ({ id }: { id: string }) => {
       return res.json();
     },
   });
+
+  useEffect(() => {
+
+    if (data?.data) {
+      const isEnrolled = data.data.enrolledStudents.includes(enrollid);
+      if (!isEnrolled) {
+
+        router.push("/dashboard/courses");
+      }
+    }
+  }, [data, enrollid, router]);
 
   const course = data?.data;
   const lessons = course?.courseVideo || [];
@@ -85,20 +97,26 @@ const SingelCourse = ({ id }: { id: string }) => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-semibold text-[#1E1E1E]">Your Progress</h2>
             <Badge
-              className={`text-slate-900 text-[10px] px-2 py-0.5 ${(lessons.filter(l => l.attempted).length === lessons.length)
+              className={`text-slate-900 text-[10px] px-2 py-0.5 ${lessons.length > 0 && lessons.every(l => l.attempted)
                 ? "bg-green-500 text-white"
                 : "bg-[#FFFF00]"
                 }`}
             >
-              {lessons.length} Total Videos
+              {lessons.filter(l => l.attempted).length} of {lessons.length} quizzes submitted
             </Badge>
           </div>
-          <Progress className={`${(lessons.filter(l => l.attempted).length / lessons.length) * 100 === 100
-            ? "bg-green-500"
-            : "bg-[#FFFF00]"
-            }`} value={lessons.filter(l => l.attempted).length / lessons.length * 100} />
+
+          {/* Progress Bar */}
+          <Progress
+            value={lessons.length > 0 ? (lessons.filter(l => l.attempted).length / lessons.length) * 100 : 0}
+            className={`h-2 rounded-full ${lessons.length > 0 && lessons.every(l => l.attempted)
+              ? "bg-green-500"
+              : ""
+              }`}
+          />
         </CardContent>
       </Card>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-4">
@@ -157,7 +175,6 @@ const SingelCourse = ({ id }: { id: string }) => {
         </div>
       </div>
 
-      {/* ================= QUIZ CARD ================= */}
       <Card className="mt-8 bg-[linear-gradient(135deg,#FEFCE8_0%,#FFF7ED_100%)] border-2 rounded-xl border-[#FFFF00]">
         <CardContent className="p-8 flex flex-col md:flex-row gap-6">
           <div className="h-16 w-16 flex bg-[#FFFF00] items-center justify-center rounded-xl">
