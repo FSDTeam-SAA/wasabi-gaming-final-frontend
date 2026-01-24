@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import ChooseCvStyle from "./choose-cv-style";
 import Sections from "./sections";
-import PersonalInfo from "./personal-info";
 import { useFormState } from "./state/useFormState";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,6 +16,7 @@ import Achievements from "./achievements";
 import Summary from "./summary";
 import TitleProgress from "./title-progress";
 import { defaultValues } from "@/utils/cvBuilderDefaultValues";
+import PersonalInfo from "./personal-info";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
@@ -39,7 +39,7 @@ const CvMakingForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-6">
           <TitleProgress form={form} />
-          <ChooseCvStyle cvFormat={cvFormat} setCvFormat={setCvFormat} />
+          {isActive === "Personal Information" &&  <ChooseCvStyle cvFormat={cvFormat} setCvFormat={setCvFormat} /> }
 
           <div className="flex items-start gap-5">
             <div className="lg:w-[30%]">
