@@ -51,8 +51,8 @@ const CvMakingForm = () => {
             />
           )}
 
-          <div className="flex items-start gap-5">
-            <div className="lg:w-[30%] sticky top-32 z-40">
+          <div className="flex flex-col items-start gap-5 lg:flex-row">
+            <div className="lg:w-[30%] sticky top-10 lg:top-32 z-40 backdrop-blur-lg">
               <Sections />
             </div>
 
