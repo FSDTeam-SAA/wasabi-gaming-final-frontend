@@ -22,13 +22,18 @@ export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
 const CvMakingForm = () => {
   const { isActive } = useFormState();
-  const [cvFormat, setCvFormat] = useState("Modern");
 
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
     mode: "onChange",
     defaultValues: defaultValues,
   });
+
+  const setCvFormat = (format: string) => {
+    form.setValue("cvformet", format);
+  };
+
+  const cvFormat = form.watch("cvformet") || "Modern";
 
   function onSubmit(data: CvBuilderFormType) {
     console.log(data);
