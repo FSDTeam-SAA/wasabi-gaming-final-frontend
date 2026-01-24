@@ -15,6 +15,7 @@ import EducationLevel from "./education-level";
 import LeadershipExperience from "./leadership-experience";
 import Achievements from "./achievements";
 import Summary from "./summary";
+import TitleProgress from "./title-progress";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
@@ -84,6 +85,7 @@ const CvMakingForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-6">
+          <TitleProgress form={form}  />
           <ChooseCvStyle />
 
           <div className="flex items-start gap-5">
