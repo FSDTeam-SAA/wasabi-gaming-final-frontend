@@ -52,7 +52,7 @@ const CvMakingForm = () => {
           )}
 
           <div className="flex items-start gap-5">
-            <div className="lg:w-[30%]">
+            <div className="lg:w-[30%] sticky top-32 z-40">
               <Sections />
             </div>
 
