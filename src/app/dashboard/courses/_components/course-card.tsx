@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Star, Users, Clock, ChevronRight, Search, Lock } from "lucide-react";
+import { Star, Users, Clock, ChevronRight, Search, Lock, UsersRoundIcon } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -72,7 +72,7 @@ export default function CourseCard() {
             return response.json();
         },
 
-    
+
 
         onSuccess: (data: any) => {
             console.log(data.data)
@@ -147,7 +147,7 @@ export default function CourseCard() {
                     </div>
 
                     <div className="flex gap-2 flex-wrap">
-                        {["All", "Mathematics", "Science", "English", "History"].map((cat, i) => (
+                        {["All", "Mathematics", "Science", "English", "History","Technology"].map((cat, i) => (
                             <button
                                 key={i}
                                 onClick={() => setSelectedCategory(cat)}
@@ -162,7 +162,6 @@ export default function CourseCard() {
                     </div>
                 </div>
             </section>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {courses.map((course) => (
                     <Card key={course._id} className="overflow-hidden border border-[#0000001A] shadow-sm rounded-2xl bg-white">
@@ -187,7 +186,9 @@ export default function CourseCard() {
 
                         <CardContent className="space-y-6">
                             <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">{course.description}</p>
-
+                             <div>
+                                <p className="flex text-[#4A5565] items-center gap-1"> <UsersRoundIcon className="w-4 h-4"/> {course.enrolledStudents?.length}</p>
+                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-xs font-semibold text-slate-600">
                                     <span>Progress</span>

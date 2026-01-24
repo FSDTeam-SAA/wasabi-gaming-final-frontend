@@ -6,26 +6,12 @@ import PersonalInfo from "./_components/personalInfo";
 import { Sparkles } from "lucide-react";
 import AccountSettings from "./_components/security";
 import JobsTable from "./_components/job";
+import AppliedJobs from "./_components/applied-jobs";
 
-
-// Mock Data
-const userData = {
-    name: "John Doe",
-    role: "Software Engineer",
-    company: "TechCorp Inc.",
-    email: "john.doe@email.com",
-    phone: "+1 234 567 8900",
-    location: "San Francisco, CA",
-    bio: "Passionate software engineer with 6+ years of experience...",
-    completion: 85
-};
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState("personal-info");
 
-    useEffect(() => {
-        console.log("Main Page Data:", userData);
-    }, []);
 
     return (
         <div className="container mx-auto p-6 space-y-6">
@@ -40,7 +26,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Header Card Component */}
-            <ProfileHeader data={userData} />
+            <ProfileHeader  />
 
             {/* Tabs Navigation Component */}
             <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -51,6 +37,7 @@ export default function ProfilePage() {
                 {/* {activeTab === "preferences" && <Preferences  data={userData} />} */}
                 {activeTab === "security" && <AccountSettings />}
                 {activeTab === "invited" && <JobsTable />}
+                {activeTab === "applied" && <AppliedJobs />}
                 {/* {activeTab === "applied" && <AppliedJobs />} */}
                 {/* Baki tabs gulo eivabe add korte hobe */}
             </div>
