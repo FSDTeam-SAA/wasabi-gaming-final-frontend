@@ -1,9 +1,51 @@
 "use client";
 import { Progress } from "@/components/ui/progress";
 import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { CvBuilderFormType } from "./cv-making-form";
 
-const TitleProgress = () => {
-  const value: number = 33;
+interface TitleProgressProps {
+  form: UseFormReturn<CvBuilderFormType>;
+}
+
+const TitleProgress = ({ form }: TitleProgressProps) => {
+
+  const formValues = form.watch();
+  
+  const calculateCompletion = () => {
+    const requiredFields = [
+      formValues.firstName,
+      formValues.lastName,
+      formValues.profession,
+      formValues.email,
+      formValues.phone,
+      formValues.location,
+
+      formValues.cvformet,
+
+      formValues.summary,
+
+      formValues.educationLevel?.[0]?.subject,
+      formValues.educationLevel?.[0]?.institution,
+      formValues.educationLevel?.[0]?.educationLevel,
+
+      formValues.legalWorkExperience?.[0]?.jobTitle ||
+        formValues.nonLegalWorkExperienceSchema?.[0]?.jobTitle,
+
+      formValues.legalWorkExperience?.[0]?.organization ||
+        formValues.nonLegalWorkExperienceSchema?.[0]?.organization,
+
+      formValues.achievements?.skills?.[0],
+    ];
+
+    const filled = requiredFields.filter(
+      (field) => field && field.trim() !== "",
+    ).length;
+
+    return Math.round((filled / requiredFields.length) * 100);
+  };
+
+  const completionPercentage = calculateCompletion();
 
   return (
     <div className="space-y-5">
@@ -22,12 +64,12 @@ const TitleProgress = () => {
           </div>
 
           <div>
-            <h1 className="text-3xl font-bold">100%</h1>
+            <h1 className="text-3xl font-bold">{completionPercentage} %</h1>
           </div>
         </div>
 
         <div className="mt-5">
-          <Progress value={value} />
+          <Progress value={completionPercentage} />
         </div>
       </div>
     </div>
