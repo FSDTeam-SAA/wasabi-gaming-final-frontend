@@ -33,7 +33,7 @@ const CvMakingForm = () => {
     form.setValue("cvformet", format);
   };
 
-  const cvFormat = form.watch("cvformet") || "Modern";
+  const cvFormat = form.watch("cvformet");
 
   function onSubmit(data: CvBuilderFormType) {
     console.log(data);
@@ -44,7 +44,12 @@ const CvMakingForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-6">
           <TitleProgress form={form} />
-          {isActive === "Personal Information" &&  <ChooseCvStyle cvFormat={cvFormat} setCvFormat={setCvFormat} /> }
+          {isActive === "Personal Information" && (
+            <ChooseCvStyle
+              cvFormat={cvFormat as string}
+              setCvFormat={setCvFormat}
+            />
+          )}
 
           <div className="flex items-start gap-5">
             <div className="lg:w-[30%]">
