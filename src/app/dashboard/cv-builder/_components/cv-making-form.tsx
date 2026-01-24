@@ -1,8 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import ChooseCvStyle from "./choose-cv-style";
 import Sections from "./sections";
-import PersonalInfo from "./personal-info";
 import { useFormState } from "./state/useFormState";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,6 +14,9 @@ import EducationLevel from "./education-level";
 import LeadershipExperience from "./leadership-experience";
 import Achievements from "./achievements";
 import Summary from "./summary";
+import TitleProgress from "./title-progress";
+import { defaultValues } from "@/utils/cvBuilderDefaultValues";
+import PersonalInfo from "./personal-info";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
@@ -24,57 +26,14 @@ const CvMakingForm = () => {
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
     mode: "onChange",
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      profession: "",
-      email: "",
-      phone: "",
-      location: "",
-      legalWorkExperience: [
-        {
-          jobTitle: "",
-          organization: "",
-          keyResponsibilities: "",
-          startYear: "",
-          endYear: "",
-        },
-      ],
-      nonLegalWorkExperienceSchema: [
-        {
-          jobTitle: "",
-          organization: "",
-          keyResponsibilities: "",
-          startYear: "",
-          endYear: "",
-        },
-      ],
-      educationLevel: [
-        {
-          subject: "",
-          institution: "",
-          educationLevel: "",
-          startYear: "",
-          endYear: "",
-          grade: "",
-        },
-      ],
-      leadership: [
-        {
-          dateYear: "",
-          description: "",
-          findType: "",
-          organization: "",
-        },
-      ],
-      achievements: {
-        skills: [],
-        recommendedSkills: [],
-      },
-      summary: "",
-      cvformet: "",
-    },
+    defaultValues: defaultValues,
   });
+
+  const setCvFormat = (format: string) => {
+    form.setValue("cvformet", format);
+  };
+
+  const cvFormat = form.watch("cvformet");
 
   function onSubmit(data: CvBuilderFormType) {
     console.log(data);
@@ -84,7 +43,13 @@ const CvMakingForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-6">
-          <ChooseCvStyle />
+          <TitleProgress form={form} />
+          {isActive === "Personal Information" && (
+            <ChooseCvStyle
+              cvFormat={cvFormat as string}
+              setCvFormat={setCvFormat}
+            />
+          )}
 
           <div className="flex items-start gap-5">
             <div className="lg:w-[30%]">
