@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "./logo/Logo";
 import { ActiveSection } from "../../constant/navConstant";
-import { secureStorage } from "../../utils/secureStorage";
+import { useAppStore } from "@/store/useAppStore";
+import { useAuthStore } from "@/store/authStore";
 import { Building2 } from "lucide-react";
 
 const Navbar = () => {
@@ -13,27 +14,27 @@ const Navbar = () => {
   const router = useRouter();
   const isContactPage = pathname === "/contact-us";
 
-  const [activeSection, setActiveSection] = useState(
-    secureStorage.getItem("activeSection") || ActiveSection.Students
-  );
-  const [cvBuilderSelection, setCvBuilderSelection] = useState(
-    secureStorage.getItem("cvBuilderSelection") || "CV Builder"
-  );
+  const { activeSection, setActiveSection } = useAppStore();
+  const { token, logout } = useAuthStore();
+
+  const [mounted, setMounted] = useState(false);
+  const [cvBuilderSelection, setCvBuilderSelection] = useState("CV Builder");
   const [isCvBuilderOpen, setIsCvBuilderOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!secureStorage.getItem("token")
-  );
 
   useEffect(() => {
-    secureStorage.setItem("activeSection", activeSection);
-    secureStorage.setItem("cvBuilderSelection", cvBuilderSelection);
-  }, [activeSection, cvBuilderSelection]);
+    setMounted(true);
+    const savedCv = localStorage.getItem("cvBuilderSelection");
+    if (savedCv) setCvBuilderSelection(savedCv);
+  }, []);
+
+  const isLoggedIn = !!token;
 
   const navItemsData =
     activeSection === ActiveSection.Students
       ? [
+        ...(isLoggedIn ? [{ name: "Dashboard", to: "/dashboard" }] : []),
         { name: "Application Tracker", to: "/dashboard/application-tracker" },
         { name: "Law Firm Profiles", to: "/dashboard/law-firm-profiles" },
         { name: "Portfolio", to: "/portfolio" },
@@ -41,6 +42,7 @@ const Navbar = () => {
         { name: "Mock Interviews", to: "/dashboard/mock-interview" },
       ]
       : [
+        ...(isLoggedIn ? [{ name: "Dashboard", to: "/school/dashboard" }] : []),
         { name: "Manage Students", to: "/school/manage-students" },
         { name: "Invite Students", to: "/school/invite-students" },
         { name: "Premium Features", to: "/school/premium-features" },
@@ -57,6 +59,7 @@ const Navbar = () => {
 
   const handleCvSelection = (option: string) => {
     setCvBuilderSelection(option);
+    localStorage.setItem("cvBuilderSelection", option);
     setIsCvBuilderOpen(false);
     if (option === "CV Builder") {
       router.push("/dashboard/cv-builder");
@@ -67,6 +70,7 @@ const Navbar = () => {
 
   const handleMobileCvSelection = (option: string) => {
     setCvBuilderSelection(option);
+    localStorage.setItem("cvBuilderSelection", option);
     setIsCvBuilderOpen(false);
     setIsMobileMenuOpen(false);
     if (option === "CV Builder") {
@@ -77,18 +81,15 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    secureStorage.removeItem("token");
-    secureStorage.removeItem("user");
-    setIsLoggedIn(false);
+    logout();
     setIsMobileMenuOpen(false);
+    router.push("/");
   };
 
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
-    // Navigate to appropriate homepage
-    if (section === ActiveSection.School) {
-      router.push("/school/dashboard");
-    } else {
+    // Stay on homepage when switching sections
+    if (pathname !== "/") {
       router.push("/");
     }
   };
@@ -96,6 +97,14 @@ const Navbar = () => {
   // Check if we should show the Profile button (only for logged-in School users)
   const showProfileButton =
     isLoggedIn && activeSection === ActiveSection.School;
+
+  if (!mounted) {
+    return (
+      <nav className="relative z-50 w-full min-h-[140px] bg-transparent">
+        {/* Skeleton or empty space to avoid layout shift */}
+      </nav>
+    );
+  }
 
   return (
     <nav className="relative z-50 w-full">
@@ -106,8 +115,8 @@ const Navbar = () => {
       >
         <button
           className={`py-1 md:py-2 lg:py-2 px-3 md:px-4 lg:px-4 xl:px-4 ${activeSection === ActiveSection.Students
-              ? "border-b-2 border-[#FDC700] font-semibold"
-              : "text-gray-700"
+            ? "border-b-2 border-[#FDC700] font-semibold"
+            : "text-gray-700"
             }`}
           onClick={() => handleSectionChange(ActiveSection.Students)}
         >
@@ -118,8 +127,8 @@ const Navbar = () => {
         </span>
         <button
           className={`px-2 py-1 sm:px-3 sm:py-1 md:px-4 md:py-2 lg:px-4 lg:py-2 ${activeSection === ActiveSection.School
-              ? "border-b-2 border-[#FDC700] font-semibold"
-              : "text-gray-700"
+            ? "border-b-2 border-[#FDC700] font-semibold"
+            : "text-gray-700"
             }`}
           onClick={() => handleSectionChange(ActiveSection.School)}
         >
@@ -130,9 +139,9 @@ const Navbar = () => {
       {/* Main Navbar - Responsive for all breakpoints */}
       <div
         className={`flex items-center justify-between p-2 md:p-3 lg:p-4 px-4 md:px-8 lg:px-2 xl:px-16 ${isContactPage
-            ? ""
-            : activeSection === ActiveSection.Students &&
-            `bg-gradient-to-r from-[#FEF26D] to-[#FEF9C2]`
+          ? ""
+          : activeSection === ActiveSection.Students &&
+          `bg-gradient-to-r from-[#FEF26D] to-[#FEF9C2]`
           }`}
       >
         {/* Logo - Responsive sizing */}
@@ -144,20 +153,20 @@ const Navbar = () => {
 
         {/* Desktop Navbar Items - Optimized for LG and XL */}
         <div className="hidden lg:flex flex-1 items-center justify-center">
-          <div className="flex items-center space-x-2 lg:space-x-3 xl:space-x-6">
+          <div className="flex items-center space-x-2 lg:space-x-3 xl:space-x-4">
             <div
-              className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-6 py-2 ${isContactPage ? `lg:bg-[#bababb8e]` : `lg:bg-[#FEFACA]`
+              className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-4 py-2 ${isContactPage ? `lg:bg-[#bababb8e]` : `lg:bg-[#FEFACA]`
                 }`}
             >
               {navItemsData.map((item) => (
                 <Link
                   key={item.name}
                   href={item.to}
-                  className={`px-2 lg:px-3 xl:px-4 text-center py-1 font-medium transition-colors duration-200 text-xs sm:text-base md:text-lg lg:text-sm xl:text-lg ${pathname === item.to
-                      ? "yellow text-black rounded-3xl px-3 lg:px-4 xl:px-4 py-2"
-                      : isContactPage
-                        ? "text-black"
-                        : "text-[#505050] hover:text-black"
+                  className={`px-2 lg:px-3 xl:px-3 text-center py-1 font-medium transition-colors duration-200 text-xs sm:text-base md:text-lg lg:text-sm xl:text-base ${pathname === item.to
+                    ? "yellow text-black rounded-3xl px-3 lg:px-4 xl:px-4 py-2"
+                    : isContactPage
+                      ? "text-black"
+                      : "text-[#505050] hover:text-black"
                     }`}
                 >
                   {item.name}
@@ -195,8 +204,8 @@ const Navbar = () => {
                           href={item.to}
                           onClick={() => setIsMoreOpen(false)}
                           className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${pathname === item.to
-                              ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
-                              : "hover:bg-gray-100"
+                            ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
+                            : "hover:bg-gray-100"
                             }`}
                         >
                           {item.name}
@@ -244,8 +253,8 @@ const Navbar = () => {
                   <React.Fragment key={option}>
                     <button
                       className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${cvBuilderSelection === option
-                          ? "bg-[#FFFF85]"
-                          : "hover:bg-gray-100"
+                        ? "bg-[#FFFF85]"
+                        : "hover:bg-gray-100"
                         }`}
                       onClick={() => handleCvSelection(option)}
                     >
@@ -365,8 +374,8 @@ const Navbar = () => {
                         setIsMobileMenuOpen(false);
                       }}
                       className={`px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 text-sm ${pathname === item.to
-                          ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
-                          : ""
+                        ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
+                        : ""
                         }`}
                     >
                       {item.name}
