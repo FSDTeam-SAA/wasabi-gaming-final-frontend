@@ -77,6 +77,18 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
   });
 
   const handleLeadershipDetails = async () => {
+    const validLeadershipItems = formValue.leadership.filter(
+      (item) =>
+        item.role.trim() && item.organization.trim() && item.dateYear.trim(),
+    );
+
+    if (validLeadershipItems.length === 0) {
+      toast.warning(
+        "Please fill in at least one leadership experience with all required fields",
+      );
+      return;
+    }
+
     const payload = {
       leadership: formValue.leadership.map((item) => ({
         role: item.role,
