@@ -1,180 +1,179 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import Logo from '@/components/shared/logo/Logo'
-import { useAppStore } from '@/store/useAppStore'
-import { ActiveSection } from '@/constant/navConstant'
-import { Building2 } from 'lucide-react'
-import { useSession, signOut } from 'next-auth/react'
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import Logo from "./logo/Logo";
+import { ActiveSection } from "../../constant/navConstant";
+import { useAppStore } from "@/store/useAppStore";
+import { useAuthStore } from "@/store/authStore";
+import { Building2 } from "lucide-react";
 
 const Navbar = () => {
-  const pathname = usePathname()
-  const router = useRouter()
-  const isContactPage = pathname === '/contact-us'
+  const pathname = usePathname();
+  const router = useRouter();
+  const isContactPage = pathname === "/contact-us";
 
-  const { activeSection, setActiveSection } = useAppStore()
-  const { data: session } = useSession()
-  const isLoggedIn = !!session
+  const { activeSection, setActiveSection } = useAppStore();
+  const { token, logout } = useAuthStore();
 
-  // Local state for UI toggles
-  const [cvBuilderSelection, setCvBuilderSelection] = useState('CV Builder')
-  const [isCvBuilderOpen, setIsCvBuilderOpen] = useState(false)
-  const [isMoreOpen, setIsMoreOpen] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false);
+  const [cvBuilderSelection, setCvBuilderSelection] = useState("CV Builder");
+  const [isCvBuilderOpen, setIsCvBuilderOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Initialize from storage if needed? useAppStore persists 'activeSection'.
-  // We can persist cvBuilderSelection in local state or another store if needed.
-  // Original code persisted it. Let's persist it in useEffect for client-side only if critical.
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedCV = localStorage.getItem('cvBuilderSelection')
-      if (savedCV) setCvBuilderSelection(savedCV)
-    }
-  }, [])
+    setMounted(true);
+    const savedCv = localStorage.getItem("cvBuilderSelection");
+    if (savedCv) setCvBuilderSelection(savedCv);
+  }, []);
 
-  const handleCvSelection = (option: string) => {
-    setCvBuilderSelection(option)
-    if (typeof window !== 'undefined')
-      localStorage.setItem('cvBuilderSelection', option)
-
-    setIsCvBuilderOpen(false)
-    if (option === 'CV Builder') {
-      router.push('/dashboard/cv-builder')
-    } else if (option === 'Cover Letter Builder') {
-      router.push('/dashboard/cover-letter')
-    }
-  }
-
-  const handleMobileCvSelection = (option: string) => {
-    setCvBuilderSelection(option)
-    if (typeof window !== 'undefined')
-      localStorage.setItem('cvBuilderSelection', option)
-
-    setIsCvBuilderOpen(false)
-    setIsMobileMenuOpen(false)
-
-    if (option === 'CV Builder') {
-      router.push('/dashboard/cv-builder')
-    } else if (option === 'Cover Letter Builder') {
-      router.push('/dashboard/cover-letter')
-    }
-  }
-
-  const handleLogout = () => {
-    signOut()
-    setIsMobileMenuOpen(false)
-  }
-
-  const showProfileButton = isLoggedIn && activeSection === ActiveSection.School
+  const isLoggedIn = !!token;
 
   const navItemsData =
     activeSection === ActiveSection.Students
       ? [
-        {
-          name: 'Application Tracker',
-          to: '/dashboard/student/application-tracker',
-        },
-        { name: 'Law Firm Profiles', to: '/dashboard/law-firm-profiles' },
-        { name: 'Portfolio', to: '/portfolio' },
-        { name: 'Courses', to: '/dashboard/courses' },
-        { name: 'Mock Interviews', to: '/dashboard/mock-interview' },
+        ...(isLoggedIn ? [{ name: "Dashboard", to: "/dashboard" }] : []),
+        { name: "Application Tracker", to: "/dashboard/application-tracker" },
+        { name: "Law Firm Profiles", to: "/dashboard/law-firm-profiles" },
+        { name: "Portfolio", to: "/portfolio" },
+        { name: "Courses", to: "/dashboard/courses" },
+        { name: "Mock Interviews", to: "/dashboard/mock-interview" },
       ]
       : [
-        { name: 'Manage Students', to: '/manage-students' },
-        { name: 'Invite Students', to: '/invite-students' },
-        { name: 'Premium Features', to: '/premium-features' },
-      ]
+        ...(isLoggedIn ? [{ name: "Dashboard", to: "/school/dashboard" }] : []),
+        { name: "Manage Students", to: "/school/manage-students" },
+        { name: "Invite Students", to: "/school/invite-students" },
+        { name: "Premium Features", to: "/school/premium-features" },
+      ];
 
   const moreItems = [
     {
-      name: 'About us',
-      to: `/about-us/${activeSection === ActiveSection.Students ? 'student' : 'school'
+      name: "About us",
+      to: `/about-us${activeSection === ActiveSection.Students ? "/student" : "/school"
         }`,
     },
-    { name: 'Contact us', to: '/contact-us' },
-  ]
+    { name: "Contact us", to: "/contact-us" },
+  ];
+
+  const handleCvSelection = (option: string) => {
+    setCvBuilderSelection(option);
+    localStorage.setItem("cvBuilderSelection", option);
+    setIsCvBuilderOpen(false);
+    if (option === "CV Builder") {
+      router.push("/dashboard/cv-builder");
+    } else if (option === "Cover Letter Builder") {
+      router.push("/dashboard/cover-letter");
+    }
+  };
+
+  const handleMobileCvSelection = (option: string) => {
+    setCvBuilderSelection(option);
+    localStorage.setItem("cvBuilderSelection", option);
+    setIsCvBuilderOpen(false);
+    setIsMobileMenuOpen(false);
+    if (option === "CV Builder") {
+      router.push("/dashboard/cv-builder");
+    } else if (option === "Cover Letter Builder") {
+      router.push("/dashboard/cover-letter");
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsMobileMenuOpen(false);
+    router.push("/");
+  };
+
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section);
+    // Stay on homepage when switching sections
+    if (pathname !== "/") {
+      router.push("/");
+    }
+  };
+
+  // Check if we should show the Profile button (only for logged-in School users)
+  const showProfileButton =
+    isLoggedIn && activeSection === ActiveSection.School;
+
+  if (!mounted) {
+    return (
+      <nav className="relative z-50 w-full min-h-[140px] bg-transparent">
+        {/* Skeleton or empty space to avoid layout shift */}
+      </nav>
+    );
+  }
 
   return (
     <nav className="relative z-50 w-full">
-      {/* Top Section */}
+      {/* Top Section - Optimized for all screens */}
       <div
-        className={`flex items-center justify-center md:justify-start ${isContactPage ? '' : 'bg-gradient-to-r from-[#FEE900] to-[#FEE900]'
-          } p-1 sm:p-2 md:p-3 lg:p-3 xl:p-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-2xl neuton`}
+        className={`flex items-center justify-center md:justify-start ${isContactPage ? "" : "bg-gradient-to-r from-[#FEE900] to-[#FEE900]"
+          } p-0.5 sm:p-1 md:p-1 lg:p-1.5 xl:p-2 text-xs sm:text-sm md:text-base lg:text-lg xl:text-2xl neuton`}
       >
-        <Link href="/">
-          <button
-            className={`py-1 md:py-2 lg:py-2 px-3 md:px-4 lg:px-4 xl:px-4 ${activeSection === ActiveSection.Students
-                ? 'border-b-2 border-[#FDC700] font-semibold'
-                : 'text-gray-700'
-              }`}
-            onClick={() => setActiveSection(ActiveSection.Students)}
-          >
-            Students
-          </button>
-        </Link>
+        <button
+          className={`py-0.5 md:py-1 lg:py-1 px-3 md:px-4 lg:px-4 xl:px-4 ${activeSection === ActiveSection.Students
+            ? "border-b-2 border-[#FDC700] font-semibold"
+            : "text-gray-700"
+            }`}
+          onClick={() => handleSectionChange(ActiveSection.Students)}
+        >
+          Students
+        </button>
         <span className="mx-1 sm:mx-2 md:mx-2 lg:mx-2 xl:mx-2 text-gray-500">
           |
         </span>
-        <Link href="/">
-          <button
-            className={`px-2 py-1 sm:px-3 sm:py-1 md:px-4 md:py-2 lg:px-4 lg:py-2 ${activeSection === ActiveSection.School
-                ? 'border-b-2 border-[#FDC700] font-semibold'
-                : 'text-gray-700'
-              }`}
-            onClick={() => setActiveSection(ActiveSection.School)}
-          >
-            School
-          </button>
-        </Link>
+        <button
+          className={`px-2 py-0.5 sm:px-3 sm:py-0.5 md:px-4 md:py-1 lg:px-4 lg:py-1 ${activeSection === ActiveSection.School
+            ? "border-b-2 border-[#FDC700] font-semibold"
+            : "text-gray-700"
+            }`}
+          onClick={() => handleSectionChange(ActiveSection.School)}
+        >
+          School
+        </button>
       </div>
 
-      {/* Main Navbar */}
+      {/* Main Navbar - Responsive for all breakpoints */}
       <div
         className={`flex items-center justify-between p-2 md:p-3 lg:p-4 px-4 md:px-8 lg:px-2 xl:px-16 ${isContactPage
-            ? ''
-            : activeSection === ActiveSection.Students &&
-            `bg-gradient-to-r from-[#FEF26D] to-[#FEF9C2]`
+          ? ""
+          : activeSection === ActiveSection.Students &&
+          `bg-gradient-to-r from-[#FEF26D] to-[#FEF9C2]`
           }`}
       >
-        {/* Logo */}
+        {/* Logo - Responsive sizing */}
         <Link href="/">
           <div className="w-auto">
             <Logo height={120} mobileHeight={80} name="logo" />
           </div>
         </Link>
 
-        {/* Desktop Navbar Items */}
+        {/* Desktop Navbar Items - Optimized for LG and XL */}
         <div className="hidden lg:flex flex-1 items-center justify-center">
-          <div className="flex items-center space-x-2 lg:space-x-3 xl:space-x-6">
+          <div className="flex items-center space-x-2 lg:space-x-3 xl:space-x-4">
             <div
-              className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-6 py-2 ${isContactPage ? `lg:bg-[#bababb8e]` : `lg:bg-[#FEFACA]`
+              className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-4 py-2 ${isContactPage ? `lg:bg-[#bababb8e]` : `lg:bg-[#FEFACA]`
                 }`}
             >
-              {navItemsData.map(item => {
-                const isActive = pathname === item.to
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.to}
-                    className={`
-                    px-2 lg:px-3 xl:px-4 text-center py-1 font-medium transition-colors duration-200 
-                    text-xs sm:text-base md:text-lg lg:text-sm xl:text-lg
-                    ${isActive
-                        ? 'bg-[#FFFF03] text-black rounded-3xl px-3 lg:px-4 xl:px-4 py-2' // .yellow class replacement
-                        : isContactPage
-                          ? 'text-black'
-                          : 'text-[#505050] hover:text-black'
-                      }
-                  `}
-                  >
-                    {item.name}
-                  </Link>
-                )
-              })}
+              {navItemsData.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.to}
+                  className={`px-2 lg:px-3 xl:px-3 text-center py-1 font-medium transition-colors duration-200 text-xs sm:text-base md:text-lg lg:text-sm xl:text-base ${pathname === item.to
+                    ? "yellow text-black rounded-3xl px-3 lg:px-4 xl:px-4 py-2"
+                    : isContactPage
+                      ? "text-black"
+                      : "text-[#505050] hover:text-black"
+                    }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
 
-              {/* More Dropdown */}
+              {/* More Dropdown - Improved for LG */}
               <div className="relative">
                 <button
                   onClick={() => setIsMoreOpen(!isMoreOpen)}
@@ -186,7 +185,7 @@ const Navbar = () => {
                     xmlns="http://www.w3.org/2000/svg"
                     width="12"
                     height="12"
-                    className={`ml-1 lg:ml-2 transform transition-transform duration-200 ${isMoreOpen ? 'rotate-180' : ''
+                    className={`ml-1 lg:ml-2 transform transition-transform duration-200 ${isMoreOpen ? "rotate-180" : ""
                       }`}
                     viewBox="0 0 24 24"
                     fill="none"
@@ -199,26 +198,23 @@ const Navbar = () => {
                 </button>
                 {isMoreOpen && (
                   <div className="absolute top-full right-0 mt-2 lg:mt-4 xl:mt-2 w-40 lg:w-44 xl:w-48 z-10 flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
-                    {moreItems.map((item, idx) => {
-                      const isActive = pathname === item.to
-                      return (
-                        <React.Fragment key={item.name}>
-                          <Link
-                            href={item.to}
-                            onClick={() => setIsMoreOpen(false)}
-                            className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${isActive
-                                ? 'bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]'
-                                : 'hover:bg-gray-100'
-                              }`}
-                          >
-                            {item.name}
-                          </Link>
-                          {idx < moreItems.length - 1 && (
-                            <div className="w-full border-b border-gray-200" />
-                          )}
-                        </React.Fragment>
-                      )
-                    })}
+                    {moreItems.map((item, idx) => (
+                      <React.Fragment key={item.name}>
+                        <Link
+                          href={item.to}
+                          onClick={() => setIsMoreOpen(false)}
+                          className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${pathname === item.to
+                            ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
+                            : "hover:bg-gray-100"
+                            }`}
+                        >
+                          {item.name}
+                        </Link>
+                        {idx < moreItems.length - 1 && (
+                          <div className="w-full border-b border-gray-200" />
+                        )}
+                      </React.Fragment>
+                    ))}
                   </div>
                 )}
               </div>
@@ -226,9 +222,9 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Right Section */}
+        {/* Right Section - Responsive buttons for LG and XL */}
         <div className="hidden lg:flex items-center space-x-2 lg:space-x-3 xl:space-x-3">
-          {/* CV Builder */}
+          {/* CV Builder - Responsive */}
           <div className="relative neuton">
             <button
               className="flex items-center space-x-1 lg:space-x-2 bg-[#FFFF00] border-2 border-[#E5E500] text-black px-2 lg:px-3 xl:px-4 py-1 lg:py-2 rounded-full font-semibold text-xs lg:text-sm xl:text-base"
@@ -253,12 +249,12 @@ const Navbar = () => {
             </button>
             {isCvBuilderOpen && (
               <div className="absolute top-full right-0 mt-2 w-36 lg:w-40 xl:w-48 z-10 flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
-                {['CV Builder', 'Cover Letter Builder'].map((option, idx) => (
+                {["CV Builder", "Cover Letter Builder"].map((option, idx) => (
                   <React.Fragment key={option}>
                     <button
                       className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${cvBuilderSelection === option
-                          ? 'bg-[#FFFF85]'
-                          : 'hover:bg-gray-100'
+                        ? "bg-[#FFFF85]"
+                        : "hover:bg-gray-100"
                         }`}
                       onClick={() => handleCvSelection(option)}
                     >
@@ -273,28 +269,12 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* School Profile */}
+          {/* Elegant Profile Button - Only for logged-in School users */}
           {showProfileButton && (
-            <Link href="/school-profile">
-              <button
-                className="
-                  flex items-center gap-1 lg:gap-2
-                  px-2 lg:px-3 xl:px-3 py-1 lg:py-1.5 xl:py-1.5
-                  rounded-full
-                  border border-[#E5E5E5]
-                  bg-white
-                  text-[#1F2937]
-                  text-xs lg:text-sm xl:text-sm
-                  font-medium
-                  shadow-sm
-                  hover:bg-gray-50
-                  hover:shadow-md
-                  transition-all
-                  duration-200
-                  min-w-[fit-content]
-                "
-              >
-                <div className="w-6 h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full bg-[#FFFF00] flex items-center justify-center flex-shrink-0">
+            <Link href="/school/profile">
+              <button className="flex items-center gap-1 lg:gap-2 px-2 lg:px-3 xl:px-3 py-1 lg:py-1.5 xl:py-1.5 rounded-full border border-[#E5E5E5] bg-white text-[#1F2937] text-xs lg:text-sm xl:text-sm font-medium shadow-sm hover:bg-gray-50 hover:shadow-md transition-all duration-200 min-w-[fit-content]">
+                {/* Avatar-style identity */}
+                <div className="w-6 h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
                   <Building2
                     size={12}
                     className="lg:w-4 lg:h-4 xl:w-4 xl:h-4 text-black"
@@ -308,7 +288,7 @@ const Navbar = () => {
             </Link>
           )}
 
-          {/* Auth Buttons */}
+          {/* Auth Buttons - Responsive */}
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
@@ -323,7 +303,7 @@ const Navbar = () => {
                   Login
                 </button>
               </Link>
-              <Link href="/signUp">
+              <Link href="/signup">
                 <button className="bg-[#FFFF00] border-2 border-[#E5E500] text-black px-2 lg:px-3 xl:px-4 py-1 lg:py-2 rounded-full font-semibold neuton text-xs lg:text-sm xl:text-base">
                   Sign up
                 </button>
@@ -332,7 +312,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Toggle */}
+        {/* Mobile Toggle - Shows on LG and below */}
         <div className="lg:hidden">
           <button
             className="text-black p-2"
@@ -355,11 +335,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu implementation simplified ... */}
+      {/* Mobile Menu - Improved for smaller LG screens */}
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-[#FEF9BE] p-4 flex flex-col space-y-3">
-          {/* ... similar items mapping ... */}
-          {navItemsData.map(item => (
+          {navItemsData.map((item) => (
             <Link
               key={item.name}
               href={item.to}
@@ -369,7 +348,97 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          {/* ... Mobile auth buttons ... */}
+
+          {/* More Dropdown for Mobile */}
+          <div className="relative">
+            <button
+              onClick={() => setIsMoreOpen(!isMoreOpen)}
+              className="flex justify-between items-center w-full px-3 py-2 text-[#505050] font-medium rounded transition-colors duration-200 text-sm"
+            >
+              More{" "}
+              <span
+                className={`${isMoreOpen ? "rotate-180" : ""
+                  } inline-block text-5xl`}
+              >
+                ▼
+              </span>
+            </button>
+            {isMoreOpen && (
+              <div className="mt-1 ml-4 flex flex-col space-y-1 border-gray-200 rounded-lg shadow-lg p-1">
+                {moreItems.map((item, idx) => (
+                  <React.Fragment key={item.name}>
+                    <Link
+                      href={item.to}
+                      onClick={() => {
+                        setIsMoreOpen(false);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 text-sm ${pathname === item.to
+                        ? "bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]"
+                        : ""
+                        }`}
+                    >
+                      {item.name}
+                    </Link>
+                    {idx < moreItems.length - 1 && (
+                      <div className="w-full border-b border-gray-200" />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile CV Builder */}
+          <div className="relative">
+            <button
+              onClick={() => setIsCvBuilderOpen(!isCvBuilderOpen)}
+              className="flex justify-between items-center w-full px-3 py-2 bg-[#FFFF00] border-2 border-[#E5E500] text-black rounded font-semibold text-sm"
+            >
+              {cvBuilderSelection}{" "}
+              <span
+                className={`${isCvBuilderOpen ? "rotate-180" : ""
+                  } inline-block`}
+              >
+                ▼
+              </span>
+            </button>
+            {isCvBuilderOpen && (
+              <div className="mt-1 ml-4 flex flex-col space-y-1 border-gray-200 rounded-lg shadow-lg p-1">
+                {["CV Builder", "Cover Letter Builder"].map((option, idx) => (
+                  <React.Fragment key={option}>
+                    <button
+                      onClick={() => handleMobileCvSelection(option)}
+                      className={`text-start px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 w-full text-sm ${cvBuilderSelection === option ? "bg-[#FFFF85]" : ""
+                        }`}
+                    >
+                      {option}
+                    </button>
+                    {idx === 0 && (
+                      <div className="w-full border-b border-gray-200" />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Profile Button */}
+          {showProfileButton && (
+            <Link
+              href="/school/profile"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg border border-[#E5E5E5] bg-white text-[#1F2937] text-sm font-medium shadow-sm hover:bg-gray-50 transition-all">
+                <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
+                  <Building2 size={18} className="text-black" />
+                </div>
+                School Profile
+              </button>
+            </Link>
+          )}
+
+          {/* Mobile Auth Buttons */}
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
@@ -384,7 +453,7 @@ const Navbar = () => {
                   Login
                 </button>
               </Link>
-              <Link href="/signUp" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
                 <button className="bg-[#FFFF00] border-2 border-[#E5E500] text-black px-4 py-2 rounded-full font-semibold w-full text-sm">
                   Sign up
                 </button>
@@ -394,7 +463,7 @@ const Navbar = () => {
         </div>
       )}
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

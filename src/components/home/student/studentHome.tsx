@@ -1,30 +1,39 @@
-import StudentHero from "./StudentHero";
-import Sponser from "./Sponser";
-import Build from "./Build";
-import DashboardDemo from "./DashboardDemo";
-import TestimonialCarousel from "./TestimonialCarousel";
-import PricingPage from "./PricingPage";
-import FAQSection from "./FAQSection";
-import StudentHeroSec from "../student-sec/StudentHeroSec";
-import HowItWorks from "../student-sec/HowItWorks";
-import LunchCareer from "../student-sec/LunchCareer";
-import Opportunities from "../student-sec/Opportunities";
+import Hero from '@/components/marketing-students-school/Hero'
+import Opportunities from '../student-sec/Opportunities'
+import ToolsSection from '@/components/marketing-students-school/ToolsSection'
+import CommunitySection from '@/components/marketing-students-school/CommunitySection'
+import HowItWorksSection from '@/components/marketing-students-school/HowItWorksSection'
+import Model from '@/components/marketing-students-school/Model'
+import Interview from '@/components/marketing-students-school/Interview'
+import HowALNWorks from '@/components/marketing-students-school/web/aln-network'
+import AchievementsSection from '@/components/marketing-students-school/web/achivement-section'
+import Testimonial from '@/components/marketing-students-school/Testomonial'
+import { StoryBehind } from '@/components/marketing-students-school/web/behind-story'
+import { StudentFAQSection } from '@/components/marketing-students-school/StudentFAQSection'
 
 const StudentHome = () => {
   return (
-    <div style={{background: "linear-gradient(175deg, #FDF063 -4.84%, #FEFBDD 105.75%)"}}>
-      <StudentHeroSec />
-      <LunchCareer />
-      <HowItWorks />
-      <Opportunities />
-      <Sponser />
-      {/* <Build></Build> */}
-      {/* <DashboardDemo></DashboardDemo> */}
-      <TestimonialCarousel></TestimonialCarousel>
-      {/* <PricingPage></PricingPage> */}
-      <FAQSection></FAQSection>
+    <div
+      style={{
+        background: 'linear-gradient(175deg, #FDF063 -4.84%, #FEFBDD 105.75%)',
+      }}
+    >
+      <Hero />
+      <ToolsSection />
+      <CommunitySection />
+      <HowItWorksSection />
+      {/* <Opportunities /> */}
+      <Model />
+      <Interview />
+      {/* <FeaturedOpportunities /> */}
+      <HowALNWorks />
+      <AchievementsSection />
+      <Testimonial />
+      {/* <ReviewsSection /> */}
+      <StoryBehind />
+      <StudentFAQSection />
     </div>
-  );
-};
+  )
+}
 
-export default StudentHome;
+export default StudentHome
