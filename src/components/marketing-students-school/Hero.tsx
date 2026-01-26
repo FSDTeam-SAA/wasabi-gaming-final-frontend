@@ -185,13 +185,17 @@ const Hero = () => {
       }}
     >
       {/* FLOATING CARD */}
+      {/* FLOATING CARD */}
       <Card
         className="
-          mx-auto mb-6
-          w-56 sm:w-64 lg:w-72
-          2xl:absolute xl:left-16 xl:top-12 2xl:left-36
-          shadow-[0px_8px_16px_0px_#0000001F]
-        "
+    hidden xl:block
+    lg:absolute left-6 lg:left-12 lg:top-12
+    xl:left-16
+    2xl:left-36
+    bg-white border-none
+    w-32 sm:w-64 lg:w-72
+    shadow-[0px_8px_16px_0px_#0000001F]
+  "
       >
         <CardContent className="py-4 px-0 flex flex-col items-center gap-4">
           {/* Avatars */}
@@ -201,11 +205,11 @@ const Hero = () => {
                 <Avatar
                   key={i}
                   className="
-                    h-8 w-8
-                    sm:h-10 sm:w-10
-                    md:h-12 md:w-12
-                    border-2 border-white ring-1 ring-gray-100
-                  "
+              h-8 w-8
+              sm:h-10 sm:w-10
+              md:h-12 md:w-12
+              border-2 border-white ring-1 ring-gray-100
+            "
                 >
                   <AvatarImage src={src} alt={`Student ${i + 1}`} />
                   <AvatarFallback>ST</AvatarFallback>
