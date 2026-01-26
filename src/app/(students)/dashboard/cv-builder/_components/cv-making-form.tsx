@@ -104,7 +104,7 @@ const CvMakingForm = () => {
               )}
               {isActive === "Achievements" && <Achievements form={form} />}
               {isActive === "Summary" && (
-                <Summary form={form} isPending={isPending} />
+                <Summary form={form} isPending={isPending} token={token} />
               )}
             </div>
           </div>
