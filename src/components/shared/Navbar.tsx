@@ -111,10 +111,10 @@ const Navbar = () => {
       {/* Top Section - Optimized for all screens */}
       <div
         className={`flex items-center justify-center md:justify-start ${isContactPage ? "" : "bg-gradient-to-r from-[#FEE900] to-[#FEE900]"
-          } p-1 sm:p-2 md:p-3 lg:p-3 xl:p-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-2xl neuton`}
+          } p-0.5 sm:p-1 md:p-1 lg:p-1.5 xl:p-2 text-xs sm:text-sm md:text-base lg:text-lg xl:text-2xl neuton`}
       >
         <button
-          className={`py-1 md:py-2 lg:py-2 px-3 md:px-4 lg:px-4 xl:px-4 ${activeSection === ActiveSection.Students
+          className={`py-0.5 md:py-1 lg:py-1 px-3 md:px-4 lg:px-4 xl:px-4 ${activeSection === ActiveSection.Students
             ? "border-b-2 border-[#FDC700] font-semibold"
             : "text-gray-700"
             }`}
@@ -126,7 +126,7 @@ const Navbar = () => {
           |
         </span>
         <button
-          className={`px-2 py-1 sm:px-3 sm:py-1 md:px-4 md:py-2 lg:px-4 lg:py-2 ${activeSection === ActiveSection.School
+          className={`px-2 py-0.5 sm:px-3 sm:py-0.5 md:px-4 md:py-1 lg:px-4 lg:py-1 ${activeSection === ActiveSection.School
             ? "border-b-2 border-[#FDC700] font-semibold"
             : "text-gray-700"
             }`}
