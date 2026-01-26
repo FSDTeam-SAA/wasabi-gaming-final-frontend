@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Award, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 type LeadershipExperienceProps = {
   form: UseFormReturn<CvBuilderFormType>;
@@ -118,23 +119,35 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
             </div>
 
             {/* Description */}
-            <FormField
-              control={form.control}
-              name={`leadership.${index}.description`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description / Details</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe your responsibilities, achievements, and impact in this role..."
-                      {...field}
-                      className="min-h-[100px] rounded-2xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500 resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="relative">
+              <FormField
+                control={form.control}
+                name={`leadership.${index}.description`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description / Details</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe your responsibilities, achievements, and impact in this role..."
+                        {...field}
+                        className="min-h-[100px] rounded-2xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500 resize-none"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <button className="absolute right-3 bottom-3">
+                <Image
+                  src={"/details-icon.png"}
+                  alt="img"
+                  width={1000}
+                  height={1000}
+                  className="w-5 h-5"
+                />
+              </button>
+            </div>
 
             {fields.length > 1 && (
               <Button
