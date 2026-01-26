@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Globe, Linkedin, Github, CheckCircle2 } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ProfileForm() {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzczYmZkZGQzYmYwMjNmMGJkZGE4NiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjE5NDksImV4cCI6MTc3MDAyNjc0OX0.ObvCFM1TNyEDKq1twGrW3FbsYN02DFQbes9vDaE87PQ";
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
 
     const [profileData, setProfileData] = useState({
         firstName: "",
@@ -147,14 +149,64 @@ export default function ProfileForm() {
 
     const completionPercentage = calculateCompletion();
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+
+                {/* Basic Info Skeleton */}
+                <div className="p-8 border border-[#0000001A] rounded-3xl bg-white shadow-sm space-y-6">
+                    <Skeleton className="h-6 w-48" />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} className="space-y-2">
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-12 w-full rounded-xl" />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-28 w-full rounded-xl" />
+                    </div>
+                </div>
+
+                {/* Social Links Skeleton */}
+                <div className="p-8 border border-[#0000001A] rounded-3xl bg-white shadow-sm space-y-6">
+                    <Skeleton className="h-6 w-40" />
+
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="flex items-center gap-4">
+                            <Skeleton className="h-5 w-5 rounded-full" />
+                            <Skeleton className="h-12 w-full rounded-xl" />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Completion Skeleton */}
+                <div className="p-6 border-2 rounded-3xl space-y-3">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-2 w-full" />
+                    <Skeleton className="h-4 w-24" />
+                </div>
+
+                {/* Button Skeleton */}
+                <div className="flex justify-end pt-4">
+                    <Skeleton className="h-14 w-48 rounded-2xl" />
+                </div>
+
+            </div>
+        );
+    }
+
 
     return (
         <div className="space-y-6">
             <div className="p-8 border border-[#0000001A] rounded-3xl bg-white shadow-sm space-y-6">
                 <h3 className="text-xl text-[#1E1E1E]">Basic Information</h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[
                         ["firstName", "First Name"],
                         ["lastName", "Last Name"],
@@ -177,7 +229,62 @@ export default function ProfileForm() {
                             />
                         </div>
                     ))}
+                </div> */}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {[
+                        ["firstName", "First Name"],
+                        ["lastName", "Last Name"],
+                        ["email", "Email Address"],
+                        ["phone", "Phone Number"],
+                        ["jobTitle", "Job Title"],
+                        ["address", "Location"],
+                        ["company", "Company"],
+                    ].map(([id, label]) => (
+                        <div key={id} className="space-y-2">
+                            <Label htmlFor={id} className="text-[#364153]">
+                                {label}
+                            </Label>
+
+                            <Input
+                                id={id}
+                                value={(profileData as any)[id]}
+                                onChange={handleInputChange}
+                                disabled={id === "email"}
+                                className="bg-slate-50 border-none h-12 rounded-xl"
+                            />
+                        </div>
+                    ))}
+
+                    {/* ✅ Grade Select Field */}
+                    <div className="space-y-2">
+                        <Label className="text-[#364153]">Grade</Label>
+
+                        <Select
+                            value={profileData.grade || ""}
+                            onValueChange={(value) =>
+                                setProfileData((prev: any) => ({
+                                    ...prev,
+                                    grade: value,
+                                }))
+                            }
+                        >
+                            <SelectTrigger className="bg-slate-50 border-none h-12 rounded-xl">
+                                <SelectValue placeholder="Select grade" />
+                            </SelectTrigger>
+
+                            <SelectContent className="bg-white border-none">
+                                <SelectItem value="Year 9th">Year 9th</SelectItem>
+                                <SelectItem value="Year 10th">Year 10th</SelectItem>
+                                <SelectItem value="Year 11th">Year 11th</SelectItem>
+                                <SelectItem value="Year 12th">Year 12th</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                 </div>
+
 
                 <div className="space-y-2">
                     <Label htmlFor="bio">Bio</Label>

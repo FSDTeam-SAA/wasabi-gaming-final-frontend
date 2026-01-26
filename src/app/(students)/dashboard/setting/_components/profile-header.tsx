@@ -11,10 +11,10 @@ import { toast } from "sonner";
 export default function ProfileHeader() {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
-    const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzczYmZkZGQzYmYwMjNmMGJkZGE4NiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjE5NDksImV4cCI6MTc3MDAyNjc0OX0.ObvCFM1TNyEDKq1twGrW3FbsYN02DFQbes9vDaE87PQ";
 
-    const { data: profile, } = useQuery({
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
+
+    const { data: profile } = useQuery({
         queryKey: ["me"],
         queryFn: async () => {
             const res = await fetch(
@@ -56,14 +56,17 @@ export default function ProfileHeader() {
         },
 
         onSuccess: () => toast.success("Profile changed successfully"),
-        onError: (err: any) => toast.error(err.message || "Something went wrong"),
+        onError: (err: any) =>
+            toast.error(err.message || "Something went wrong"),
     });
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -79,17 +82,21 @@ export default function ProfileHeader() {
         .join("")
         .toUpperCase();
 
+   
     return (
-        <Card className="p-6  border-2 border-[#FFFF00] bg-gradient-to-br  from-[#FEFCE8] to-white  rounded-xl relative">
-            <div className="flex gap-6 items-start relative">
+        <Card className="p-6 border-2 border-[#FFFF00] bg-gradient-to-br from-[#FEFCE8] to-white rounded-xl relative">
+            <div className="flex flex-col sm:flex-row gap-6 items-start relative">
+
                 {/* Avatar Section */}
-                <div className="flex flex-col items-center gap-2 relative">
+                <div className="flex flex-col items-center gap-2 relative shrink-0">
                     <div className="w-24 h-24 border-[#FFFF00] border-2 shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),_0px_10px_15px_-3px_rgba(0,0,0,0.1)] rounded-full overflow-hidden bg-[#FFFF00] flex items-center justify-center text-2xl font-bold relative">
-                        {(changeProfilePic.isPending) && (
+
+                        {changeProfilePic.isPending && (
                             <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-10">
                                 <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
                             </div>
                         )}
+
                         {preview || profile?.data?.profileImage ? (
                             <Image
                                 src={preview || profile?.data?.profileImage}
@@ -109,7 +116,8 @@ export default function ProfileHeader() {
                         className="text-xs border border-[#FFFF00] bg-[#FFFFFF] rounded-3xl"
                         onClick={handleUploadClick}
                     >
-                        <Upload className="w-4 h-4 mr-2" /> Upload Photo
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Photo
                     </Button>
 
                     <input
@@ -122,46 +130,63 @@ export default function ProfileHeader() {
                 </div>
 
                 {/* Profile Info */}
-                <div className="flex-1">
+                <div className="flex-1 w-full">
+
                     <div className="flex justify-between">
                         <div>
-                            <h2 className="text-[#1E1E1E] text-[24px] ">{profile?.data?.firstName} {profile?.data?.lastName}</h2>
-                            <p className="text-[#4A5565] text-[16px]">
+                            <h2 className="text-[#1E1E1E] text-[20px] sm:text-[24px] break-words">
+                                {profile?.data?.firstName}{" "}
+                                {profile?.data?.lastName}
+                            </h2>
+
+                            <p className="text-[#4A5565] text-[16px] break-words">
                                 {profile?.data?.company}
                             </p>
                         </div>
                     </div>
 
-                    <p className="mt-3 text-[16px] text-[#364153] max-w-2xl">
+                    <p className="mt-3 text-[14px] sm:text-[16px] text-[#364153] max-w-2xl break-words">
                         {profile?.data?.bio}
                     </p>
 
-                    <p className="mt-3 text-[16px] text-[#364153] max-w-2xl">
+                    <p className="mt-3 text-[14px] sm:text-[16px] text-[#364153] max-w-2xl break-words">
                         {profile?.data?.grade}
                     </p>
 
-                    <div className="grid grid-cols-2 gap-2 mt-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-2">
-                            <Mail className="w-4 h-4" /> {profile?.data?.email}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4 text-sm text-gray-500">
+
+                        <div className="flex items-center gap-2 break-all">
+                            <Mail className="w-4 h-4" />
+                            {profile?.data?.email}
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Phone className="w-4 h-4" /> {profile?.data?.phone}
+
+                        <div className="flex items-center gap-2 break-all">
+                            <Phone className="w-4 h-4" />
+                            {profile?.data?.phone}
                         </div>
-                        <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" /> {profile?.data?.address}
+
+                        <div className="flex items-center gap-2 break-all">
+                            <MapPin className="w-4 h-4" />
+                            {profile?.data?.address}
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />{" "}
+
+                        <div className="flex items-center gap-2 break-all">
+                            <Calendar className="w-4 h-4" />
                             {profile?.data?.createdAt
-                                ? new Date(profile.data.createdAt).toLocaleDateString("en-US", {
+                                ? new Date(
+                                    profile.data.createdAt
+                                ).toLocaleDateString("en-US", {
                                     year: "numeric",
                                     month: "short",
                                     day: "numeric",
                                 })
                                 : "-"}
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
         </Card>
     );

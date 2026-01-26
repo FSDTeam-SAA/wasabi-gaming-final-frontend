@@ -21,9 +21,10 @@ import { SingleCourseResponse } from "@/types/course";
 
 const SingelCourse = ({ id }: { id: string }) => {
   const router = useRouter();
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzA1Y2I1NzI0OTlhOWZiOWFiNjg1YSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzdHVkZW50QGdtYWlsLmNvbSIsImlhdCI6MTc2OTE3MzA3NCwiZXhwIjoxNzY5Nzc3ODc0fQ.36x1EbnpCGOGwJUv4afIG8wAL9PCZ8foDIS_YJNW4CY";
-  const enrollid = "69705cb572499a9fb9ab685a"
+
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
+
+  const enrollid = "6977511d5ada81c9f709b532"
 
   const { data, isLoading, isError } = useQuery<SingleCourseResponse>({
     queryKey: ["single-course", id],
