@@ -19,11 +19,14 @@ import { defaultValues } from "@/utils/cvBuilderDefaultValues";
 import PersonalInfo from "./personal-info";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import ModernCvModal from "./modern-cv-modal";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
 const CvMakingForm = () => {
   const { isActive } = useFormState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cvData, setCvData] = useState<CvBuilderFormType | null>(null);
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0Mjk1NzMsImV4cCI6MTc3MDAzNDM3M30.K7VQE7jgv5GR15D34eMNyzBD7Vht86ie3L8iNzuDI1s";
 
@@ -57,6 +60,10 @@ const CvMakingForm = () => {
     },
     onSuccess: (data) => {
       toast.success(data?.message);
+      if (data?.data) {
+        setCvData(data.data);
+        setIsModalOpen(true);
+      }
     },
     onError: (error) => {
       toast.error(error.message);
@@ -71,46 +78,59 @@ const CvMakingForm = () => {
     }
   }
 
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="space-y-6">
-          <TitleProgress form={form} />
-          {isActive === "Personal Information" && (
-            <ChooseCvStyle
-              cvFormat={cvFormat as string}
-              setCvFormat={setCvFormat}
-            />
-          )}
+    <div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-6">
+            <TitleProgress form={form} />
+            {isActive === "Personal Information" && (
+              <ChooseCvStyle
+                cvFormat={cvFormat as string}
+                setCvFormat={setCvFormat}
+              />
+            )}
 
-          <div className="flex flex-col items-start gap-5 lg:flex-row">
-            <div className="lg:w-[30%] sticky top-10 lg:top-32 z-40 backdrop-blur-lg">
-              <Sections />
-            </div>
+            <div className="flex flex-col items-start gap-5 lg:flex-row">
+              <div className="lg:w-[30%] sticky top-10 lg:top-32 z-40 backdrop-blur-lg">
+                <Sections />
+              </div>
 
-            <div className="flex flex-1">
-              {isActive === "Personal Information" && (
-                <PersonalInfo form={form} />
-              )}
-              {isActive === "Legal Work Experience" && (
-                <LegalWorkExperience form={form} />
-              )}
-              {isActive === "Non Legal Work Experience" && (
-                <NonLegalWorkExperience form={form} />
-              )}
-              {isActive === "Education Level" && <EducationLevel form={form} />}
-              {isActive === "Leadership Experience" && (
-                <LeadershipExperience form={form} />
-              )}
-              {isActive === "Achievements" && <Achievements form={form} />}
-              {isActive === "Summary" && (
-                <Summary form={form} isPending={isPending} />
-              )}
+              <div className="flex flex-1">
+                {isActive === "Personal Information" && (
+                  <PersonalInfo form={form} />
+                )}
+                {isActive === "Legal Work Experience" && (
+                  <LegalWorkExperience form={form} />
+                )}
+                {isActive === "Non Legal Work Experience" && (
+                  <NonLegalWorkExperience form={form} />
+                )}
+                {isActive === "Education Level" && (
+                  <EducationLevel form={form} />
+                )}
+                {isActive === "Leadership Experience" && (
+                  <LeadershipExperience form={form} />
+                )}
+                {isActive === "Achievements" && <Achievements form={form} />}
+                {isActive === "Summary" && (
+                  <Summary form={form} isPending={isPending} token={token} />
+                )}
+                <ModernCvModal
+                  isOpen={isModalOpen}
+                  onClose={handleModalClose}
+                  cvData={cvData}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </div>
   );
 };
 
