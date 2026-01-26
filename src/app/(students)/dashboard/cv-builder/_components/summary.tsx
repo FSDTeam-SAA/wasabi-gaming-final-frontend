@@ -14,6 +14,7 @@ import { CvBuilderFormType } from "./cv-making-form";
 import { Button } from "@/components/ui/button";
 import { useFormState } from "./state/useFormState";
 import { useEffect } from "react";
+import Image from "next/image";
 
 type SummaryProps = {
   form: UseFormReturn<CvBuilderFormType>;
@@ -23,11 +24,11 @@ const Summary = ({ form }: SummaryProps) => {
   const { setIsActive, markStepCompleted } = useFormState();
 
   useEffect(() => {
-  const summary = form.watch("summary");
-  if (summary?.length === 10) {
-    markStepCompleted("Summary");
-  }
-}, [form.watch("summary")]);
+    const summary = form.watch("summary");
+    if (summary?.length === 10) {
+      markStepCompleted("Summary");
+    }
+  }, [form.watch("summary")]);
 
   return (
     <div className="w-full p-4 border border-gray-300 rounded-xl">
@@ -44,23 +45,35 @@ const Summary = ({ form }: SummaryProps) => {
 
       <div className="space-y-5">
         {/* Summary field */}
-        <FormField
-          control={form.control}
-          name="summary"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-medium text-black">Summary</FormLabel>
-              <FormControl>
-                <Textarea
-                  className="min-h-[200px] rounded-2xl p-4 border border-gray-100 placeholder:text-gray-500 bg-[#f3f3f5] resize-none"
-                  placeholder="Experienced software engineer with 5+ years of expertise in full-stack development. Passionate about building scalable applications and leading high-performing teams.'"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="relative">
+          <FormField
+            control={form.control}
+            name={`summary`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description / Details</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Experienced software engineer with 5+ years of expertise in full-stack development. Passionate about building scalable applications and leading high-performing teams."
+                    {...field}
+                    className="min-h-[180px] rounded-2xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500 resize-none"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <button className="absolute right-3 bottom-3">
+            <Image
+              src={"/details-icon.png"}
+              alt="img"
+              width={1000}
+              height={1000}
+              className="w-5 h-5"
+            />
+          </button>
+        </div>
 
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
