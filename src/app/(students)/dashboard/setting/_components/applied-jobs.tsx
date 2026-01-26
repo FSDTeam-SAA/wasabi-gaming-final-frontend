@@ -36,7 +36,7 @@ export default function AppliedJobs() {
     const [currentPage, setCurrentPage] = useState(1);
     const jobsPerPage = 5;
 
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzczYmZkZGQzYmYwMjNmMGJkZGE4NiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjE5NDksImV4cCI6MTc3MDAyNjc0OX0.ObvCFM1TNyEDKq1twGrW3FbsYN02DFQbes9vDaE87PQ";
+     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
 
     const { data, isLoading, isError } = useQuery<ApiResponse>({
         queryKey: ["applied-job"],

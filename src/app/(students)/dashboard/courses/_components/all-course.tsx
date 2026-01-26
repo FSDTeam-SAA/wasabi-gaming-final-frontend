@@ -1,6 +1,7 @@
 "use client";
 import { Award, BookOpen, CircleCheckBig, GraduationCap, Search, Star, TrendingUp, Users } from 'lucide-react'
 import CourseCard from './course-card'
+import { useQuery } from '@tanstack/react-query';
 
 
 export const metadata = {
@@ -8,15 +9,42 @@ export const metadata = {
     description:
         'Access high-quality courses designed to help you land your dream job.',
 }
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
 
 export default function AllCourse() {
-    const stats = [
-        { label: 'Total Courses', value: 6, icon: BookOpen, bg: "#DBEAFE", textCOlor: "#155DFC" },
-        { label: 'Enrolled', value: 4, icon: CircleCheckBig, bg: "#DCFCE7", textCOlor: "#00A63E" },
-        { label: 'Videos Completed', value: 1, icon: TrendingUp, bg: "#F3E8FF", textCOlor: "#9810FA" },
-        { label: 'Certificates', value: 0, icon: Award, bg: "#FEF9C2", textCOlor: "#D08700" },
-    ]
 
+
+    const { data } = useQuery({
+        queryKey: ["dashboardStudents"],
+        queryFn: async () => {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/course/dashboard`
+            );
+            if (!res.ok) throw new Error("Failed to load ");
+            return res.json();
+        },
+    });
+
+    const { data: statss } = useQuery({
+        queryKey: ["statss"],
+        queryFn: async () => {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/course/header`,{
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+            if (!res.ok) throw new Error("Failed to load ");
+            return res.json();
+        },
+    });
+
+    const stats = [
+        { label: 'Total Courses', value: statss?.data?.purchasedCourseCount || 0, icon: BookOpen, bg: "#DBEAFE", textCOlor: "#155DFC" },
+        { label: 'Enrolled', value: statss?.data?.enrolledCourseCount || 0, icon: CircleCheckBig, bg: "#DCFCE7", textCOlor: "#00A63E" },
+        { label: 'Videos Completed', value: statss?.data?.completedVideoCount || 0, icon: TrendingUp, bg: "#F3E8FF", textCOlor: "#9810FA" },
+    ];
 
     return (
         <div className="min-h-screen bg-background">
@@ -39,16 +67,16 @@ export default function AllCourse() {
                         </p>
 
                         <div className="flex flex-wrap gap-6 text-sm">
-                            <span className='flex items-center gap-2'><Award className='text-[#FFFF00]' size={20} /> 3 Free Courses</span>
-                            <span className='flex items-center gap-2'><Users className='text-[#FFFF00]' size={20} /> 5,000+ Students</span>
-                            <span className='flex items-center gap-2'><Star className='text-[#FFFF00]' size={20} /> 4.8 Average Rating</span>
+                            <span className='flex items-center gap-2'><Award className='text-[#FFFF00]' size={20} /> {data?.data?.totalFreeCourses} Free Courses</span>
+                            <span className='flex items-center gap-2'><Users className='text-[#FFFF00]' size={20} /> {data?.data?.totalStudents} Students</span>
+                            {/* <span className='flex items-center gap-2'><Star className='text-[#FFFF00]' size={20} /> 4.8 Average Rating</span> */}
                         </div>
                     </div>
                 </section>
 
                 {/* STATS */}
                 <section className="mb-10">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {stats.map((s, i) => (
                             <div
                                 key={i}
