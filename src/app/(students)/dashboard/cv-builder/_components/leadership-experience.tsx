@@ -210,6 +210,7 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
 
               <button
                 onClick={handleLeadershipDetails}
+                type="button"
                 className="absolute right-3 bottom-3"
               >
                 <Image

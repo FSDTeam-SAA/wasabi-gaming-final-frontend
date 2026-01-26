@@ -25,7 +25,7 @@ export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 const CvMakingForm = () => {
   const { isActive } = useFormState();
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzczYmZkZGQzYmYwMjNmMGJkZGE4NiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjUxNDIsImV4cCI6MTc3MDAyOTk0Mn0.O44y7SNCwAe_o-rWVVsFiyg2npWxURGXuHv5-NHxFQk";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0Mjk1NzMsImV4cCI6MTc3MDAzNDM3M30.K7VQE7jgv5GR15D34eMNyzBD7Vht86ie3L8iNzuDI1s";
 
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
