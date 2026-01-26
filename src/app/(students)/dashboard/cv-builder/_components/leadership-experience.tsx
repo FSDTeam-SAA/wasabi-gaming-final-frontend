@@ -40,8 +40,15 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
 
   const handleLeadershipDetails = () => {
     const payload = {
-      
+      leadership: formValue.leadership.map((item) => ({
+        role: item.role,
+        organization: item.organization,
+        dateYear: item.dateYear,
+        description: item.description,
+      })),
     };
+
+    console.log("payload: ", payload);
   };
 
   return (
@@ -147,7 +154,10 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
                 )}
               />
 
-              <button className="absolute right-3 bottom-3">
+              <button
+                onClick={handleLeadershipDetails}
+                className="absolute right-3 bottom-3"
+              >
                 <Image
                   src={"/details-icon.png"}
                   alt="img"
@@ -190,7 +200,7 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
         {/* Navigation Buttons */}
         <div className="mt-4 space-x-4">
           <Button
-            onClick={() => setIsActive("Education Level")} // Change to previous step
+            onClick={() => setIsActive("Education Level")}
             type="button"
             className="w-24 bg-gray-300 rounded-3xl hover:bg-gray-400/55"
           >
