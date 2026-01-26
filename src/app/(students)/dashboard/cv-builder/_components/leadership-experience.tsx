@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { CvBuilderFormType } from "./cv-making-form";
@@ -13,6 +14,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Award, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+interface LeadershipDetails {
+  leadership: {
+    role: string;
+    organization: string;
+    dateYear: string;
+    description: string | undefined;
+  }[];
+}
 
 type LeadershipExperienceProps = {
   form: UseFormReturn<CvBuilderFormType>;
@@ -20,6 +33,9 @@ type LeadershipExperienceProps = {
 
 const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
   const { setIsActive, markStepCompleted } = useFormState();
+  const formValue = form.watch();
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzczYmZkZGQzYmYwMjNmMGJkZGE4NiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjUxNDIsImV4cCI6MTc3MDAyOTk0Mn0.O44y7SNCwAe_o-rWVVsFiyg2npWxURGXuHv5-NHxFQk";
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -31,6 +47,61 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
     if (isStepValid) {
       setIsActive("Achievements");
       markStepCompleted("Leadership Experience");
+    }
+  };
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationKey: ["leadership-details"],
+    mutationFn: async (payload: LeadershipDetails) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/cvbuilder/leadership`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      return await res.json();
+    },
+
+    onSuccess: (data) => {
+      toast.success(data?.message);
+    },
+    onError: (error) => {
+      toast.error(error?.message);
+    },
+  });
+
+  const handleLeadershipDetails = async () => {
+    const validLeadershipItems = formValue.leadership.filter(
+      (item) =>
+        item.role.trim() && item.organization.trim() && item.dateYear.trim(),
+    );
+
+    if (validLeadershipItems.length === 0) {
+      toast.warning(
+        "Please fill in at least one leadership experience with all required fields",
+      );
+      return;
+    }
+
+    const payload = {
+      leadership: formValue.leadership.map((item) => ({
+        role: item.role,
+        organization: item.organization,
+        dateYear: item.dateYear,
+        description: item.description,
+      })),
+    };
+
+    try {
+      await mutateAsync(payload);
+    } catch (error) {
+      console.log(`error from leadership experience: ${error}`);
     }
   };
 
@@ -55,7 +126,7 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
             {/* Find Type (Role/Position) */}
             <FormField
               control={form.control}
-              name={`leadership.${index}.findType`}
+              name={`leadership.${index}.role`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -118,23 +189,39 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
             </div>
 
             {/* Description */}
-            <FormField
-              control={form.control}
-              name={`leadership.${index}.description`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description / Details</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe your responsibilities, achievements, and impact in this role..."
-                      {...field}
-                      className="min-h-[100px] rounded-2xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500 resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="relative">
+              <FormField
+                control={form.control}
+                name={`leadership.${index}.description`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description / Details</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe your responsibilities, achievements, and impact in this role..."
+                        {...field}
+                        className="min-h-[100px] rounded-2xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500 resize-none"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <button
+                onClick={handleLeadershipDetails}
+                type="button"
+                className="absolute right-3 bottom-3"
+              >
+                <Image
+                  src={"/details-icon.png"}
+                  alt="img"
+                  width={1000}
+                  height={1000}
+                  className="w-5 h-5"
+                />
+              </button>
+            </div>
 
             {fields.length > 1 && (
               <Button
@@ -155,7 +242,7 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
           className="flex items-center justify-center w-full gap-2 py-2 border border-gray-400 border-dashed rounded-xl"
           onClick={() =>
             append({
-              findType: "",
+              role: "",
               organization: "",
               dateYear: "",
               description: "",
@@ -168,7 +255,7 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
         {/* Navigation Buttons */}
         <div className="mt-4 space-x-4">
           <Button
-            onClick={() => setIsActive("Education Level")} // Change to previous step
+            onClick={() => setIsActive("Education Level")}
             type="button"
             className="w-24 bg-gray-300 rounded-3xl hover:bg-gray-400/55"
           >

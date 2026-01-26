@@ -17,11 +17,15 @@ import Summary from "./summary";
 import TitleProgress from "./title-progress";
 import { defaultValues } from "@/utils/cvBuilderDefaultValues";
 import PersonalInfo from "./personal-info";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
 const CvMakingForm = () => {
   const { isActive } = useFormState();
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0Mjk1NzMsImV4cCI6MTc3MDAzNDM3M30.K7VQE7jgv5GR15D34eMNyzBD7Vht86ie3L8iNzuDI1s";
 
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
@@ -35,8 +39,36 @@ const CvMakingForm = () => {
 
   const cvFormat = form.watch("cvformet");
 
-  function onSubmit(data: CvBuilderFormType) {
-    console.log(data);
+  const { mutateAsync, isPending } = useMutation({
+    mutationKey: ["cv-making"],
+    mutationFn: async (payload: CvBuilderFormType) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/cvbuilder`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      toast.success(data?.message);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  async function onSubmit(data: CvBuilderFormType) {
+    try {
+      await mutateAsync(data);
+    } catch (error) {
+      console.log(`error from cv making: ${error}`);
+    }
   }
 
   return (
@@ -51,8 +83,8 @@ const CvMakingForm = () => {
             />
           )}
 
-          <div className="flex items-start gap-5">
-            <div className="lg:w-[30%]">
+          <div className="flex flex-col items-start gap-5 lg:flex-row">
+            <div className="lg:w-[30%] sticky top-10 lg:top-32 z-40 backdrop-blur-lg">
               <Sections />
             </div>
 
@@ -71,7 +103,9 @@ const CvMakingForm = () => {
                 <LeadershipExperience form={form} />
               )}
               {isActive === "Achievements" && <Achievements form={form} />}
-              {isActive === "Summary" && <Summary form={form} />}
+              {isActive === "Summary" && (
+                <Summary form={form} isPending={isPending} />
+              )}
             </div>
           </div>
         </div>

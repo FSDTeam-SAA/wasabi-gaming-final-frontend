@@ -10,7 +10,7 @@ export const educationSchema = z.object({
 });
 
 export const leadershipSchema = z.object({
-  findType: z.string().min(1, "Find type is required"),
+  role: z.string().min(1, "Find type is required"),
   organization: z.string().min(1, "Organization is required"),
   dateYear: z.string().min(1, "Date year is required"),
   description: z.string().optional(),
