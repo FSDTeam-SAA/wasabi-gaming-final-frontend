@@ -62,10 +62,11 @@ const Sections: React.FC = () => {
           <button
             key={item.label}
             disabled={isDisabled}
+            type="button"
             onClick={() => setIsActive(item.label)}
             className={`
               flex items-center w-full gap-4 px-5 py-3 border rounded-3xl
-              transition-all duration-200 hover:bg-gray-50
+              transition-all duration-200
               ${isActiveStep ? "bg-[#f9ff04] border-[#f9ff04]" : "border-gray-200"}
               ${isDisabled ? "opacity-40 cursor-not-allowed hover:bg-transparent" : ""}
             `}
