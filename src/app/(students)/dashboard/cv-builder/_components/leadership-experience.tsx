@@ -15,6 +15,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Award, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+interface LeadershipDetails {
+  leadership: {
+    role: string;
+    organization: string;
+    dateYear: string;
+    description: string | undefined;
+  }[];
+}
 
 type LeadershipExperienceProps = {
   form: UseFormReturn<CvBuilderFormType>;
@@ -22,8 +33,9 @@ type LeadershipExperienceProps = {
 
 const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
   const { setIsActive, markStepCompleted } = useFormState();
-
   const formValue = form.watch();
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzczYmZkZGQzYmYwMjNmMGJkZGE4NiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjUxNDIsImV4cCI6MTc3MDAyOTk0Mn0.O44y7SNCwAe_o-rWVVsFiyg2npWxURGXuHv5-NHxFQk";
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -38,7 +50,33 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
     }
   };
 
-  const handleLeadershipDetails = () => {
+  const { mutateAsync, isPending } = useMutation({
+    mutationKey: ["leadership-details"],
+    mutationFn: async (payload: LeadershipDetails) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/cvbuilder/leadership`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      return await res.json();
+    },
+
+    onSuccess: (data) => {
+      toast.success(data?.message);
+    },
+    onError: (error) => {
+      toast.error(error?.message);
+    },
+  });
+
+  const handleLeadershipDetails = async () => {
     const payload = {
       leadership: formValue.leadership.map((item) => ({
         role: item.role,
@@ -48,7 +86,11 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
       })),
     };
 
-    console.log("payload: ", payload);
+    try {
+      await mutateAsync(payload);
+    } catch (error) {
+      console.log(`error from leadership experience: ${error}`);
+    }
   };
 
   return (
