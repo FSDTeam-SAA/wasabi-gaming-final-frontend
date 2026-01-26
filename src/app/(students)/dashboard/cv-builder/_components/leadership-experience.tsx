@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { CvBuilderFormType } from "./cv-making-form";
@@ -22,6 +23,8 @@ type LeadershipExperienceProps = {
 const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
   const { setIsActive, markStepCompleted } = useFormState();
 
+  const formValue = form.watch();
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "leadership",
@@ -33,6 +36,12 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
       setIsActive("Achievements");
       markStepCompleted("Leadership Experience");
     }
+  };
+
+  const handleLeadershipDetails = () => {
+    const payload = {
+      
+    };
   };
 
   return (
@@ -56,7 +65,7 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
             {/* Find Type (Role/Position) */}
             <FormField
               control={form.control}
-              name={`leadership.${index}.findType`}
+              name={`leadership.${index}.role`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -168,7 +177,7 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
           className="flex items-center justify-center w-full gap-2 py-2 border border-gray-400 border-dashed rounded-xl"
           onClick={() =>
             append({
-              findType: "",
+              role: "",
               organization: "",
               dateYear: "",
               description: "",

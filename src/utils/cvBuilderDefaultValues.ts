@@ -37,7 +37,7 @@ export const defaultValues = {
     {
       dateYear: "",
       description: "",
-      findType: "",
+      role: "",
       organization: "",
     },
   ],
