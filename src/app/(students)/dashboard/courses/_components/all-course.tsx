@@ -52,7 +52,7 @@ export default function AllCourse() {
                         {stats.map((s, i) => (
                             <div
                                 key={i}
-                                className={`rounded-xl border p-6 flex items-center gap-3 `}
+                                className={`rounded-xl border border-[#0000001A] p-6 flex items-center gap-3 `}
                             >
                                 <div
                                     className="h-9 w-9 flex items-center justify-center rounded-full"

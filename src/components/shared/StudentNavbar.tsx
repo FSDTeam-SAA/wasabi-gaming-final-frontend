@@ -84,9 +84,9 @@ const StudentNavbar = () => {
 
         {/* Right Section - Desktop */}
         <Link
-          href="/dashboard/profile"
+          href="/dashboard/setting"
           className={`px-4 py-2 rounded-2xl font-medium transition-all duration-200 ${
-            isActive("/dashboard/profile")
+            isActive("/dashboard/setting")
               ? "bg-[#FFFF00] text-[#1E1E1E] border-2 border-[#E5E500]"
               : "text-[#505050] hover:text-black"
           }`}
@@ -137,10 +137,10 @@ const StudentNavbar = () => {
 
           {/* Mobile Right Section */}
           <Link
-            href="/dashboard/profile"
+            href="/dashboard/setting"
             onClick={() => setIsMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-              isActive("/dashboard/profile")
+              isActive("/dashboard/setting")
                 ? "bg-[#FFFF00] text-black border-2 border-[#E5E500]"
                 : "text-[#505050] hover:text-black"
             }`}
