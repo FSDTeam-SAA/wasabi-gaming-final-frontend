@@ -43,10 +43,6 @@ export default function CourseCard() {
     });
 
     const courses = data?.data ?? [];
-    console.log(data)
-
-    const categories = ["All", ...Array.from(new Set(courses.map((c) => c.category)))];
-
 
     const payMutation = useMutation({
         mutationFn: async (courseId: string) => {
@@ -142,7 +138,7 @@ export default function CourseCard() {
                             placeholder="Search courses..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-[#F3F3F5] rounded-full border px-10 py-2 text-sm outline-none"
+                            className="w-full bg-[#F3F3F5] rounded-full  px-10 py-2 text-sm outline-none"
                         />
                     </div>
 
