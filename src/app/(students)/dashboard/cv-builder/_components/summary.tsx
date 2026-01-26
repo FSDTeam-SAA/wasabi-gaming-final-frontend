@@ -96,7 +96,7 @@ const Summary = ({ form }: SummaryProps) => {
           >
             Previous
           </Button>
-          <Button type="button" className="w-24 rounded-3xl">
+          <Button type="submit" className="w-24 rounded-3xl">
             Save
           </Button>
         </div>
