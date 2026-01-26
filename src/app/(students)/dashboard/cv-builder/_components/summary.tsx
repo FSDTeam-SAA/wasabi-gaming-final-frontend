@@ -15,12 +15,14 @@ import { Button } from "@/components/ui/button";
 import { useFormState } from "./state/useFormState";
 import { useEffect } from "react";
 import Image from "next/image";
+import { Spinner } from "@/components/ui/spinner";
 
 type SummaryProps = {
   form: UseFormReturn<CvBuilderFormType>;
+  isPending: boolean;
 };
 
-const Summary = ({ form }: SummaryProps) => {
+const Summary = ({ form, isPending }: SummaryProps) => {
   const { setIsActive, markStepCompleted } = useFormState();
 
   useEffect(() => {
@@ -96,8 +98,15 @@ const Summary = ({ form }: SummaryProps) => {
           >
             Previous
           </Button>
-          <Button type="submit" className="w-24 rounded-3xl">
-            Save
+          <Button disabled={isPending} type="submit" className="w-24 rounded-3xl disabled:cursor-not-allowed">
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <Spinner className="w-4 h-4" />
+                <span>Saving</span>
+              </span>
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </div>
