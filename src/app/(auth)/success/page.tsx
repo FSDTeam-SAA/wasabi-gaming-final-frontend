@@ -1,9 +1,7 @@
-import React from 'react'
+import SuccessContent from "./_components/SuccessContent";
 
 const SuccessPage = () => {
-  return (
-    <div>SuccessPage</div>
-  )
-}
+  return <SuccessContent />;
+};
 
-export default SuccessPage
+export default SuccessPage;
