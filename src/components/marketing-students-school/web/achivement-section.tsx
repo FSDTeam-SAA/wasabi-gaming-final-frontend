@@ -50,7 +50,7 @@ const AchievementsSection = () => {
           {achievements.map((achievement, index) => (
             <Card
               key={index}
-              className="bg-white rounded-2xl overflow-hidden shadow-lg  transition-all duration-300 hover:shadow-2xl group"
+              className="bg-white rounded-2xl overflow-hidden shadow-lg  transition-all duration-300 hover:shadow-2xl border-none group"
             >
               {/* Image */}
               <div className="relative w-full h-48 overflow-hidden">

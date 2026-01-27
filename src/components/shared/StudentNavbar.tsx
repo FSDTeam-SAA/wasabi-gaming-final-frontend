@@ -55,7 +55,7 @@ const StudentNavbar = () => {
   }
 
   return (
-    <nav className="w-full border border-[#E5E7EB]">
+    <nav className="w-full border border-[#E5E7EB] bg-slate-50">
       <div className="flex items-center justify-between px-4 md:px-8 lg:px-16 py-2">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0">
@@ -68,10 +68,11 @@ const StudentNavbar = () => {
             <li key={item.name}>
               <Link
                 href={item.path}
-                className={`px-3  rounded-lg font-medium transition-all duration-200 ${isActive(item.path)
+                className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  isActive(item.path)
                     ? 'yellow text-[#1E1E1E]'
                     : 'text-[#505050] hover:text-black'
-                  }`}
+                }`}
               >
                 {item.name}
               </Link>
@@ -82,10 +83,11 @@ const StudentNavbar = () => {
         {/* Right Section - Desktop */}
         <Link
           href="/dashboard/setting"
-          className={`px-4 rounded-2xl font-medium transition-all duration-200 ${isActive('/dashboard/setting')
+          className={`px-4 rounded-2xl font-medium transition-all duration-200 ${
+            isActive('/dashboard/setting')
               ? 'bg-[#FFFF00] text-[#1E1E1E] border-2 border-[#E5E500]'
               : 'text-[#505050] hover:text-black'
-            }`}
+          }`}
         >
           <div className="hidden lg:flex items-center space-x-4">
             <button className="p-2 rounded-full size-10 text-sm text-[#505050] bg-[#E5E7EB] font-medium hover:text-black transition-colors">
@@ -119,10 +121,11 @@ const StudentNavbar = () => {
                 <Link
                   href={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-3  rounded-lg font-medium text-sm transition-all duration-200 ${isActive(item.path)
+                  className={`block px-3  rounded-lg font-medium text-sm transition-all duration-200 ${
+                    isActive(item.path)
                       ? 'bg-[#FFFF00] text-black border-2 border-[#E5E500]'
                       : 'text-[#505050] hover:text-black'
-                    }`}
+                  }`}
                 >
                   {item.name}
                 </Link>
@@ -134,10 +137,11 @@ const StudentNavbar = () => {
           <Link
             href="/dashboard/setting"
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`block px-3 rounded-lg font-medium text-sm transition-all duration-200 ${isActive('/dashboard/setting')
+            className={`block px-3 rounded-lg font-medium text-sm transition-all duration-200 ${
+              isActive('/dashboard/setting')
                 ? 'bg-[#FFFF00] text-black border-2 border-[#E5E500]'
                 : 'text-[#505050] hover:text-black'
-              }`}
+            }`}
           >
             <div className="flex flex-col space-y-2 mt-4 pt-4 border-t border-[#E5E500]">
               <div className="flex items-center space-x-3">
