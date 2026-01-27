@@ -138,7 +138,7 @@ const Navbar = () => {
 
       {/* Main Navbar - Responsive for all breakpoints */}
       <div
-        className={`flex items-center justify-between p-2 md:p-3 lg:p-4 px-4 md:px-8 lg:px-2 xl:px-16 ${isContactPage
+        className={`flex items-center justify-between py-2 md:py-2 lg:py-2 px-4 md:px-8 lg:px-2 xl:px-16 ${isContactPage
           ? ""
           : activeSection === ActiveSection.Students &&
           `bg-gradient-to-r from-[#FEF26D] to-[#FEF9C2]`
@@ -147,7 +147,7 @@ const Navbar = () => {
         {/* Logo - Responsive sizing */}
         <Link href="/">
           <div className="w-auto">
-            <Logo height={120} mobileHeight={80} name="logo" />
+            <Logo />
           </div>
         </Link>
 
