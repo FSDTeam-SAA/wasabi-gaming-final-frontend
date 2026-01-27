@@ -41,18 +41,23 @@ const SingelCourse = ({ id }: { id: string }) => {
       return res.json();
     },
   });
- if(data?.data && data.data.coursePrice > 0){
-   useEffect(() => {
 
-    if (data?.data) {
-      const isEnrolled = data.data.enrolledStudents.includes(enrollid);
-      if (!isEnrolled) {
+  useEffect(() => {
+    if (!data?.data) return;
 
-        router.push("/dashboard/courses");
-      }
+    const coursePrice = data.data.coursePrice;
+
+    // ✅ Free course → no redirect
+    if (coursePrice === 0) return;
+
+    // ✅ Paid course → check enrollment
+    const isEnrolled = data.data.enrolledStudents.includes(enrollid);
+
+    if (!isEnrolled) {
+      router.push("/dashboard/courses");
     }
   }, [data, enrollid, router]);
- }
+
 
   const course = data?.data;
   const lessons = course?.courseVideo || [];
