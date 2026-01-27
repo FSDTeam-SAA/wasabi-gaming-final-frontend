@@ -9,7 +9,7 @@ export const metadata = {
     description:
         'Access high-quality courses designed to help you land your dream job.',
 }
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg5NWI5YjE1NTA5NWU5ZDZkYWI1MSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk1MTA1MTMsImV4cCI6MTc3MDExNTMxM30.aVjHeDmvTv3G8z8x8crWSdy13P4j26-eBZ4zbZrMkiA";
 
 export default function AllCourse() {
 
@@ -29,11 +29,11 @@ export default function AllCourse() {
         queryKey: ["statss"],
         queryFn: async () => {
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/course/header`,{
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/course/header`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
+            }
             );
             if (!res.ok) throw new Error("Failed to load ");
             return res.json();
