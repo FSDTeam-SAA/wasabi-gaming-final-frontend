@@ -14,9 +14,10 @@ import { useVerifyOTP, useSendOTP } from '@/hooks/useAuth';
 export default function VerifyIdentityPage() {
     const router = useRouter();
     const signupData = useAuthStore((state) => state.signupData);
+    console.log(signupData)
     const email = signupData?.email || "johndoe@example.com";
 
-    const [code, setCode] = useState(["", "", "", "", ""]);
+    const [code, setCode] = useState(["", "", "", "", "", ""]);
     const [isInvalid, setIsInvalid] = useState(false);
     const [countdown, setCountdown] = useState(60);
     const [isResending, setIsResending] = useState(false);
@@ -38,7 +39,7 @@ export default function VerifyIdentityPage() {
         setCode(newCode);
         setIsInvalid(false);
 
-        if (v && i < 4) inputRefs.current[i + 1]?.focus();
+        if (v && i < 5) inputRefs.current[i + 1]?.focus();
     };
 
     const handleKeyDown = (i: number, e: React.KeyboardEvent) => {
@@ -56,9 +57,9 @@ export default function VerifyIdentityPage() {
     const handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text/plain').trim();
-        const numbersOnly = pastedData.replace(/\D/g, '').slice(0, 5);
+        const numbersOnly = pastedData.replace(/\D/g, '').slice(0, 6);
 
-        if (numbersOnly.length === 5) {
+        if (numbersOnly.length === 6) {
             const newCode = numbersOnly.split('');
             setCode(newCode);
             setIsInvalid(false);
@@ -70,8 +71,8 @@ export default function VerifyIdentityPage() {
     };
 
     const handleVerification = (otpCode: string) => {
-        if (otpCode.length < 5) {
-            toast.error("Please enter all 5 digits");
+        if (otpCode.length < 6) {
+            toast.error("Please enter all 6 digits");
             return;
         }
 
@@ -85,7 +86,7 @@ export default function VerifyIdentityPage() {
             },
             onError: () => {
                 // Fallback for mock if API fails
-                if (otpCode === "12345") {
+                if (otpCode === "123456") {
                     toast.success("Code verified successfully (Mock)!");
                     router.push('/login');
                 } else {

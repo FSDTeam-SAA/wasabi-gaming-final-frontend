@@ -13,6 +13,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { ICONS, IMAGES } from '@/assets';
 import { useRegister } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useMutation } from '@tanstack/react-query';
 
 // Social Login Component
 const SocialLogin = ({ onManualContinue }: { onManualContinue: () => void }) => (
@@ -58,7 +59,7 @@ export default function SignUpPage() {
 
     const router = useRouter();
     const setSignupData = useAuthStore((state) => state.setSignupData);
-    const { mutate: registerUser, isPending } = useRegister();
+    // const { mutate: registerUser, isPending } = useRegister();
 
     const {
         register,
@@ -70,10 +71,41 @@ export default function SignUpPage() {
         setActiveTab(tab);
     };
 
+
+    const {mutate, isPending} = useMutation({
+        mutationKey: ['registerUser'],
+        mutationFn: async (formData: any) =>{
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Failed to register');
+            }
+
+            return res.json();
+        },
+        onSuccess: (data)=>{
+            console.log("Registration successful:", data);
+            if(!data?.success){
+                toast.error(data?.message || "Signup failed. Please try again.");
+                return;
+            }
+            toast.success(data?.message || "User registered successfully. Please verify your email.");
+            setSignupData({ email: data?.data?.email, role: data?.data?.role });
+            router.push('/verify-identity');
+        }
+    })
+
     const onSubmit = (data: any) => {
         const formData =
             activeTab === 'Students'
-                ? {
+                ? { 
                     email: data.email,
                     phone: data.phone,
                     password: data.password,
@@ -89,7 +121,9 @@ export default function SignUpPage() {
                     role: 'school',
                 };
 
-                console.log("Registering user with data:", formData);
+        console.log("Registering user with data:", formData);
+
+        mutate(formData)
 
         // In legacy code, it just navigated. Here we should likely call API or store data.
         // Legacy VerifyIdentity does NOT call register API, it verifies OTP.
@@ -102,24 +136,24 @@ export default function SignUpPage() {
         // Or if legacy behavior was "Navigate then verify", maybe register triggers OTP send?
         // Let's assume we call register here.
 
-        registerUser(formData, {
-            onSuccess: (response) => {
-                toast.success("Signup successful! Please verify your identity.");
-                // Store email for verification page
-                setSignupData({ email: formData.email, role: formData.role });
-                router.push('/verify-identity');
-            },
-            onError: (error: any) => {
-                // Fallback for demo/legacy: proceed even if API fails (if backend is mock)
-                // Uncomment below to enforce API success
-                // toast.error(error?.response?.data?.message || "Signup failed");
+        // registerUser(formData, {
+        //     onSuccess: (response) => {
+        //         toast.success("Signup successful! Please verify your identity.");
+        //         // Store email for verification page
+        //         setSignupData({ email: formData.email, role: formData.role });
+        //         router.push('/verify-identity');
+        //     },
+        //     onError: (error: any) => {
+        //         // Fallback for demo/legacy: proceed even if API fails (if backend is mock)
+        //         // Uncomment below to enforce API success
+        //         // toast.error(error?.response?.data?.message || "Signup failed");
 
-                console.warn("Register API failed, proceeding as legacy mock behavior might require.");
-                // For faithful migration of "Simulate successful login", we might need to simulate success here too?
-                // But let's try to report error properly.
-                toast.error("Signup failed. Please try again.");
-            }
-        });
+        //         console.warn("Register API failed, proceeding as legacy mock behavior might require.");
+        //         // For faithful migration of "Simulate successful login", we might need to simulate success here too?
+        //         // But let's try to report error properly.
+        //         toast.error("Signup failed. Please try again.");
+        //     }
+        // });
 
         // NOTE: If backend is not running or failing, unblock:
         // setSignupData({ email: formData.email, role: formData.role });
