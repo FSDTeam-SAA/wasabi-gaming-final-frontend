@@ -188,10 +188,10 @@ const Hero = () => {
       {/* FLOATING CARD */}
       <Card
         className="
-    hidden xl:block
-    lg:absolute left-6 lg:left-12 lg:top-12
+    hidden 2xl:block
+    lg:absolute left-4 md:left-2  lg:left-12 lg:top-12
     xl:left-16
-    2xl:left-36
+    2xl:left-24
     bg-white border-none
     w-32 sm:w-64 lg:w-72
     shadow-[0px_8px_16px_0px_#0000001F]
@@ -207,7 +207,7 @@ const Hero = () => {
                   className="
               h-8 w-8
               sm:h-10 sm:w-10
-              md:h-12 md:w-12
+              lg:h-12 lg:w-12
               border-2 border-white ring-1 ring-gray-100
             "
                 >

@@ -13,15 +13,6 @@ import { StoryBehind } from '@/components/marketing-students-school/web/behind-s
 const SchoolHome = () => {
   return (
     <div>
-      {/* this should be removed in production */}
-
-      {/* <SchoolHero />
-      <SchoolBreif />
-      <SchoolTransparentProgress />
-      <SchoolTracking />
-      <SchoolStoryBehind />
-      <SchoolFAQ /> */}
-
       {/* the actual components to be in school */}
       <SchoolHero />
       <Features />

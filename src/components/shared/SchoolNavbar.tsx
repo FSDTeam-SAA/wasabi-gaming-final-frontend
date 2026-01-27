@@ -37,10 +37,10 @@ const SchoolNavbar = () => {
 
     return (
         <nav className="w-full border border-[#E5E7EB]">
-            <div className="flex items-center justify-between px-4 md:px-8 lg:px-16 py-3 md:py-4">
+            <div className="flex items-center justify-between px-4 md:px-8 lg:px-16 py-2">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
-                    <Logo height={120} mobileHeight={70} name="logo" />
+                    <Logo />
                 </Link>
 
                 {/* Desktop Navigation */}
@@ -50,8 +50,8 @@ const SchoolNavbar = () => {
                             <Link
                                 href={item.path}
                                 className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 ${isActive(item.path)
-                                        ? "yellow text-[#1E1E1E]"
-                                        : "text-[#505050] hover:text-black"
+                                    ? "yellow text-[#1E1E1E]"
+                                    : "text-[#505050] hover:text-black"
                                     }`}
                             >
                                 {item.name}
@@ -64,8 +64,8 @@ const SchoolNavbar = () => {
                 <Link
                     href="/school/profile"
                     className={`px-4 py-2 rounded-2xl font-medium transition-all duration-200 ${isActive("/school/profile")
-                            ? "bg-[#FFFF00] text-[#1E1E1E] border-2 border-[#E5E500]"
-                            : "text-[#505050] hover:text-black"
+                        ? "bg-[#FFFF00] text-[#1E1E1E] border-2 border-[#E5E500]"
+                        : "text-[#505050] hover:text-black"
                         }`}
                 >
                     <div className="hidden lg:flex items-center space-x-4">
@@ -101,8 +101,8 @@ const SchoolNavbar = () => {
                                     href={item.path}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className={`block px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${isActive(item.path)
-                                            ? "bg-[#FFFF00] text-black border-2 border-[#E5E500]"
-                                            : "text-[#505050] hover:text-black"
+                                        ? "bg-[#FFFF00] text-black border-2 border-[#E5E500]"
+                                        : "text-[#505050] hover:text-black"
                                         }`}
                                 >
                                     {item.name}
@@ -116,8 +116,8 @@ const SchoolNavbar = () => {
                         href="/school/profile"
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={`block px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${isActive("/school/profile")
-                                ? "bg-[#FFFF00] text-black border-2 border-[#E5E500]"
-                                : "text-[#505050] hover:text-black"
+                            ? "bg-[#FFFF00] text-black border-2 border-[#E5E500]"
+                            : "text-[#505050] hover:text-black"
                             }`}
                     >
                         <div className="flex flex-col space-y-2 mt-4 pt-4 border-t border-[#E5E500]">
