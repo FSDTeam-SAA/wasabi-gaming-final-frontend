@@ -6,12 +6,14 @@ import Link from "next/link";
 import Image from "next/image";
 
 export interface LawFirm {
+    aboutFirm: any;
+    exertise: any;
     _id: string;
-    name: string;
+    firmName: string;
     tagline: string;
     location: string;
     size: string;
-    logo: string;
+    coverImage: string;
     tags: string[];
     gradient: string;
     featured?: boolean;
@@ -35,14 +37,14 @@ const LawFirmCard = ({ firm }: { firm: LawFirm }) => {
                     }}
                 >
                     {/* Fallback or real image */}
-                    {firm.logo ? (
+                    {firm.coverImage ? (
                         <img
-                            src={firm.logo}
-                            alt={`${firm.name} logo`}
+                            src={firm.coverImage}
+                            alt={`${firm.firmName} logo`}
                             className="max-w-full max-h-full object-contain"
                         />
                     ) : (
-                        <div className="text-white font-bold text-xl">{firm.name[0]}</div>
+                        <div className="text-white font-bold text-xl">{firm?.firmName[0]}</div>
                     )}
 
                 </div>
@@ -60,7 +62,7 @@ const LawFirmCard = ({ firm }: { firm: LawFirm }) => {
             {/* ---------- Body ---------- */}
             <div className="p-4 md:p-6 flex-1 flex flex-col">
                 {/* Name & Tagline */}
-                <h3 className="text-lg md:text-xl font-medium text-gray-900">{firm.name}</h3>
+                <h3 className="text-lg md:text-xl font-medium text-gray-900">{firm.firmName}</h3>
                 <p className="text-xs md:text-sm text-gray-600 mt-1 line-clamp-2">{firm.tagline}</p>
 
                 {/* Location & Size */}
