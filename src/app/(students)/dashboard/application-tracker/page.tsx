@@ -671,7 +671,7 @@ export default function ApplicationTrackerPage() {
   return (
     <div className="space-y-8 min-h-screen bg-white mb-10">
       {/* Header */}
-      <div className="container mx-auto pt-8">
+      <div className="pt-8 px-16">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold main-color mb-2">
