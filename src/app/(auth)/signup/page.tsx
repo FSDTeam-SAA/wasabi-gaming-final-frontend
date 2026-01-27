@@ -89,6 +89,8 @@ export default function SignUpPage() {
                     role: 'school',
                 };
 
+                console.log("Registering user with data:", formData);
+
         // In legacy code, it just navigated. Here we should likely call API or store data.
         // Legacy VerifyIdentity does NOT call register API, it verifies OTP.
         // This implies register API should be called HERE, and then OTP verification happens?
