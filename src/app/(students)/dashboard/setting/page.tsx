@@ -37,7 +37,7 @@ export default function ProfilePage() {
                 {/* {activeTab === "preferences" && <Preferences  data={userData} />} */}
                 {activeTab === "security" && <AccountSettings />}
                 {activeTab === "invited" && <JobsTable />}
-                {activeTab === "applied" && <AppliedJobs />}
+                {/* {activeTab === "applied" && <AppliedJobs />} */}
                 {/* {activeTab === "applied" && <AppliedJobs />} */}
                 {/* Baki tabs gulo eivabe add korte hobe */}
             </div>

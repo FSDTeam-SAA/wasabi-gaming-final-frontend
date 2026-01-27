@@ -15,11 +15,13 @@ type QuizResult = {
   quiz: string;
   userAnswer: string;
   isCorrect: boolean;
+  correctAnswer: string;
   questionTitle: string;
 };
 
 interface SuccessModalProps {
   open: boolean;
+
   setOpen: (open: boolean) => void;
   score: number;
   total: number;
@@ -33,6 +35,7 @@ export default function SuccessModal({
   total,
   results,
 }: SuccessModalProps) {
+  console.log(results)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[440px] p-0 bg-[#FFFFFF] overflow-hidden rounded-3xl">
@@ -64,16 +67,36 @@ export default function SuccessModal({
             {results.map((q) => (
               <div
                 key={q.quiz}
-                className="flex items-center gap-3 p-4 bg-[#F0FFF4] border border-[#DCFCE7] rounded-2xl"
+                className="flex items-start gap-3 p-4 bg-[#F0FFF4] border border-[#DCFCE7] rounded-2xl"
               >
                 <CheckCircle2
-                  className={`w-5 h-5 shrink-0 ${q.isCorrect ? "text-[#22C55E]" : "text-red-500"}`}
+                  className={`w-5 h-5 shrink-0 ${q.isCorrect ? "text-[#22C55E]" : "text-red-500"
+                    }`}
                 />
-                <p className="text-[13px] text-slate-600 font-medium truncate">
-                  {q.questionTitle}: {q.userAnswer} ({q.isCorrect ? "Correct" : "Wrong"})
-                </p>
+
+                <div className="space-y-1">
+                  <p className="text-[13px] text-slate-700 font-medium">
+                    {q.questionTitle}
+                  </p>
+
+                  <p className="text-[12px] text-slate-600">
+                    Your Answer:{" "}
+                    <span
+                      className={q.isCorrect ? "text-green-600" : "text-red-500"}
+                    >
+                      {q.userAnswer}
+                    </span>
+                  </p>
+
+                  {!q.isCorrect && (
+                    <p className="text-[12px] text-green-600">
+                      Correct Answer: {q.correctAnswer}
+                    </p>
+                  )}
+                </div>
               </div>
             ))}
+
           </div>
 
           <DialogClose asChild>
