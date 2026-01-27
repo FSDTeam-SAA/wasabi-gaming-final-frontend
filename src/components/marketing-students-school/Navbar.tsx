@@ -146,35 +146,34 @@
 
 // export default Navbar;
 
+'use client'
 
-"use client";
-
-import { ChevronRight } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useState } from "react";
-import { usePathname } from "next/navigation";
+import { ChevronRight } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import React, { useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
 
-  const isActive = (path: string): boolean => pathname === path;
+  const isActive = (path: string): boolean => pathname === path
 
   return (
     <header className="w-full">
       {/* Top Strip */}
       <div className="bg-[#FFFFB0] text-black text-sm">
-        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
-
+        <div className="container mx-auto px-4 py-1 flex items-center justify-between">
           {/* Left */}
           <div className="flex items-center gap-2">
             <Link href="/">
               <span
-                className={`text-base cursor-pointer ${isActive("/")
-                  ? "font-semibold underline underline-offset-4"
-                  : "text-gray-700 hover:text-black"
-                  }`}
+                className={`text-base cursor-pointer ${
+                  isActive('/')
+                    ? 'font-semibold underline underline-offset-4'
+                    : 'text-gray-700 hover:text-black'
+                }`}
               >
                 Students
               </span>
@@ -182,10 +181,11 @@ const Navbar = () => {
             <span>|</span>
             <Link href="/school">
               <span
-                className={`text-base cursor-pointer ${isActive("/school")
-                  ? "font-semibold underline underline-offset-4"
-                  : "text-gray-700 hover:text-black"
-                  }`}
+                className={`text-base cursor-pointer ${
+                  isActive('/school')
+                    ? 'font-semibold underline underline-offset-4'
+                    : 'text-gray-700 hover:text-black'
+                }`}
               >
                 School
               </span>
@@ -193,7 +193,10 @@ const Navbar = () => {
           </div>
 
           {/* Right */}
-          <Link href="/coming-soon" className="flex items-center gap-1 font-medium">
+          <Link
+            href="/coming-soon"
+            className="flex items-center gap-1 font-medium"
+          >
             <span className="hidden sm:block">Contact With Us</span>
             <span className="sm:hidden">Contact</span>
             <ChevronRight size={18} />
@@ -203,8 +206,7 @@ const Navbar = () => {
 
       {/* Main Navbar */}
       <nav className="bg-white border-b border-[#B6B6B6]">
-        <div className="container mx-auto px-4 lg:px-6 py-4 flex items-center justify-between">
-
+        <div className="container mx-auto px-4 lg:px-6 py-1 flex items-center justify-between">
           {/* Logo */}
           <Link href="/">
             <Image
@@ -219,14 +221,17 @@ const Navbar = () => {
           {/* Desktop Menu (Laptop safe) */}
           <ul className="hidden md:flex items-center bg-[#EBEBEB] lg:space-x-8 border border-[#EBEBEB] rounded-full text-black font-medium">
             {[
-              "Application Tracker",
-              "Law Firm Profiles",
-              "Event",
-              "Courses",
-              "Mock Interviews",
-              "More",
-            ].map((item) => (
-              <li key={item} className="lg:py-3 lg:px-4 md:py-3 md:px-2 cursor-pointer">
+              'Application Tracker',
+              'Law Firm Profiles',
+              'Event',
+              'Courses',
+              'Mock Interviews',
+              'More',
+            ].map(item => (
+              <li
+                key={item}
+                className="lg:py-3 lg:px-4 md:py-3 md:px-2 cursor-pointer"
+              >
                 <Link href="/coming-soon">{item}</Link>
               </li>
             ))}
@@ -265,13 +270,13 @@ const Navbar = () => {
           <div className="lg:hidden bg-white border-t shadow-md">
             <div className="px-4 py-4 space-y-3 text-sm">
               {[
-                "Application Tracker",
-                "Law Firm Profiles",
-                "Event",
-                "Courses",
-                "Mock Interviews",
-                "More",
-              ].map((item) => (
+                'Application Tracker',
+                'Law Firm Profiles',
+                'Event',
+                'Courses',
+                'Mock Interviews',
+                'More',
+              ].map(item => (
                 <Link
                   key={item}
                   href="/coming-soon"
@@ -285,7 +290,7 @@ const Navbar = () => {
         )}
       </nav>
     </header>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

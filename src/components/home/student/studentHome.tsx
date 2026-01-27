@@ -22,7 +22,7 @@ const StudentHome = () => {
       <ToolsSection />
       <CommunitySection />
       <HowItWorksSection />
-      <Opportunities />
+      {/* <Opportunities /> */}
       <Model />
       <Interview />
       {/* <FeaturedOpportunities /> */}

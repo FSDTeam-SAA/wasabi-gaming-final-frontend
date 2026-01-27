@@ -18,8 +18,8 @@ export default function CourseCard() {
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzA1Y2I1NzI0OTlhOWZiOWFiNjg1YSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzdHVkZW50QGdtYWlsLmNvbSIsImlhdCI6MTc2OTA4MDYzOCwiZXhwIjoxNzY5Njg1NDM4fQ.NjhIlFr8TveXONsSf4snTaBX7HhKO_M_vKyPuHOA4tI";
-    const id = "69705cb572499a9fb9ab685a"
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
+    const id = "6977511d5ada81c9f709b532"
 
     useEffect(() => {
         const handler = setTimeout(() => setDebouncedSearchTerm(searchTerm), 500);
@@ -43,10 +43,6 @@ export default function CourseCard() {
     });
 
     const courses = data?.data ?? [];
-    console.log(data)
-
-    const categories = ["All", ...Array.from(new Set(courses.map((c) => c.category)))];
-
 
     const payMutation = useMutation({
         mutationFn: async (courseId: string) => {
@@ -142,7 +138,7 @@ export default function CourseCard() {
                             placeholder="Search courses..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-[#F3F3F5] rounded-full border px-10 py-2 text-sm outline-none"
+                            className="w-full bg-[#F3F3F5] rounded-full  px-10 py-2 text-sm outline-none"
                         />
                     </div>
 

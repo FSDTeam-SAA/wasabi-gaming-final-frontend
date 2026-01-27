@@ -4,7 +4,7 @@ import React from "react";
 import { IMAGES } from "../../../assets";
 import { psychometricData, PsychometricTest } from "./data";
 import { Button, Card, CircularProgress } from "./PsychometricUI";
-import { CheckCircle2, RotateCcw, LayoutDashboard, Sparkles, TrendingUp, Target } from "lucide-react";
+import { CheckCircle2, RotateCcw, LayoutDashboard, Sparkles, TrendingUp, Target, Badge } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 interface ResultsProps {
