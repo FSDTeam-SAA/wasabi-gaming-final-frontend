@@ -4,26 +4,28 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Loader2 } from "lucide-react";
+// import { Loader2 } from "lucide-react";
 
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/shared/logo/Logo';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useVerifyOTP, useSendOTP } from '@/hooks/useAuth';
+// import { useVerifyOTP, useSendOTP } from '@/hooks/useAuth';
+import { useMutation } from '@tanstack/react-query';
 
 export default function VerifyIdentityPage() {
     const router = useRouter();
     const signupData = useAuthStore((state) => state.signupData);
+    console.log(signupData)
     const email = signupData?.email || "johndoe@example.com";
 
-    const [code, setCode] = useState(["", "", "", "", ""]);
+    const [code, setCode] = useState(["", "", "", "", "", ""]);
     const [isInvalid, setIsInvalid] = useState(false);
     const [countdown, setCountdown] = useState(60);
-    const [isResending, setIsResending] = useState(false);
+    // const [isResending, setIsResending] = useState(false);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-    const { mutate: verifyOTP, isPending: isVerifying } = useVerifyOTP();
-    const { mutate: sendOTP } = useSendOTP();
+    // const { mutate: verifyOTP, isPending: isVerifying } = useVerifyOTP();
+    // const { mutate: sendOTP } = useSendOTP();
 
     useEffect(() => {
         if (countdown <= 0) return;
@@ -38,7 +40,7 @@ export default function VerifyIdentityPage() {
         setCode(newCode);
         setIsInvalid(false);
 
-        if (v && i < 4) inputRefs.current[i + 1]?.focus();
+        if (v && i < 5) inputRefs.current[i + 1]?.focus();
     };
 
     const handleKeyDown = (i: number, e: React.KeyboardEvent) => {
@@ -56,68 +58,141 @@ export default function VerifyIdentityPage() {
     const handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text/plain').trim();
-        const numbersOnly = pastedData.replace(/\D/g, '').slice(0, 5);
+        const numbersOnly = pastedData.replace(/\D/g, '').slice(0, 6);
 
-        if (numbersOnly.length === 5) {
+        if (numbersOnly.length === 6) {
             const newCode = numbersOnly.split('');
             setCode(newCode);
             setIsInvalid(false);
-            setTimeout(() => inputRefs.current[4]?.focus(), 0);
+            setTimeout(() => inputRefs.current[5]?.focus(), 0);
 
             // Auto submit on paste
             handleVerification(numbersOnly);
         }
     };
 
+
+    // verify email and otp 
+
+    const {mutate:verifyOTP, isPending:isVerifying} = useMutation({
+        mutationKey: ["register-verify-email"],
+        mutationFn: async ({email, otp}: {email: string, otp: string}) => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register-verify-email`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, otp }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to verify OTP");
+            }
+
+            return response.json();
+        },
+        onSuccess: (data)=>{
+            if(!data?.success){
+                toast.error(data?.message || "OTP verification failed. Please try again.");
+                return;
+            }
+            toast.success(data?.message || "Email verified successfully. You can now log in.");
+            router.push('/login');
+        }
+    })
+
     const handleVerification = (otpCode: string) => {
-        if (otpCode.length < 5) {
-            toast.error("Please enter all 5 digits");
+        if (otpCode.length < 6) {
+            toast.error("Please enter all 6 digits");
             return;
         }
 
-        verifyOTP({ email, otp: otpCode }, {
-            onSuccess: () => {
-                toast.success("Code verified successfully!");
-                // Clear signup data? maybe not yet if needed later
-                // Redirect to login or reset password based on context. 
-                // For signup flow: login.
-                router.push('/login');
-            },
-            onError: () => {
-                // Fallback for mock if API fails
-                if (otpCode === "12345") {
-                    toast.success("Code verified successfully (Mock)!");
-                    router.push('/login');
-                } else {
-                    setIsInvalid(true);
-                    toast.error("Invalid Code!");
-                }
-            }
-        });
+
+        verifyOTP({ email, otp: otpCode });
+        
+
+        // verifyOTP({ email, otp: otpCode }, {
+        //     onSuccess: () => {
+        //         toast.success("Code verified successfully!");
+        //         // Clear signup data? maybe not yet if needed later
+        //         // Redirect to login or reset password based on context. 
+        //         // For signup flow: login.
+        //         router.push('/login');
+        //     },
+        //     onError: () => {
+        //         // Fallback for mock if API fails
+        //         if (otpCode === "123456") {
+        //             toast.success("Code verified successfully (Mock)!");
+        //             router.push('/login');
+        //         } else {
+        //             setIsInvalid(true);
+        //             toast.error("Invalid Code!");
+        //         }
+        //     }
+        // });
     };
 
     const handleSubmit = () => {
         handleVerification(code.join(""));
     };
 
-    const handleResend = () => {
-        setIsResending(true);
-        // API Call
-        sendOTP({ email }, {
-            onSuccess: () => {
-                toast.success(`Code resent to ${email}!`);
-                setCountdown(60);
-                setCode(["", "", "", "", ""]);
-                setIsInvalid(false);
-                setIsResending(false);
-            },
-            onError: () => {
-                toast.error("Failed to resend code.");
-                // Mock fallback
-                setCountdown(60);
-                setIsResending(false);
+
+    // forgot password api 
+    const {mutate:sendOTP, isPending:isResending} = useMutation({
+        mutationKey: ["send-otp"],
+        mutationFn: async ({email}:{email: string}) => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to send OTP");
             }
-        });
+
+            return response.json();
+        },
+        onSuccess: (data)=>{
+            if(!data?.success){
+                toast.error(data?.message || "Failed to resend code. Please try again.");
+                return;
+            }
+            toast.success(data?.message || `Code resent to ${email}!`);
+            setCountdown(60);
+                 setCode(["", "", "", "", "", ""]);
+                 setIsInvalid(false);
+                //  setIsResending(false);
+
+        }
+    })
+
+    const handleResend = () => {
+        // setIsResending(true);
+
+        sendOTP({email})
+
+
+        // API Call
+        // sendOTP({ email }, {
+        //     onSuccess: () => {
+        //         toast.success(`Code resent to ${email}!`);
+        //         setCountdown(60);
+        //         setCode(["", "", "", "", "", ""]);
+        //         setIsInvalid(false);
+        //         setIsResending(false);
+        //     },
+        //     onError: () => {
+        //         toast.error("Failed to resend code.");
+        //         // Mock fallback
+        //         setCountdown(60);
+        //         setIsResending(false);
+        //     }
+        // });
     };
 
     return (
