@@ -1,4 +1,5 @@
 import { PocketKnife } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 interface Props {
@@ -28,7 +29,13 @@ const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
           className={`p-4  h-[500px] rounded-xl cursor-pointer ${cvFormat === "Modern" ? "border-2 border-primary shadow-lg" : "border border-gray-200"}`}
         >
           <div className="h-[420px] border-b">
-            <h1>Image needed</h1>
+            <Image
+              src={`/resume/modern.png`}
+              alt="img.png"
+              width={1000}
+              height={1000}
+              className="w-full h-full"
+            />
           </div>
 
           <div className="pt-2">
@@ -42,7 +49,13 @@ const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
           className={`p-4  h-[500px] rounded-xl cursor-pointer ${cvFormat === "Classic" ? "border-2 border-primary shadow-lg" : "border border-gray-200"}`}
         >
           <div className="h-[420px] border-b">
-            <h1>Image needed</h1>
+            <Image
+              src={`/resume/classic.png`}
+              alt="img.png"
+              width={1000}
+              height={1000}
+              className="w-full h-full"
+            />
           </div>
 
           <div className="pt-2">
