@@ -13,7 +13,7 @@ const logos = [
 
 const PartnersMarquee = () => {
   return (
-    <section className="py-5 bg-white overflow-hidden">
+    <section className="py-5 bg-white overflow-y-hidden ">
       <Marquee gradient={false} speed={50} pauseOnHover loop={0}>
         <div className="flex items-center gap-8 md:gap-20 lg:gap-48">
           {logos.map((logo, index) => (

@@ -1,5 +1,4 @@
 import Hero from '@/components/marketing-students-school/Hero'
-import Opportunities from '../student-sec/Opportunities'
 import ToolsSection from '@/components/marketing-students-school/ToolsSection'
 import CommunitySection from '@/components/marketing-students-school/CommunitySection'
 import HowItWorksSection from '@/components/marketing-students-school/HowItWorksSection'

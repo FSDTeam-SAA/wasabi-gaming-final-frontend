@@ -110,7 +110,7 @@ const Navbar = () => {
     <nav className="relative z-50 w-full">
       {/* Top Section - Optimized for all screens */}
       <div
-        className={`flex items-center justify-center md:justify-start ${isContactPage ? "" : "bg-gradient-to-r from-[#FEE900] to-[#FEE900]"
+        className={`flex items-center justify-start ${isContactPage ? "" : "bg-[#FFFFB0]"
           } p-0.5 sm:p-1 md:p-1 lg:p-1.5 xl:p-2 text-xs sm:text-sm md:text-base lg:text-lg xl:text-2xl neuton`}
       >
         <button
@@ -138,16 +138,17 @@ const Navbar = () => {
 
       {/* Main Navbar - Responsive for all breakpoints */}
       <div
-        className={`flex items-center justify-between p-2 md:p-3 lg:p-4 px-4 md:px-8 lg:px-2 xl:px-16 ${isContactPage
+        className={`flex items-center justify-between py-2 md:py-2 lg:py-2 px-4 md:px-8 lg:px-2 xl:px-16 ${isContactPage
           ? ""
-          : activeSection === ActiveSection.Students &&
-          `bg-gradient-to-r from-[#FEF26D] to-[#FEF9C2]`
+          : activeSection === ActiveSection.Students
+            ? "bg-slate-50"
+            : "bg-gradient-to-r from-slate-100 to-slate-200"
           }`}
       >
         {/* Logo - Responsive sizing */}
         <Link href="/">
           <div className="w-auto">
-            <Logo height={120} mobileHeight={80} name="logo" />
+            <Logo />
           </div>
         </Link>
 
@@ -358,7 +359,7 @@ const Navbar = () => {
               More{" "}
               <span
                 className={`${isMoreOpen ? "rotate-180" : ""
-                  } inline-block text-5xl`}
+                  } inline-block text-lg`}
               >
                 ▼
               </span>

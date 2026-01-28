@@ -22,9 +22,9 @@ import { SingleCourseResponse } from "@/types/course";
 const SingelCourse = ({ id }: { id: string }) => {
   const router = useRouter();
 
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg5NWI5YjE1NTA5NWU5ZDZkYWI1MSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk1MTA1MTMsImV4cCI6MTc3MDExNTMxM30.aVjHeDmvTv3G8z8x8crWSdy13P4j26-eBZ4zbZrMkiA";
 
-  const enrollid = "6977511d5ada81c9f709b532"
+  const enrollid = "697895b9b155095e9d6dab51"
 
   const { data, isLoading, isError } = useQuery<SingleCourseResponse>({
     queryKey: ["single-course", id],
@@ -43,15 +43,21 @@ const SingelCourse = ({ id }: { id: string }) => {
   });
 
   useEffect(() => {
+    if (!data?.data) return;
 
-    if (data?.data) {
-      const isEnrolled = data.data.enrolledStudents.includes(enrollid);
-      if (!isEnrolled) {
+    const coursePrice = data.data.coursePrice;
 
-        router.push("/dashboard/courses");
-      }
+    // ✅ Free course → no redirect
+    if (coursePrice === 0) return;
+
+    // ✅ Paid course → check enrollment
+    const isEnrolled = data.data.enrolledStudents.includes(enrollid);
+
+    if (!isEnrolled) {
+      router.push("/dashboard/courses");
     }
   }, [data, enrollid, router]);
+
 
   const course = data?.data;
   const lessons = course?.courseVideo || [];
