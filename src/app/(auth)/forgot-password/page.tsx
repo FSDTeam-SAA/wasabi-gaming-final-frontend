@@ -1,9 +1,7 @@
-import React from 'react'
+import ForgotPasswordForm from "./_components/forgot-password-form";
 
 const ForgotPasswordPage = () => {
-  return (
-    <div>ForgotPasswordPage</div>
-  )
-}
+  return <ForgotPasswordForm />;
+};
 
-export default ForgotPasswordPage
+export default ForgotPasswordPage;

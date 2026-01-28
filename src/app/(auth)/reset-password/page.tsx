@@ -1,9 +1,12 @@
-import React from 'react'
+import { Suspense } from "react";
+import ResetPasswordForm from "./_components/reset-password-form";
 
 const ResetPasswordPage = () => {
   return (
-    <div>ResetPasswordPage</div>
-  )
-}
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+};
 
-export default ResetPasswordPage
+export default ResetPasswordPage;
