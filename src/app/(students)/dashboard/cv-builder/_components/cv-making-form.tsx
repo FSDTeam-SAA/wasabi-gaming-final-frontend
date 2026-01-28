@@ -28,7 +28,7 @@ const CvMakingForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cvData, setCvData] = useState<CvBuilderFormType | null>(null);
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0Mjk1NzMsImV4cCI6MTc3MDAzNDM3M30.K7VQE7jgv5GR15D34eMNyzBD7Vht86ie3L8iNzuDI1s";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg5NWI5YjE1NTA5NWU5ZDZkYWI1MSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk1OTI1MjYsImV4cCI6MTc3MDE5NzMyNn0.pEkkBnwUA4chMqdg1sxjO-Sys3GRIXvqMEL1_Dg59CU";
 
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),

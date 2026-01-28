@@ -137,13 +137,13 @@ const ModernCvModal = ({ isOpen, onClose, cvData }: ModernCvModalProps) => {
           }}
         >
           {/* Header Section */}
-          <div className="pb-6 mb-8 border-b-2 border-black/50">
+          <div className="pb-3 mb-4 text-center border-b-2 border-black/50">
             <h1 className="text-4xl font-bold text-gray-900">
               {cvData.firstName} {cvData.lastName}
             </h1>
-            <h2 className="mt-2 text-xl text-blue-600">{cvData.profession}</h2>
+            <h2 className="mt-2 text-xl text-gray-800">{cvData.profession}</h2>
 
-            <div className="flex flex-wrap gap-4 mt-4 text-gray-600">
+            <div className="flex justify-between gap-4 mt-4 text-gray-600">
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 <span>{cvData.email}</span>
@@ -161,7 +161,7 @@ const ModernCvModal = ({ isOpen, onClose, cvData }: ModernCvModalProps) => {
 
           <div>
             {/* Left Column */}
-            <div className="space-y-8 lg:col-span-2">
+            <div className="space-y-4 lg:col-span-2">
               {/* Professional Summary */}
               <section>
                 <h3 className="pb-4 mb-4 text-xl font-semibold text-gray-900 border-b-2 border-gray-300/50">
@@ -186,7 +186,7 @@ const ModernCvModal = ({ isOpen, onClose, cvData }: ModernCvModalProps) => {
                             <h4 className="font-semibold text-gray-900">
                               {exp.jobTitle}
                             </h4>
-                            <p className="text-blue-600">{exp.organization}</p>
+                            <p className="text-gray-500">{exp.organization}</p>
                           </div>
                           <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full">
                             {formatDateRange(
@@ -218,7 +218,7 @@ const ModernCvModal = ({ isOpen, onClose, cvData }: ModernCvModalProps) => {
                             <h4 className="font-semibold text-gray-900">
                               {lead.role}
                             </h4>
-                            <p className="text-blue-600">{lead.organization}</p>
+                            <p className="text-gray-500">{lead.organization}</p>
                           </div>
                           <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full">
                             {lead.dateYear}
@@ -245,7 +245,7 @@ const ModernCvModal = ({ isOpen, onClose, cvData }: ModernCvModalProps) => {
                             <h4 className="font-semibold text-gray-900">
                               {edu.educationLevel}
                             </h4>
-                            <p className="text-blue-600">{edu.institution}</p>
+                            <p className="text-gray-500">{edu.institution}</p>
                           </div>
                           <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full">
                             {formatDateRange(edu.startYear, edu.endYear)}
@@ -274,12 +274,12 @@ const ModernCvModal = ({ isOpen, onClose, cvData }: ModernCvModalProps) => {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {cvData.achievements.skills.map((skill, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 text-sm text-blue-700 bg-blue-100 rounded-full"
-                    >
-                      {skill}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-black/80"></div>
+                      <span key={index} className="text-black/75">
+                        {skill}
+                      </span>
+                    </div>
                   ))}
                   {cvData.achievements.recommendedSkills.map((skill, index) => (
                     <span
