@@ -36,7 +36,7 @@ const SchoolNavbar = () => {
     };
 
     return (
-        <nav className="w-full border border-[#E5E7EB] bg-gradient-to-r from-slate-100 to-slate-200">
+        <nav className="w-full border border-[#E5E7EB] bg-slate-50">
             <div className="flex items-center justify-between px-4 md:px-8 lg:px-16 py-2">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
