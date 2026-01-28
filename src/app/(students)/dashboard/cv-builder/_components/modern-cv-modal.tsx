@@ -297,13 +297,8 @@ const ModernCvModal = ({ isOpen, onClose, cvData }: ModernCvModalProps) => {
 
         {/* Action Buttons - These won't appear in PDF */}
         <div className="flex justify-end gap-3 mt-3">
-          <Button
-            variant="outline"
-            onClick={handleShareEmail}
-            className="flex items-center gap-2"
-          >
-            <Mail className="w-4 h-4" />
-            Share via Email
+          <Button variant="outline" onClick={onClose}>
+            Close Preview
           </Button>
 
           <Button

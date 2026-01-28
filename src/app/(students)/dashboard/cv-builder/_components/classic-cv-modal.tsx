@@ -1,14 +1,9 @@
 "use client";
 
 import React, { useRef } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, X, Printer, Mail } from "lucide-react";
+import { Download, Mail, Phone, MapPin, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { CvBuilderFormType } from "./cv-making-form";
 import html2canvas from "html2canvas";
@@ -25,369 +20,207 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
 
   if (!classicCvData) return null;
 
-  const formatDateRange = (start: string, end: string) => {
-    return `${start} - ${end}`;
-  };
-
   const handleDownloadPDF = async () => {
     if (!cvRef.current) {
       toast.error("CV content not found");
       return;
     }
-
     try {
-      toast.loading("Generating PDF... Please wait.");
-
-      // Capture only the CV content, not the buttons
-      const cvElement = cvRef.current;
-
-      // Store original styles
-      const originalBoxShadow = cvElement.style.boxShadow;
-      const originalMarginTop = cvElement.style.marginTop;
-
-      // Temporarily adjust styles for better PDF output
-      cvElement.style.boxShadow = "none";
-      cvElement.style.marginTop = "0";
-      cvElement.style.padding = "40px";
-
-      // Clone the element to avoid affecting the visible version
-      const clonedElement = cvElement.cloneNode(true) as HTMLElement;
-      clonedElement.style.position = "fixed";
-      clonedElement.style.left = "-9999px";
-      clonedElement.style.top = "0";
-      clonedElement.style.width = "794px"; // A4 width in pixels
-      clonedElement.style.backgroundColor = "white";
-      document.body.appendChild(clonedElement);
-
-      // Use html2canvas with specific options to preserve layout
-      const canvas = await html2canvas(clonedElement, {
-        scale: 3, // Very high resolution for crisp text
+      toast.loading("Generating PDF...");
+      const canvas = await html2canvas(cvRef.current, {
+        scale: 2,
         useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-        width: 794, // A4 width
-        height: clonedElement.scrollHeight,
-        windowWidth: 794,
-        onclone: (clonedDoc, element) => {
-          // Ensure all text is visible
-          const allElements = element.querySelectorAll("*");
-          allElements.forEach((el) => {
-            const htmlEl = el as HTMLElement;
-            htmlEl.style.boxShadow = "none";
-          });
-        },
       });
-
-      // Clean up cloned element
-      document.body.removeChild(clonedElement);
-
-      // Restore original styles
-      cvElement.style.boxShadow = originalBoxShadow;
-      cvElement.style.marginTop = originalMarginTop;
-      cvElement.style.padding = "";
-
-      // Calculate PDF dimensions (A4 format)
-      const imgWidth = 210; // A4 width in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      // Create PDF with proper margins
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-
-      // Add white background
-      pdf.setFillColor(255, 255, 255);
-      pdf.rect(0, 0, 210, 297, "F");
-
-      // Add image to PDF with proper positioning
-      const imgData = canvas.toDataURL("image/png", 1.0);
-      pdf.addImage(imgData, "PNG", 10, 10, 190, imgHeight * (190 / imgWidth));
-
-      // Download PDF
-      pdf.save(`${classicCvData.firstName}_${classicCvData.lastName}_CV.pdf`);
-
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
+      pdf.save(`${classicCvData.firstName}_CV.pdf`);
       toast.dismiss();
-      toast.success("PDF downloaded successfully!");
-    } catch (error) {
+      toast.success("Downloaded!");
+    } catch (e) {
       toast.dismiss();
-      console.error("Error generating PDF:", error);
-      toast.error("Failed to generate PDF. Please try again.");
+      toast.error("Download failed");
     }
-  };
-
-  const handleShareEmail = () => {
-    const subject = `CV - ${classicCvData.firstName} ${classicCvData.lastName}`;
-    const body = `Please find my CV attached.\n\nName: ${classicCvData.firstName} ${classicCvData.lastName}\nEmail: ${classicCvData.email}\nPhone: ${classicCvData.phone}`;
-    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-white">
-        {/* CV Preview Content - Only this part goes to PDF */}
-        <div
-          ref={cvRef}
-          className="cv-content p-8 bg-white rounded-lg shadow-[0_0_10px_10px_rgba(0,0,0,0.1)] mt-5"
-          style={{
-            width: "850px",
-            margin: "0 auto",
-            boxSizing: "border-box",
-          }}
-        >
-          <h1>Classssssicccc CVVVV</h1>
-
-          {/* Header Section */}
-          <div className="pb-3 mb-4 text-center border-b-2 border-black/50">
-            <h1 className="text-4xl font-bold text-gray-900">
-              {classicCvData.firstName} {classicCvData.lastName}
-            </h1>
-            <h2 className="mt-2 text-xl text-gray-800">
-              {classicCvData.profession}
-            </h2>
-
-            <div className="flex justify-between gap-4 mt-4 text-gray-600">
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                <span>{classicCvData.email}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                <span>{classicCvData.phone}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                <span>{classicCvData.location}</span>
+      <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto bg-zinc-100 p-0 border-none">
+        <div className="flex flex-col items-center p-8">
+          {/* CV PAPER */}
+          <div
+            ref={cvRef}
+            className="bg-white text-[#4a4a4a] shadow-2xl"
+            style={{
+              width: "210mm",
+              minHeight: "297mm",
+              padding: "0",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            {/* Header Section */}
+            <div className="px-12 pt-16 pb-8">
+              <div className="flex flex-col items-end pt-8 border-t-4 border-zinc-200">
+                <h1 className="text-5xl font-light tracking-widest uppercase text-zinc-800">
+                  {classicCvData.firstName}{" "}
+                  <span className="font-bold">{classicCvData.lastName}</span>
+                </h1>
+                <p className="text-xl tracking-[0.2em] text-zinc-500 mt-2">
+                  {classicCvData.profession || "Marketing Manager"}
+                </p>
               </div>
             </div>
-          </div>
 
-          <div>
-            {/* Left Column */}
-            <div className="space-y-4 lg:col-span-2">
-              {/* Professional Summary */}
-              <section>
-                <h3 className="pb-4 mb-4 text-xl font-semibold text-gray-900 border-b-2 border-gray-300/50">
-                  Professional Summary
-                </h3>
-                <p className="leading-relaxed text-gray-700">
+            {/* Dark Contact Bar */}
+            <div className="bg-[#666666] text-white py-3 px-12 flex justify-between text-[10px] uppercase tracking-widest">
+              <div className="flex items-center gap-2">
+                <MapPin size={12} />{" "}
+                {classicCvData.location || "123 Anywhere St., Any City"}
+              </div>
+              <div className="flex items-center gap-2">
+                <Globe size={12} /> www.reallygreatsite.com
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail size={12} /> {classicCvData.email}
+              </div>
+            </div>
+
+            <div className="px-12 pt-8">
+              <section className="mb-10">
+                <div className="flex items-center gap-4 mb-4">
+                  <h3 className="font-bold tracking-widest uppercase text-zinc-800 shrink-0">
+                    Profile Info
+                  </h3>
+                  <div className="h-[1px] bg-zinc-300 w-full"></div>
+                </div>
+                <p className="text-xs leading-relaxed text-zinc-600">
                   {classicCvData.summary}
                 </p>
               </section>
+            </div>
 
-              {/* Work Experience */}
-              {classicCvData.legalWorkExperience.length > 0 && (
+            <div className="grid grid-cols-12 gap-0">
+              {/* MAIN COLUMN (Left) */}
+              <div className="col-span-7 p-12 pr-8">
+                {/* Profile Info */}
+
+                {/* Experience */}
                 <section>
-                  <h3 className="pb-4 mb-4 text-xl font-semibold text-gray-900 border-b-2 border-gray-300/50 ">
-                    Work Experience
-                  </h3>
-                  <div className="space-y-6">
-                    {classicCvData.legalWorkExperience.map((exp, index) => (
-                      <div key={index}>
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">
-                              {exp.jobTitle}
-                            </h4>
-                            <p className="text-gray-500">{exp.organization}</p>
-                          </div>
-                          <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full">
-                            {formatDateRange(
-                              exp.startYear,
-                              exp.endYear as string,
-                            )}
-                          </span>
+                  <div className="flex items-center gap-4 mb-6">
+                    <h3 className="font-bold tracking-widest uppercase text-zinc-800 shrink-0">
+                      Experience
+                    </h3>
+                    <div className="h-[1px] bg-zinc-300 w-full"></div>
+                  </div>
+
+                  <div className="relative pl-6 ml-2 space-y-8 border-l border-zinc-300">
+                    {classicCvData.legalWorkExperience.map((exp, i) => (
+                      <div key={i} className="relative">
+                        {/* Bullet Point */}
+                        <div className="absolute -left-[31px] top-1 w-2 h-2 bg-zinc-500 border border-white"></div>
+
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
+                          {exp.startYear} - {exp.endYear || "Present"}
+                        </span>
+                        <div className="mb-1 text-xs font-bold text-zinc-500">
+                          {exp.organization}
                         </div>
-                        <p className="mt-2 text-gray-700">
-                          {exp.keyResponsibilities}
+                        <h4 className="mb-2 font-bold text-zinc-800">
+                          {exp.jobTitle}
+                        </h4>
+                        <ul className="text-[11px] text-zinc-600 list-disc list-outside ml-3 space-y-1">
+                          <li>{exp.keyResponsibilities}</li>
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+
+              {/* SIDEBAR (Right) */}
+              <div className="min-h-full col-span-5 p-12 pl-8 bg-zinc-50">
+                {/* Education */}
+                <section className="mb-10">
+                  <div className="flex items-center gap-4 mb-4">
+                    <h3 className="font-bold tracking-widest uppercase text-zinc-800 shrink-0">
+                      Education
+                    </h3>
+                    <div className="h-[1px] bg-zinc-300 w-full"></div>
+                  </div>
+                  <div className="space-y-6">
+                    {classicCvData.educationLevel.map((edu, i) => (
+                      <div key={i}>
+                        <div className="text-[10px] font-bold text-zinc-400 mb-1">
+                          {edu.startYear} - {edu.endYear} | {edu.institution}
+                        </div>
+                        <div className="text-xs font-bold text-zinc-700">
+                          {edu.educationLevel}
+                        </div>
+                        <p className="text-[10px] text-zinc-500 mt-1">
+                          {edu.subject}
                         </p>
                       </div>
                     ))}
                   </div>
                 </section>
-              )}
 
-              {/* Leadership Experience */}
-              {classicCvData.leadership.length > 0 && (
-                <section>
-                  <h3 className="pb-4 mb-4 text-xl font-semibold text-gray-900 border-b-2 border-gray-300/50 ">
-                    Leadership Experience
-                  </h3>
-                  <div className="space-y-6">
-                    {classicCvData.leadership.map((lead, index) => (
-                      <div key={index}>
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">
-                              {lead.role}
-                            </h4>
-                            <p className="text-gray-500">{lead.organization}</p>
-                          </div>
-                          <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full">
-                            {lead.dateYear}
-                          </span>
-                        </div>
-                        <p className="mt-2 text-gray-700">{lead.description}</p>
-                      </div>
-                    ))}
+                {/* Skills */}
+                <section className="mb-10">
+                  <div className="flex items-center gap-4 mb-4">
+                    <h3 className="font-bold tracking-widest uppercase text-zinc-800 shrink-0">
+                      Skills
+                    </h3>
+                    <div className="h-[1px] bg-zinc-300 w-full"></div>
                   </div>
-                </section>
-              )}
-
-              {/* Education */}
-              {classicCvData.educationLevel.length > 0 && (
-                <section>
-                  <h3 className="pb-4 mb-4 text-xl font-semibold text-gray-900 border-b-2 border-gray-300/50">
-                    Education
-                  </h3>
-                  <div className="space-y-6">
-                    {classicCvData.educationLevel.map((edu, index) => (
-                      <div key={index}>
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">
-                              {edu.educationLevel}
-                            </h4>
-                            <p className="text-gray-500">{edu.institution}</p>
-                          </div>
-                          <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full">
-                            {formatDateRange(edu.startYear, edu.endYear)}
-                          </span>
-                        </div>
-                        <div className="mt-2 space-y-1">
-                          <p className="text-gray-700">
-                            <span className="font-medium">Subject:</span>{" "}
-                            {edu.subject}
-                          </p>
-                          <p className="text-gray-700">
-                            <span className="font-medium">Grade:</span>{" "}
-                            {edu.grade}
-                          </p>
-                        </div>
-                      </div>
+                  <ul className="text-[11px] text-zinc-600 space-y-2">
+                    {classicCvData.achievements.skills.map((skill, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <span className="w-1 h-1 rounded-full bg-zinc-800"></span>{" "}
+                        {skill}
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </section>
-              )}
 
-              {/* Skills */}
-              <section>
-                <h3 className="pb-4 mb-4 text-xl font-semibold text-gray-900 border-b-2 border-gray-300/50">
-                  Skills
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {classicCvData.achievements.skills.map((skill, index) => (
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-black/80"></div>
-                      <span key={index} className="text-black/75">
-                        {skill}
-                      </span>
-                    </div>
-                  ))}
-                  {classicCvData.achievements.recommendedSkills.map(
-                    (skill, index) => (
-                      <span
-                        key={`rec-${index}`}
-                        className="px-3 py-1 text-sm text-green-700 bg-green-100 rounded-full"
-                      >
-                        {skill}
-                      </span>
-                    ),
-                  )}
-                </div>
-              </section>
+                {/* Languages */}
+                <section>
+                  <div className="flex items-center gap-4 mb-4">
+                    <h3 className="font-bold tracking-widest uppercase text-zinc-800 shrink-0">
+                      Languages
+                    </h3>
+                    <div className="h-[1px] bg-zinc-300 w-full"></div>
+                  </div>
+                  <ul className="text-[11px] text-zinc-600 space-y-2">
+                    <li className="flex items-center gap-2">
+                      <span className="w-1 h-1 rounded-full bg-zinc-800"></span>{" "}
+                      English
+                    </li>
+                    <li className="flex items-center gap-2 text-zinc-400">
+                      <span className="w-1 h-1 rounded-full bg-zinc-400"></span>{" "}
+                      Spanish (Basic)
+                    </li>
+                  </ul>
+                </section>
+              </div>
             </div>
           </div>
+
+          {/* Floating Actions */}
+          <div className="flex justify-end w-full gap-3 mt-8">
+            <Button variant="outline" onClick={onClose}>
+              Close Preview
+            </Button>
+            <Button
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 bg-primary"
+            >
+              <Download className="w-4 h-4 mr-2" /> Download PDF
+            </Button>
+          </div>
         </div>
-
-        {/* Action Buttons - These won't appear in PDF */}
-        <div className="flex justify-end gap-3 mt-3">
-          <Button
-            variant="outline"
-            onClick={handleShareEmail}
-            className="flex items-center gap-2"
-          >
-            <Mail className="w-4 h-4" />
-            Share via Email
-          </Button>
-
-          <Button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-2 bg-primary"
-          >
-            <Download className="w-4 h-4" />
-            Download PDF
-          </Button>
-        </div>
-
-        {/* Print Styles */}
-        <style jsx global>{`
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            .cv-content,
-            .cv-content * {
-              visibility: visible;
-            }
-            .cv-content {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              box-shadow: none !important;
-              margin: 0 !important;
-              padding: 20px !important;
-            }
-            button,
-            .border-t {
-              display: none !important;
-            }
-          }
-        `}</style>
       </DialogContent>
     </Dialog>
   );
 };
-
-// Missing icons
-const Phone = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-    />
-  </svg>
-);
-
-const MapPin = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-    />
-  </svg>
-);
 
 export default ClassicCvModal;
