@@ -20,6 +20,7 @@ import PersonalInfo from "./personal-info";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ModernCvModal from "./modern-cv-modal";
+import ClassicCvModal from "./classic-cv-modal";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
@@ -27,6 +28,10 @@ const CvMakingForm = () => {
   const { isActive } = useFormState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cvData, setCvData] = useState<CvBuilderFormType | null>(null);
+  const [isClassModalOpen, setIsClassicModalOpen] = useState(false);
+  const [classicCvData, setClassicCvData] = useState<CvBuilderFormType | null>(
+    null,
+  );
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg5NWI5YjE1NTA5NWU5ZDZkYWI1MSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk1OTI1MjYsImV4cCI6MTc3MDE5NzMyNn0.pEkkBnwUA4chMqdg1sxjO-Sys3GRIXvqMEL1_Dg59CU";
 
@@ -61,8 +66,13 @@ const CvMakingForm = () => {
     onSuccess: (data) => {
       toast.success(data?.message);
       if (data?.data) {
-        setCvData(data.data);
-        setIsModalOpen(true);
+        if (data?.data?.cvformet === "Modern") {
+          setCvData(data.data);
+          setIsModalOpen(true);
+        } else {
+          setClassicCvData(data?.data);
+          setIsClassicModalOpen(true);
+        }
       }
     },
     onError: (error) => {
@@ -80,6 +90,10 @@ const CvMakingForm = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+  };
+
+  const handleClassicModalClose = () => {
+    setIsClassicModalOpen(false);
   };
 
   return (
@@ -124,6 +138,12 @@ const CvMakingForm = () => {
                   isOpen={isModalOpen}
                   onClose={handleModalClose}
                   cvData={cvData}
+                />
+
+                <ClassicCvModal
+                  isOpen={isClassModalOpen}
+                  onClose={handleClassicModalClose}
+                  classicCvData={classicCvData}
                 />
               </div>
             </div>
