@@ -14,9 +14,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import Logo from '@/components/shared/logo/Logo';
 import { secureStorage } from '@/utils/secureStorage';
 import { ActiveSection } from '@/constant/navConstant';
-import { ICONS, IMAGES } from '@/assets';
+import {  IMAGES } from '@/assets';
 import { toast } from 'sonner';
 import { getDeviceInfo } from '@/utils/deviceInfo';
+import { Eye, EyeOff, Mail } from 'lucide-react';
 
 // Replicating SocialLoginButton locally as it was in the original file
 const SocialLoginButton = () => (
@@ -149,7 +150,7 @@ export default function LoginPage() {
                                     })}
                                 />
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <img src={ICONS.email} alt="email icon" className="w-5 h-5 opacity-80" />
+                                <Mail className='opacity-60'/>
                                 </div>
                             </div>
                             {errors.email && (
@@ -176,11 +177,7 @@ export default function LoginPage() {
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
                                 >
-                                    <img
-                                        src={showPassword ? ICONS.eyeOpen : ICONS.eyeClose}
-                                        alt="toggle"
-                                        className="w-5 h-5"
-                                    />
+                                    {showPassword ?  <Eye /> : <EyeOff />}
                                 </button>
                             </div>
                             {errors.password && (
@@ -227,7 +224,7 @@ export default function LoginPage() {
 
                         <p className="text-center text-gray-600 mt-6">
                             Don't have an account?{" "}
-                            <Link href="/signUp" style={{ color: "#B9B92B" }}>
+                            <Link href="/signup" style={{ color: "#B9B92B" }}>
                                 Sign up
                             </Link>
                         </p>

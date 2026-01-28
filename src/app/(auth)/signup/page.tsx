@@ -14,6 +14,7 @@ import { ICONS, IMAGES } from '@/assets';
 import { useRegister } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useMutation } from '@tanstack/react-query';
+import { Eye, EyeOff, Mail, PhoneCall } from 'lucide-react';
 
 // Social Login Component
 const SocialLogin = ({ onManualContinue }: { onManualContinue: () => void }) => (
@@ -284,7 +285,7 @@ export default function SignUpPage() {
                                     })}
                                 />
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <img src={ICONS.email} alt="email icon" className="w-5 h-5 opacity-80" />
+                                    <Mail className="opacity-60"/>
                                 </div>
                             </div>
                             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message as string}</p>}
@@ -300,7 +301,7 @@ export default function SignUpPage() {
                                     {...register("phone", { required: "Phone is required" })}
                                 />
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <img src={ICONS.phone} alt="phone icon" className="w-5 h-5 opacity-80" />
+                                   <PhoneCall className="opacity-60"/>
                                 </div>
                             </div>
                             {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message as string}</p>}
@@ -324,11 +325,7 @@ export default function SignUpPage() {
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
                                 >
-                                    <img
-                                        src={showPassword ? ICONS.eyeOpen : ICONS.eyeClose}
-                                        alt="toggle"
-                                        className="w-5 h-5"
-                                    />
+                                     {showPassword ?  <Eye /> : <EyeOff />}
                                 </button>
                             </div>
                             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message as string}</p>}
