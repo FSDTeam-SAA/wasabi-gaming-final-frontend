@@ -16,6 +16,7 @@ import { secureStorage } from '@/utils/secureStorage';
 import { ActiveSection } from '@/constant/navConstant';
 import { ICONS, IMAGES } from '@/assets';
 import { toast } from 'sonner';
+import { getDeviceInfo } from '@/utils/deviceInfo';
 
 // Replicating SocialLoginButton locally as it was in the original file
 const SocialLoginButton = () => (
@@ -66,10 +67,13 @@ export default function LoginPage() {
     const onSubmit = async (data: any) => {
         console.log("Login data:", { ...data });
 
+        const deviceInfo = getDeviceInfo();
+
         try {
             const res = await signIn('credentials', {
                 email: data.email,
                 password: data.password,
+                deviceInfo : JSON.stringify(deviceInfo),
                 redirect: false,
             });
 
@@ -78,16 +82,18 @@ export default function LoginPage() {
             } else {
                 toast.success("Login successful!");
 
+                router.push("/")
+
                 // Use activeTab to decide where to go, similar to original logic
                 // Original: if (currentTab === ActiveSection.Students) navigate("/dashboard");
                 // We use the string values directly or import ActiveSection if available.
                 // Assuming ActiveSection.Students = "Students" based on context.
 
-                if (activeTab === "Students") {
-                    router.push("/dashboard");
-                } else {
-                    router.push("/manage-students");
-                }
+                // if (activeTab === "Students") {
+                //     router.push("/dashboard");
+                // } else {
+                //     router.push("/manage-students");
+                // }
             }
         } catch (err) {
             toast.error("Login encountered an error.");
