@@ -37,7 +37,7 @@ const StudentHero = () => {
         <div className="flex flex-col justify-center items-center md:space-y-6 space-y-2 lg:space-y-8 z-30">
           <h1 className="banner-color highlight-color source text-xs md:text-2xl lg:text-[34px] 2xl:text-[52px] uppercase font-semibold text-center  z-30 ">
             Pursue your legal <span className="text-[#D9D937]">dreams </span>
-            with confidence
+            with confidence 
           </h1>
           <p className=" source text-[#464646] md:text-base text-xs lg:text-xl font-normal uppercase  z-30 ">
             Join the Aspiring Legal Network - Get the support, tools, and
