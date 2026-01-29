@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 const HeaderBanner = () => {
     return (
         <div
-            className="relative p-6 md:p-8 lg:p-12 rounded-3xl border border-blue-100 overflow-hidden"
+            className="container mx-auto relative p-6 md:p-8 lg:p-12 rounded-3xl border border-blue-100 overflow-hidden"
             style={{
                 background:
                     "linear-gradient(117deg, #FEFCE8 0%, #FFFFFF 50%, #EFF6FF 100%)",
