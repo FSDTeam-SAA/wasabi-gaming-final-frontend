@@ -38,34 +38,38 @@ const Hero = () => {
       {/* FLOATING CARD */}
       <Card
         className="
-    hidden lg:block
+    hidden lg:block rounded-[16px]
     lg:absolute lg:left-4 lg:top-12
     xl:left-12
     2xl:left-24
     bg-white border-none
-    lg:w-48 xl:w-60 2xl:w-72
+    lg:w-52 
     shadow-[0px_8px_16px_0px_#0000001F]
   "
       >
-        <CardContent className="py-3 xl:py-4 px-0 flex flex-col items-center gap-2 xl:gap-4">
+        <CardContent className="py-2  flex flex-col px-2 lg:px-4 items-start gap-2">
           {/* Avatars */}
           <div className="flex -space-x-2 sm:-space-x-3">
-            {['/star1.jpg', '/star2.jpg', '/star3.jpg', '/star4.jpg'].map(
-              (src, i) => (
-                <Avatar
-                  key={i}
-                  className="
+            {[
+              '/star1.jpg',
+              '/star2.jpg',
+              '/star3.jpg',
+              '/star4.jpg',
+              '/star5.jpg',
+            ].map((src, i) => (
+              <Avatar
+                key={i}
+                className="
               h-8 w-8
               xl:h-10 xl:w-10
-              2xl:h-12 2xl:w-12
+              
               border-2 border-white ring-1 ring-gray-100
             "
-                >
-                  <AvatarImage src={src} alt={`Student ${i + 1}`} />
-                  <AvatarFallback>ST</AvatarFallback>
-                </Avatar>
-              ),
-            )}
+              >
+                <AvatarImage src={src} alt={`Student ${i + 1}`} />
+                <AvatarFallback>ST</AvatarFallback>
+              </Avatar>
+            ))}
           </div>
 
           {/* Stars */}

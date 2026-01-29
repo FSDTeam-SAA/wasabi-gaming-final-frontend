@@ -190,7 +190,7 @@ export function SchoolHero() {
                                 src={images[currentIndex]}
                                 alt={`Slide ${currentIndex + 1}`}
                                 fill
-                                className="object-cover rounded-l-xl shadow-2xl"
+                                className="object-cover rounded-xl shadow-2xl"
                             />
                             <div className="absolute inset-0 rounded-xl border border-black/10 pointer-events-none"></div>
 

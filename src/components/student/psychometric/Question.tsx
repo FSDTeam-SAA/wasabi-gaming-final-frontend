@@ -4,48 +4,48 @@ import React from "react";
 import { PsychometricQuestion } from "./data";
 import { cn } from "@/utils/cn";
 
-export const RadioButton = ({
+const letters = ["A", "B", "C", "D", "E", "F"];
+
+export const OptionCard = ({
     label,
+    letter,
     checked,
     onChange,
     value
 }: {
     label: string;
+    letter: string;
     checked: boolean;
     onChange: (value: number) => void;
     value: number
 }) => (
-    <label
+    <div
+        onClick={() => onChange(value)}
         className={cn(
-            "flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200",
+            "group flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all duration-200 bg-white",
             checked
-                ? "border-yellow-400 bg-yellow-50 shadow-sm"
-                : "border-gray-100 hover:border-yellow-200 hover:bg-gray-50/50"
+                ? "border-[#FFFF00] bg-[#FFFF00]/10 shadow-sm"
+                : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
         )}
     >
-        <div className="relative w-5 h-5 shrink-0">
-            <input
-                type="radio"
-                checked={checked}
-                onChange={() => onChange(value)}
-                className="sr-only"
-            />
-            <div
-                className={cn(
-                    "absolute inset-0 rounded-full border-2 transition-colors",
-                    checked ? "border-yellow-400" : "border-gray-300"
-                )}
-            />
-            {checked && (
-                <div className="absolute inset-1.5 bg-yellow-400 rounded-full" />
+        <div
+            className={cn(
+                "w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold border shrink-0 transition-colors",
+                checked
+                    ? "border-gray-900 bg-white text-black"
+                    : "border-gray-300 text-gray-500 group-hover:border-gray-400"
             )}
+        >
+            {letter}
         </div>
 
         <span className={cn(
-            "text-base font-bold flex-1 transition-colors",
-            checked ? "text-black" : "text-gray-600"
-        )}>{label}</span>
-    </label>
+            "text-base font-medium flex-1",
+            checked ? "text-gray-900" : "text-gray-600"
+        )}>
+            {label}
+        </span>
+    </div>
 );
 
 interface QuestionProps {
@@ -56,14 +56,18 @@ interface QuestionProps {
 
 const Question: React.FC<QuestionProps> = ({ question, selectedAnswer, onAnswerSelect }) => {
     return (
-        <div className="font-poppins">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-8 leading-relaxed">
-                {question.text}
-            </h3>
-            <div className="space-y-4">
+        <div className="font-poppins space-y-8">
+            <div className="bg-gray-50 rounded-xl p-6 md:p-8 border border-gray-100">
+                <h3 className="text-lg md:text-xl font-medium text-gray-800 leading-relaxed">
+                    {question.text}
+                </h3>
+            </div>
+
+            <div className="space-y-3">
                 {question.options.map((option, index) => (
-                    <RadioButton
+                    <OptionCard
                         key={index}
+                        letter={letters[index] || "?"}
                         label={option}
                         checked={selectedAnswer === index}
                         onChange={onAnswerSelect}

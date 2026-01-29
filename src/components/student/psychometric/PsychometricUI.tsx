@@ -88,9 +88,9 @@ export const Button = ({
     );
 };
 
-export const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-    <ShadcnCard className={cn("bg-white rounded-3xl shadow-sm border-gray-100 overflow-hidden", className)}>
-        <CardContent className="p-8">
+export const Card = ({ children, className = "", style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) => (
+    <ShadcnCard className={cn("bg-white rounded-3xl shadow-sm border-gray-100 overflow-hidden", className)} style={style}>
+        <CardContent className="p-0">
             {children}
         </CardContent>
     </ShadcnCard>
