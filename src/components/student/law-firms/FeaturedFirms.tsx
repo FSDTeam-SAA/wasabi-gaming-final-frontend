@@ -1,53 +1,51 @@
-import React from 'react';
-import LawFirmCard, { LawFirm } from "./LawFirmCard";
-import { ICONS } from "@/assets"; // Adjusted path to alias if possible, or relative
+"use client";
 
-const firms: LawFirm[] = [
-    {
-        _id: "1",
-        name: "Broadfields Law",
-        tagline: "Excellence in Corporate Law",
-        location: "London, UK",
-        size: "250+",
-        tags: ["Corporate Law", "M&A", "Tax", "Litigation"],
-        logo: ICONS.farmLogo,
-        gradient: "from-green-50 to-green-100",
-        featured: true,
-    },
-    {
-        _id: "2",
-        name: "Ashurst",
-        tagline: "Global Legal Excellence",
-        location: "Multiple Locations",
-        size: "1800+",
-        tags: ["International Law", "Banking", "Finance", "Tax", "Litigation"],
-        logo: ICONS.farmLogo,
-        gradient: "from-orange-50 to-red-50",
-        featured: true,
-    },
-    {
-        _id: "3",
-        name: "DLA Piper",
-        tagline: "Global Business Law Firm",
-        location: "Worldwide",
-        size: "4200+",
-        tags: ["Corporate", "Finance", "Tax", "Litigation", "M&A"],
-        logo: ICONS.farmLogo,
-        gradient: "from-blue-50 to-indigo-50",
-        featured: true,
-    },
-];
+import React from "react";
+import LawFirmCard, { LawFirm } from "./LawFirmCard";
+import { useQuery } from "@tanstack/react-query";
+
+interface LawFirmApiResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+  };
+  data: LawFirm[];
+}
 
 const FeaturedFirms = () => {
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {firms.map((firm, i) => (
-                <div key={i} className="h-full">
-                    <LawFirmCard firm={firm} />
-                </div>
-            ))}
-        </div>
-    );
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["featuredLawFirms"],
+    queryFn: async (): Promise<LawFirmApiResponse> => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lawfirms`);
+      return res.json();
+    },
+  });
+
+  if (isLoading) return <p>Loading featured firms...</p>;
+  if (isError) return <p>Error loading featured firms!</p>;
+
+  // Take first 4 firms
+  const featuredFirms = data?.data?.slice(0, 4) || [];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {featuredFirms.length > 0 ? (
+        featuredFirms.map((firm) => (
+          <div key={firm._id} className="h-full">
+            <LawFirmCard firm={firm} />
+          </div>
+        ))
+      ) : (
+        <p className="text-gray-500 col-span-full text-center mt-4">
+          No featured firms available.
+        </p>
+      )}
+    </div>
+  );
 };
 
 export default FeaturedFirms;

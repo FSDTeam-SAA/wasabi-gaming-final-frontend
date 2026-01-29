@@ -40,7 +40,7 @@ const SavedFirms = () => {
         },
         {
             _id: "4",
-            name: "DLA Piper",
+            nae: "DLA Piper",
             tagline: "Global Business Law Firm",
             location: "Worldwide",
             size: "4200+",
