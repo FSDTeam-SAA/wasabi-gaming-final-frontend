@@ -1,7 +1,8 @@
 'use client';
 
 import React from "react";
-import { Button, Card, ProgressBar } from "./PsychometricUI";
+import { Card, ProgressBar } from "./PsychometricUI";
+import { Button } from "@/components/ui/button";
 import Question from "./Question";
 import { PsychometricTest } from "./data";
 import { cn } from "@/utils/cn";
@@ -32,72 +33,97 @@ const Test: React.FC<TestProps> = ({
     const question = activeTest.questions[currentQuestion];
 
     return (
-        <div className="min-h-screen bg-gray-50/50 p-4 md:p-8 font-poppins">
-            <div className="max-w-4xl mx-auto">
-                <div className="mb-10">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                        <h2 className="text-xl md:text-2xl font-bold text-gray-900 border-l-4 border-yellow-400 pl-4">
-                            Practice Assessment: <span className="text-gray-500 font-medium">{activeTest.name}</span>
-                        </h2>
-                        <span className="bg-white px-4 py-2 rounded-full shadow-sm text-sm font-bold text-gray-400 border uppercase tracking-wider">
-                            Question {currentQuestion + 1} <span className="text-gray-200 mx-1">/</span> {activeTest.questions.length}
-                        </span>
-                    </div>
-                    <ProgressBar percent={progress} />
+
+        <div className="min-h-screen bg-gray-50/30 p-4 md:p-8 font-poppins flex flex-col items-center">
+            <div className="w-full max-w-[1116.5px]">
+                <div className="mb-12 text-center space-y-2">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                        Answer Your Psychometric Test Questions
+                    </h2>
+                    <p className="text-gray-500 font-medium">
+                        Gain insights into your strengths and areas for growth.
+                    </p>
                 </div>
 
-                <Card className="mb-8 shadow-sm">
-                    <Question
-                        question={question}
-                        selectedAnswer={selectedAnswer}
-                        onAnswerSelect={onAnswerSelect}
-                    />
-                </Card>
-
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                    <Button
-                        variant="secondary"
-                        size="lg"
-                        onClick={onPrevious}
-                        disabled={currentQuestion === 0}
-                        className="w-full md:w-40 h-14"
+                <div className="relative">
+                    <Card className="shadow-xl bg-white overflow-hidden relative z-10 p-0"
+                        style={{
+                            borderWidth: "1.81px",
+                            borderColor: "#FFFF0033",
+                            borderRadius: "14.5px",
+                        }}
                     >
-                        <ChevronLeft className="w-5 h-5" /> Previous
-                    </Button>
+                        <div className="flex justify-between items-center border-b border-gray-100"
+                            style={{ padding: "21.75px" }}
+                        >
+                            <h3 className="font-semibold text-gray-700">Practice Questions</h3>
+                            <span className="text-sm font-medium text-gray-400">
+                                Question {currentQuestion + 1} of {activeTest.questions.length} <span className="text-[#d8ac26]">({Object.keys(answers).length}/{activeTest.questions.length} answered)</span>
+                            </span>
+                        </div>
 
-                    <div className="flex gap-2 flex-wrap justify-center bg-white p-2 rounded-2xl border shadow-sm px-4">
-                        {activeTest.questions.map((_, idx) => (
-                            <div
-                                key={idx}
-                                className={cn(
-                                    "w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300",
-                                    idx === currentQuestion
-                                        ? "bg-yellow-400 text-black shadow-md ring-2 ring-yellow-200"
-                                        : answers[idx] !== undefined
-                                            ? "bg-green-50 text-green-600 border border-green-100"
-                                            : "bg-gray-50 text-gray-400 border border-gray-100"
-                                )}
+                        <div style={{ padding: "21.75px" }}>
+                            <Question
+                                question={question}
+                                selectedAnswer={selectedAnswer}
+                                onAnswerSelect={onAnswerSelect}
+                            />
+                        </div>
+
+                        <div className="flex justify-between items-center bg-white"
+                            style={{ padding: "0 21.75px 21.75px 21.75px" }}
+                        >
+                            <Button
+                                variant="outline"
+                                onClick={onPrevious}
+                                disabled={currentQuestion === 0}
+                                className="w-32 rounded-xl h-11"
                             >
-                                {answers[idx] !== undefined && idx !== currentQuestion ? <Check className="w-4 h-4" /> : idx + 1}
-                            </div>
-                        ))}
-                    </div>
+                                <ChevronLeft className="w-4 h-4 mr-1" /> Previous
+                            </Button>
 
-                    <Button
-                        variant="primary"
-                        size="lg"
-                        onClick={onNext}
-                        disabled={selectedAnswer === null}
-                        className="w-full md:w-40 h-14"
-                    >
-                        {currentQuestion === activeTest.questions.length - 1
-                            ? "Finish Assessment"
-                            : <>Next Question <ChevronRight className="w-5 h-5" /></>}
-                    </Button>
+                            <div className="flex gap-2">
+                                {activeTest.questions.map((_, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={cn(
+                                            "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300",
+                                            idx === currentQuestion
+                                                ? "bg-[#FFFF00] text-black"
+                                                : answers[idx] !== undefined
+                                                    ? "bg-gray-100 text-gray-600"
+                                                    : "bg-gray-50 text-gray-300"
+                                        )}
+                                    >
+                                        {idx + 1}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <Button
+                                onClick={onNext}
+                                disabled={selectedAnswer === null}
+                                className="w-32 rounded-xl h-11 font-bold"
+                            >
+                                {currentQuestion === activeTest.questions.length - 1
+                                    ? "Finish"
+                                    : <>Next <ChevronRight className="w-4 h-4 ml-1" /></>}
+                            </Button>
+                        </div>
+
+
+                        <div className="h-1.5 bg-gray-50 w-full">
+                            <div
+                                className="h-full bg-[#FFFF00] transition-all duration-300 ease-out"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
+                    </Card>
                 </div>
             </div>
         </div>
     );
+
 };
 
 export default Test;
