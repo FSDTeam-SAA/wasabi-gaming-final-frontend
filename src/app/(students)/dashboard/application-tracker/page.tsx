@@ -30,6 +30,8 @@ import { cn } from "@/utils/cn";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Progress } from "@radix-ui/react-progress";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -236,6 +238,7 @@ export default function ApplicationTrackerPage() {
   const [searchTrigger, setSearchTrigger] = useState(0);
 
   const itemsPerPage = 9;
+  const router = useRouter;
 
   const [selectedJob, setSelectedJob] = useState<Application | null>(null);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
@@ -376,69 +379,71 @@ export default function ApplicationTrackerPage() {
         </div>
 
         {/* Filters */}
-<div className="mb-12">
-  <form
-    onSubmit={handleSearch}
-    className="flex flex-col sm:flex-row gap-4"
-  >
-    {/* Search input with button inside */}
-    <div className="flex-1 relative">
-      {/* Left icon */}
-      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+        <div className="mb-12">
+          <form
+            onSubmit={handleSearch}
+            className="flex flex-col sm:flex-row gap-4"
+          >
+            {/* Search input with button inside */}
+            <div className="flex-1 relative">
+              {/* Left icon */}
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
 
-      <Input
-        placeholder="Search by title, company or location..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleSearch();
-          }
-        }}
-        className="pl-12 pr-14 py-6 rounded-xl border-gray-300 focus:border-yellow-400"
-      />
+              <Input
+                placeholder="Search by title, company or location..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSearch();
+                  }
+                }}
+                className="pl-12 pr-14 py-6 rounded-xl border-gray-300 focus:border-yellow-400"
+              />
 
-      {/* Search button inside the input (right side) */}
-      <Button
-        type="submit"
-        size="icon"
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-full w-9 h-9 flex items-center justify-center shadow-sm"
-        disabled={isLoading}
-      >
-        <Search className="w-5 h-5" />
-      </Button>
-    </div>
+              {/* Search button inside the input (right side) */}
+              <Button
+                type="submit"
+                size="icon"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-full w-9 h-9 flex items-center justify-center shadow-sm"
+                disabled={isLoading}
+              >
+                <Search className="w-5 h-5" />
+              </Button>
+            </div>
 
-    {/* Location Select */}
-    <Select value={locationFilter} onValueChange={setLocationFilter}>
-      <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl border border-[#616161]">
-        <SelectValue placeholder="All Locations" />
-      </SelectTrigger>
-      <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
-        <SelectItem value="london">London</SelectItem>
-        <SelectItem value="Manchester (M2 5AE)">Manchester</SelectItem>
-        <SelectItem value="Birmingham (B3 2FG)">Birmingham</SelectItem>
-        <SelectItem value="Leeds (LS1 5AB)">Leeds</SelectItem>
-        <SelectItem value="liverpool">Liverpool</SelectItem>
-        <SelectItem value="cardiff">Cardiff</SelectItem>
-      </SelectContent>
-    </Select>
+            {/* Location Select */}
+            <Select value={locationFilter} onValueChange={setLocationFilter}>
+              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl border border-[#616161]">
+                <SelectValue placeholder="All Locations" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
+                <SelectItem value="london">London</SelectItem>
+                <SelectItem value="Manchester (M2 5AE)">Manchester</SelectItem>
+                <SelectItem value="Birmingham (B3 2FG)">Birmingham</SelectItem>
+                <SelectItem value="Leeds (LS1 5AB)">Leeds</SelectItem>
+                <SelectItem value="liverpool">Liverpool</SelectItem>
+                <SelectItem value="cardiff">Cardiff</SelectItem>
+              </SelectContent>
+            </Select>
 
-    {/* Job Type Select */}
-    <Select value={jobTypeFilter} onValueChange={setJobTypeFilter}>
-      <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl !border border-[#616161]">
-        <SelectValue placeholder="Job Types" />
-      </SelectTrigger>
-      <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
-        <SelectItem value="apprenticeship">Apprenticeship</SelectItem>
-        <SelectItem value="work_experience">Work Experience</SelectItem>
-        <SelectItem value="training_contracts">Training Contracts</SelectItem>
-        <SelectItem value="paralegal">Paralegal</SelectItem>
-      </SelectContent>
-    </Select>
-  </form>
-</div>
+            {/* Job Type Select */}
+            <Select value={jobTypeFilter} onValueChange={setJobTypeFilter}>
+              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl !border border-[#616161]">
+                <SelectValue placeholder="Job Types" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
+                <SelectItem value="apprenticeship">Apprenticeship</SelectItem>
+                <SelectItem value="work_experience">Work Experience</SelectItem>
+                <SelectItem value="training_contracts">
+                  Training Contracts
+                </SelectItem>
+                <SelectItem value="paralegal">Paralegal</SelectItem>
+              </SelectContent>
+            </Select>
+          </form>
+        </div>
 
         {/* Job Cards */}
         {applications.length === 0 ? (
@@ -510,17 +515,13 @@ export default function ApplicationTrackerPage() {
                     </Button>
 
                     {canApplyToJob(app) && (
-                      <Button
-                        className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-medium"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toast.success(
-                            `Applying to ${app.position} at ${app.company}`,
-                          );
-                        }}
-                      >
+                      <div>
+                        <Link href='/dashboard/application-tracker/CvUploadpage.tsx'>
+                        <Button className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-medium">
                         Apply
                       </Button>
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>
