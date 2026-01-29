@@ -2,11 +2,10 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload, Copy, Check } from "lucide-react";
-import { cn } from "@/utils/cn";
 
 interface InvitationContentProps {
     activeTab?: string;
@@ -31,12 +30,6 @@ export function InvitationContent({ activeTab = "single" }: InvitationContentPro
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const recentInvitations = [
-        { id: 1, name: "Sarah Johnson", email: "sarah.j@email.com", time: "2 hours ago", status: "Accepted" },
-        { id: 2, name: "Michael Chen", email: "michael.c@email.com", time: "5 hours ago", status: "Pending" },
-        { id: 3, name: "Emma Williams", email: "emma.w@email.com", time: "1 day ago", status: "Accepted" },
-        { id: 4, name: "James Brown", email: "james.b@email.com", time: "2 days ago", status: "Pending" },
-    ];
 
     return (
         <div className="w-full space-y-8 font-poppins">
@@ -164,44 +157,6 @@ export function InvitationContent({ activeTab = "single" }: InvitationContentPro
                             <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Conversion Rate</p>
                         </div>
                     </div>
-                </div>
-            </Card>
-
-            {/* Recent Invitations Section */}
-            <Card className="p-8 bg-white border border-gray-200 text-left">
-                <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xl font-bold">Recent Invitations</h3>
-                    <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">671 Total</span>
-                </div>
-
-                <div className="space-y-4">
-                    {recentInvitations.map((invitation) => (
-                        <div
-                            key={invitation.id}
-                            className="flex items-center justify-between p-5 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-                        >
-                            <div className="flex items-center gap-4 flex-1">
-                                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center font-bold text-base text-black">
-                                    {invitation.name.charAt(0)}
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-bold text-gray-900">{invitation.name}</p>
-                                    <p className="text-sm text-gray-500">{invitation.email}</p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-end gap-2 shrink-0">
-                                <p className="text-xs text-gray-400 font-medium">{invitation.time}</p>
-                                <span
-                                    className={cn(
-                                        "text-xs font-bold px-3 py-1 rounded-full",
-                                        invitation.status === "Accepted" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                                    )}
-                                >
-                                    {invitation.status}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
                 </div>
             </Card>
 
