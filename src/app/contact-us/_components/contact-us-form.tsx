@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useSession } from "next-auth/react"
 
 const formSchema = z.object({
   fullName: z
@@ -38,6 +39,11 @@ const formSchema = z.object({
 
 
 const ContactForm = () => {
+    const session = useSession();
+    console.log("session", session?.data)
+
+
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -52,7 +58,6 @@ const ContactForm = () => {
         mutationKey: ["contact-us"],
         mutationFn: async (values: {fullName:string, message:string, email:string})=>{
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/contacts`,{
-            // const res = await fetch(`https://wasabigaming-backend.onrender.com/api/v1/contacts`,{
                 method: "POST",
                 headers: {
                     "Content-Type" : "application/json"

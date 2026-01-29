@@ -10,8 +10,8 @@ async function request(endpoint: string, options: RequestInit = {}) {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (session?.user?.accessToken) {
-    headers.set('Authorization', `Bearer ${session.user.accessToken}`)
+  if (session?.accessToken) {
+    headers.set('Authorization', `Bearer ${session.accessToken}`)
   }
 
   const config: RequestInit = {

@@ -90,7 +90,10 @@ export const authOptions: NextAuthOptions = {
 
         // 🔥 FIX
         session.user.loginHistory = token.loginHistory as any[];
+        session.accessToken = token.accessToken as string;
       }
+
+      
 
       return session;
     },
