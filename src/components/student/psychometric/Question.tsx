@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { PsychometricQuestion } from "./data";
+import { PsychometricQuestion } from "@/lib/api/psychometric/psychometricApi";
 import { cn } from "@/utils/cn";
 
 const letters = ["A", "B", "C", "D", "E", "F"];
@@ -55,16 +55,18 @@ interface QuestionProps {
 }
 
 const Question: React.FC<QuestionProps> = ({ question, selectedAnswer, onAnswerSelect }) => {
+    if (!question) return null;
+
     return (
         <div className="font-poppins space-y-8">
             <div className="bg-gray-50 rounded-xl p-6 md:p-8 border border-gray-100">
                 <h3 className="text-lg md:text-xl font-medium text-gray-800 leading-relaxed">
-                    {question.text}
+                    {question?.question}
                 </h3>
             </div>
 
             <div className="space-y-3">
-                {question.options.map((option, index) => (
+                {question?.options?.map((option, index) => (
                     <OptionCard
                         key={index}
                         letter={letters[index] || "?"}
