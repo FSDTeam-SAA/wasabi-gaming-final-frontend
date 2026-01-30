@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { ChevronRight, CheckCircle2, Award, X, XCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 type Quiz = {
     _id: string;
@@ -60,7 +61,8 @@ export default function QuizModal({
     } | null>(null);
     const queryClient = useQueryClient();
 
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
+    const { data: sessionData } = useSession();
+    const token = sessionData?.accessToken;
 
     const questions = currentLesson?.quiz || [];
     const totalSteps = questions.length;

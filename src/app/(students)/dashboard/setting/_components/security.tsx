@@ -325,7 +325,7 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 type PasswordForm = {
     currentPassword: string;
@@ -342,10 +342,10 @@ export default function AccountSettings() {
 
     const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
 
-    const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc2ZTI5Y2Y5Zjk1MGM3ZjM1ZWRjZSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJtYWhhYnVyMTgxNDAzMUBnbWFpbC5jb20iLCJpYXQiOjE3Njk1MDc5MjAsImV4cCI6MTc3MDExMjcyMH0.4KO5RDi9REZ61c-te0haZ_Ho2HnZLSonpI32gXDkU00";
-
-    const id = "6977511d5ada81c9f709b532";
+    const { data: sessionData } = useSession();
+    const token = sessionData?.accessToken;
+    const id = sessionData?.user?.id;
+  
 
     const changePassword = useMutation({
         mutationFn: async (payload: {
