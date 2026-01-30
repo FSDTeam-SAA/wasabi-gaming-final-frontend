@@ -2,137 +2,156 @@
 
 import React from "react";
 import { IMAGES } from "../../../assets";
-import { psychometricData, PsychometricTest } from "./data";
+import { PsychometricTest } from "@/lib/api/psychometric/psychometricApi";
 import { Button, Card, CircularProgress } from "./PsychometricUI";
-import { CheckCircle2, RotateCcw, LayoutDashboard, Sparkles, TrendingUp, Target, Badge } from "lucide-react";
+import { CheckCircle2, RotateCcw, LayoutDashboard, Sparkles, TrendingUp, Target, Users, Brain, BarChart } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 interface ResultsProps {
     score: number;
+    correctCount: number;
+    totalCount: number;
     activeTest: PsychometricTest | null;
     onTryAgain: () => void;
     onBackToDashboard: () => void;
 }
 
-const Results: React.FC<ResultsProps> = ({ score, onTryAgain, onBackToDashboard }) => {
+const Results: React.FC<ResultsProps> = ({ score, correctCount, totalCount, activeTest, onTryAgain, onBackToDashboard }) => {
     return (
-        <div className="min-h-screen bg-gray-50/30 p-4 md:p-8 font-poppins">
+        <div className="min-h-screen bg-gray-50/30 p-4 md:p-8 font-poppins text-black">
             <div className="max-w-5xl mx-auto space-y-8">
-                <header className="mb-12">
+                <header className="mb-12 text-center md:text-left">
                     <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-3 tracking-tight italic">
-                        Your Assessment Results
+                        Your Psychometric Test Results
                     </h1>
                     <p className="text-lg text-gray-500 font-medium">
-                        Personalized insights into your cognitive profile and career readiness.
+                        Gain insights into your strengths and areas for growth.
                     </p>
                 </header>
 
                 {/* Hero Score Card */}
                 <Card className="text-center shadow-xl border-none ring-1 ring-gray-100 relative overflow-hidden bg-white">
-                    <div className="absolute top-0 left-0 w-full h-1.5 bg-yellow-400" />
-                    <div className="py-8">
-                        <div className="w-24 h-24 mx-auto bg-yellow-50 rounded-3xl flex items-center justify-center mb-6 text-yellow-500 shadow-inner ring-1 ring-yellow-100">
-                            <CheckCircle2 className="w-12 h-12" />
+                    <div className="py-12 flex flex-col items-center">
+                        <div className="w-20 h-20 bg-yellow-50 rounded-full flex items-center justify-center mb-6 text-yellow-500 shadow-inner overflow-hidden border-4 border-yellow-100">
+                            <CheckCircle2 className="w-10 h-10" />
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                            Assessment Completed!
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                            Test Completed!
                         </h2>
-                        <p className="text-lg text-gray-500 font-medium mb-10">
-                            You correctly answered <span className="text-black font-bold">{score} out of 100</span> questions.
+                        <p className="text-base text-gray-500 font-medium mb-10">
+                            You scored <span className="text-black font-bold">{correctCount} out of {totalCount}</span> questions correctly.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center px-6">
-                            <Button onClick={onTryAgain} className="h-14 px-10 text-lg flex-1 sm:max-w-[240px]">
-                                <RotateCcw className="w-5 h-5" /> Retake Test
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center px-6 w-full max-w-md">
+                            <Button onClick={onTryAgain} className="h-11 px-8 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-bold border-none shadow-sm flex-1">
+                                Try Again
                             </Button>
-                            <Button variant="outline" onClick={onBackToDashboard} className="h-14 px-10 text-lg flex-1 sm:max-w-[240px]">
-                                <LayoutDashboard className="w-5 h-5" /> All Assessments
+                            <Button variant="outline" onClick={onBackToDashboard} className="h-11 px-8 rounded-xl border-gray-200 text-gray-700 font-medium flex-1">
+                                Review Answers
                             </Button>
                         </div>
                     </div>
                 </Card>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Circular Progress Section */}
-                    <Card className="md:col-span-1 bg-white border-none shadow-sm ring-1 ring-gray-100 flex flex-col items-center justify-center py-10">
-                        <CircularProgress percent={score} />
-                        <div className="mt-6 text-center">
-                            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Performance</p>
-                            <p className="text-xl font-bold text-gray-900">
-                                {score >= 80 ? "Exceptional" : score >= 60 ? "Proficient" : "Foundational"}
-                            </p>
-                        </div>
-                    </Card>
-
-                    {/* AI Summary Section */}
-                    <Card className="md:col-span-2 bg-yellow-50/50 border-none shadow-sm ring-1 ring-yellow-100">
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-3">
-                                <Sparkles className="text-yellow-500 w-6 h-6 fill-current" />
-                                <h3 className="text-xl font-bold text-gray-900">Overall Strength Profile</h3>
-                            </div>
-                            <p className="text-gray-700 text-lg leading-relaxed font-medium">
-                                You've demonstrated a strong aptitude in logical reasoning and problem identification.
-                                Your performance suggests a highly analytical mindset capable of navigating complex data structures
-                                and drawing accurate conclusions under time pressure.
-                            </p>
-                            <div className="bg-white/60 p-4 rounded-2xl border border-yellow-200/50 italic text-sm text-yellow-800 font-bold">
-                                "Your ability to identify patterns is in the top 15% of all candidates."
+                <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-gray-900">Overall Performance Summary</h3>
+                    <Card className="bg-white border-2 border-gray-100 shadow-sm p-8">
+                        <div className="flex flex-col md:flex-row items-center gap-10">
+                            <CircularProgress percent={score} />
+                            <div className="space-y-4 flex-1 text-center md:text-left">
+                                <p className="text-xl font-bold text-yellow-400">
+                                    Score: {correctCount} out of {totalCount} correct
+                                </p>
+                                <p className="text-gray-500 font-medium leading-relaxed max-w-2xl">
+                                    You've completed the test. While your score shows room for improvement, this is a great opportunity to build stronger analytical and reasoning skills.
+                                </p>
                             </div>
                         </div>
                     </Card>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Key Strengths */}
-                    <Card className="ring-1 ring-green-100 bg-white shadow-sm border-none">
-                        <div className="flex items-center gap-3 mb-8">
-                            <TrendingUp className="text-green-500 w-6 h-6" />
-                            <h3 className="text-xl font-bold text-gray-900">Key Strengths</h3>
-                        </div>
-                        <div className="space-y-4">
-                            {psychometricData.strengths.map((strength, idx) => (
-                                <div key={idx} className="p-5 bg-green-50/50 rounded-2xl border border-green-100 flex items-center justify-between group transition-all hover:bg-green-50">
-                                    <span className="font-bold text-gray-800 text-base">{strength.name}</span>
-                                    <Badge className="bg-green-500 text-white border-none font-bold py-1 px-3 rounded-lg">{strength.score}</Badge>
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-bold text-gray-900">Key Strengths</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Card className="p-6 flex items-center gap-4 bg-white border border-gray-100 shadow-sm rounded-2xl">
+                                <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center text-yellow-600">
+                                    <TrendingUp className="w-6 h-6" />
                                 </div>
-                            ))}
+                                <div>
+                                    <h4 className="font-bold text-gray-900 text-base">Numerical Reasoning</h4>
+                                    <p className="text-xs text-gray-500 font-medium">Ratios, rates</p>
+                                </div>
+                            </Card>
+                            <Card className="p-6 flex items-center gap-4 bg-white border border-gray-100 shadow-sm rounded-2xl">
+                                <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center text-yellow-600">
+                                    <Target className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-gray-900 text-base">Abstract Reasoning</h4>
+                                    <p className="text-xs text-gray-500 font-medium">Pattern recognition</p>
+                                </div>
+                            </Card>
                         </div>
-                    </Card>
+                    </div>
 
-                    {/* Areas to Improve */}
-                    <Card className="ring-1 ring-orange-100 bg-white shadow-sm border-none">
-                        <div className="flex items-center gap-3 mb-8">
-                            <Target className="text-orange-500 w-6 h-6" />
-                            <h3 className="text-xl font-bold text-gray-900">Growth Opportunities</h3>
-                        </div>
-                        <div className="space-y-4">
-                            {psychometricData.areasToImprove.slice(0, 2).map((area, idx) => (
-                                <div key={idx} className="p-5 bg-orange-50/50 rounded-2xl border border-orange-100 group transition-all hover:bg-orange-50">
-                                    <h4 className="font-bold text-gray-800 text-base mb-2 uppercase tracking-wide text-xs">{area.name}</h4>
-                                    <p className="text-sm text-gray-600 font-medium leading-relaxed">{area.description}</p>
-                                </div>
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-bold text-gray-900">Areas to Improve</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {[
+                                { title: "Situational Judgment & Prioritisation", desc: "Focus on collaboration and proactive communication.", icon: Users },
+                                { title: "Verbal Reasoning & Critical Thinking", desc: "Practice logical analysis and evaluating arguments.", icon: Brain },
+                                { title: "Numerical Accuracy", desc: "Review percentages and averages carefully.", icon: BarChart }
+                            ].map((area, i) => (
+                                <Card key={i} className="p-6 space-y-3 bg-white border border-gray-100 shadow-sm rounded-2xl">
+                                    <area.icon className="w-5 h-5 text-yellow-500" />
+                                    <h4 className="font-bold text-gray-900 text-[13px] leading-tight">{area.title}</h4>
+                                    <p className="text-[11px] text-gray-500 leading-relaxed font-medium">{area.desc}</p>
+                                </Card>
                             ))}
                         </div>
-                    </Card>
+                    </div>
                 </div>
 
-                {/* Global CTA */}
-                <div className="bg-black rounded-[40px] p-12 relative overflow-hidden shadow-2xl">
-                    <div className="absolute -right-20 -top-20 w-64 h-64 bg-yellow-400/20 rounded-full blur-[100px]" />
-                    <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-purple-500/10 rounded-full blur-[100px]" />
+                <div className="bg-yellow-50/50 border border-yellow-200 rounded-[24px] p-8 space-y-6">
+                    <div className="flex items-center gap-2 text-yellow-600">
+                        <Sparkles className="w-5 h-5 fill-current" />
+                        <span className="text-sm font-bold uppercase tracking-wider">AI-Powered Feedback</span>
+                    </div>
 
-                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div className="text-center md:text-left space-y-4">
-                            <h3 className="text-3xl font-bold text-white">Ready for more?</h3>
-                            <p className="text-gray-400 text-lg max-w-md font-medium">
-                                Apply these insights to your AI Assessment Centre or start a Mock Interview today.
-                            </p>
+                    <div className="flex flex-col md:flex-row gap-8 items-start">
+                        <p className="text-sm text-gray-600 font-medium leading-relaxed flex-1">
+                            Psychometric skills are highly trainable. Focus on understanding the reasoning behind each question type and applying systematic problem-solving strategies. With consistent practice, you can significantly enhance your performance.
+                        </p>
+                        <div className="w-full md:w-64 aspect-video rounded-2xl overflow-hidden shadow-lg border-4 border-white">
+                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Study" className="w-full h-full object-cover" />
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                            <Button onClick={onBackToDashboard} className="h-14 px-10 text-lg rounded-2xl w-full sm:w-auto">
-                                View More Tests
-                            </Button>
+                    </div>
+                </div>
+
+                <div className="bg-[#FFFF00] rounded-[16px] p-6 relative overflow-hidden flex items-center gap-4">
+                    <div className="w-10 h-10 bg-black/5 rounded-full flex items-center justify-center">
+                        <span className="text-xl font-bold">"</span>
+                    </div>
+                    <div className="space-y-0.5">
+                        <p className="text-sm font-bold text-gray-900 leading-tight italic">
+                            "Every great achiever was once a beginner. Keep learning, keep growing."
+                        </p>
+                        <p className="text-xs text-black/60 font-medium italic">— Aspiring Legal Network Team</p>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-gray-900">Next Steps for You</h3>
+                    <div className="bg-white border rounded-2xl p-4 flex justify-between items-center group cursor-pointer hover:border-yellow-400 transition-colors">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-yellow-50 group-hover:text-yellow-600 transition-colors">
+                                <Target className="w-4 h-4" />
+                            </div>
+                            <span className="text-[13px] font-bold text-gray-700">Take a Verbal Reasoning Test</span>
+                        </div>
+                        <div className="w-6 h-6 border rounded flex items-center justify-center text-gray-300 group-hover:text-yellow-500 transition-colors">
+                            <CheckCircle2 className="w-4 h-4" />
                         </div>
                     </div>
                 </div>

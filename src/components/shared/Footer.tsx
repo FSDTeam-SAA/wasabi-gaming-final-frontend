@@ -17,7 +17,7 @@ const Footer = () => {
 
     return (
         <footer
-            className={`text-[#1E1E1E] py-12 px-4 md:px-16 ${isYellowBg ? `bg-[#FEF9C2]` : "main-bg-color border-t"}`}
+            className={`text-[#1E1E1E] py-12 px-4 md:px-16 ${isYellowBg ? `bg-[#FEF9C2]` : "main-bg-color "}`}
         >
             <div className="max-w-7xl mx-auto lg:flex justify-between items-start gap-12">
                 {/* Left Section: Logo and Description */}

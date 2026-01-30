@@ -4,7 +4,7 @@ import React from "react";
 import { Card, ProgressBar } from "./PsychometricUI";
 import { Button } from "@/components/ui/button";
 import Question from "./Question";
-import { PsychometricTest } from "./data";
+import { PsychometricTest } from "@/lib/api/psychometric/psychometricApi";
 import { cn } from "@/utils/cn";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 
@@ -29,8 +29,9 @@ const Test: React.FC<TestProps> = ({
 }) => {
     if (!activeTest) return null;
 
-    const progress = ((currentQuestion + 1) / activeTest.questions.length) * 100;
-    const question = activeTest.questions[currentQuestion];
+    const questions = activeTest?.allQuestions || [];
+    const progress = ((currentQuestion + 1) / (questions?.length || 1)) * 100;
+    const question = questions?.[currentQuestion];
 
     return (
 
@@ -58,7 +59,7 @@ const Test: React.FC<TestProps> = ({
                         >
                             <h3 className="font-semibold text-gray-700">Practice Questions</h3>
                             <span className="text-sm font-medium text-gray-400">
-                                Question {currentQuestion + 1} of {activeTest.questions.length} <span className="text-[#d8ac26]">({Object.keys(answers).length}/{activeTest.questions.length} answered)</span>
+                                Question {currentQuestion + 1} of {questions?.length} <span className="text-[#d8ac26]">({Object.keys(answers).length}/{questions?.length} answered)</span>
                             </span>
                         </div>
 
@@ -83,7 +84,7 @@ const Test: React.FC<TestProps> = ({
                             </Button>
 
                             <div className="flex gap-2">
-                                {activeTest.questions.map((_, idx) => (
+                                {questions?.map((_, idx) => (
                                     <div
                                         key={idx}
                                         className={cn(
@@ -105,7 +106,7 @@ const Test: React.FC<TestProps> = ({
                                 disabled={selectedAnswer === null}
                                 className="w-32 rounded-xl h-11 font-bold"
                             >
-                                {currentQuestion === activeTest.questions.length - 1
+                                {currentQuestion === (questions?.length || 0) - 1
                                     ? "Finish"
                                     : <>Next <ChevronRight className="w-4 h-4 ml-1" /></>}
                             </Button>
