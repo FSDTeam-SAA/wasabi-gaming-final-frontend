@@ -30,6 +30,8 @@ import { cn } from "@/utils/cn";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Progress } from "@radix-ui/react-progress";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -81,8 +83,10 @@ interface Application {
 
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
-  if (lower === "active" || lower === "open") return "bg-green-100 text-green-700";
-  if (lower === "inactive" || lower === "closed") return "bg-gray-200 text-gray-500";
+  if (lower === "active" || lower === "open")
+    return "bg-green-100 text-green-700";
+  if (lower === "inactive" || lower === "closed")
+    return "bg-gray-200 text-gray-500";
   return "bg-gray-100 text-gray-600";
 };
 
@@ -126,7 +130,7 @@ function JobDetailsModal({
               <div
                 className={cn(
                   "px-4 py-1.5 rounded-full text-sm font-semibold",
-                  getStatusColor(job.status)
+                  getStatusColor(job.status),
                 )}
               >
                 {job.status === "active" ? "Open Position" : "Closed"}
@@ -172,7 +176,9 @@ function JobDetailsModal({
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-gray-500 font-medium">Application Deadline</p>
+              <p className="text-sm text-gray-500 font-medium">
+                Application Deadline
+              </p>
               <p className="font-medium text-gray-900">
                 {new Date(job.deadline).toLocaleDateString("en-GB", {
                   day: "numeric",
@@ -187,7 +193,8 @@ function JobDetailsModal({
             <h3 className="text-xl font-bold text-gray-900">Job Description</h3>
             <div className="prose prose-gray max-w-none text-gray-700 leading-relaxed">
               <p className="whitespace-pre-line">
-                {job.description || "No detailed description available at this time."}
+                {job.description ||
+                  "No detailed description available at this time."}
               </p>
             </div>
           </div>
@@ -227,15 +234,19 @@ export default function ApplicationTrackerPage() {
   const [jobTypeFilter, setJobTypeFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Trigger search only on button click or Enter
+  const [searchTrigger, setSearchTrigger] = useState(0);
+
   const itemsPerPage = 9;
+  const router = useRouter;
 
   const [selectedJob, setSelectedJob] = useState<Application | null>(null);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
 
-  // Reset page when filters or tab change
+  // Reset page when major filters or search is triggered
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab, searchQuery, locationFilter, jobTypeFilter]);
+  }, [activeTab, searchTrigger, locationFilter, jobTypeFilter]);
 
   // Build query params
   const queryParams = new URLSearchParams({
@@ -243,16 +254,34 @@ export default function ApplicationTrackerPage() {
     limit: itemsPerPage.toString(),
   });
 
-  // Add status filter only for "open" and "closed" tabs
+  // Status filter
   if (activeTab === "open") {
     queryParams.set("status", "active");
   } else if (activeTab === "closed") {
     queryParams.set("status", "inactive");
   }
-  // "all" → no status filter
+
+  // Only include search when triggered
+  if (searchQuery.trim()) {
+    queryParams.set("searchTerm", searchQuery.trim());
+  }
+  if (locationFilter) {
+    queryParams.set("location", locationFilter);
+  }
+  if (jobTypeFilter) {
+    queryParams.set("jobType", jobTypeFilter);
+    // Alternative: queryParams.set("level", jobTypeFilter);
+  }
 
   const { data, isLoading, error } = useQuery<ApiResponse>({
-    queryKey: ["jobs", currentPage, activeTab, searchQuery, locationFilter, jobTypeFilter],
+    queryKey: [
+      "jobs",
+      currentPage,
+      activeTab,
+      searchTrigger,
+      locationFilter,
+      jobTypeFilter,
+    ],
     queryFn: async () => {
       const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/job?${queryParams.toString()}`;
       const res = await fetch(url);
@@ -276,18 +305,25 @@ export default function ApplicationTrackerPage() {
       deadline: job.applicationDeadline,
       description: job.description,
       applied: false,
-      canApply: job.status === "active" && !isJobClosed(job.applicationDeadline),
+      canApply:
+        job.status === "active" && !isJobClosed(job.applicationDeadline),
     }));
   }, [data]);
 
   const totalItems = data?.meta?.total || 0;
-  const totalPages = data?.meta?.totalPages || Math.ceil(totalItems / itemsPerPage) || 1;
+  const totalPages =
+    data?.meta?.totalPages || Math.ceil(totalItems / itemsPerPage) || 1;
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setSearchTrigger((prev) => prev + 1);
   };
 
   if (isLoading) {
@@ -315,7 +351,8 @@ export default function ApplicationTrackerPage() {
             Explore Legal Opportunities
           </h1>
           <p className="text-lg md:text-xl text-gray-600">
-            Discover apprenticeships, training contracts, newly qualified roles and more.
+            Discover apprenticeships, training contracts, newly qualified roles
+            and more.
           </p>
         </div>
 
@@ -329,63 +366,92 @@ export default function ApplicationTrackerPage() {
                 "px-6 sm:px-10 py-4 font-semibold text-base sm:text-lg whitespace-nowrap border-b-4",
                 activeTab === tab
                   ? "border-yellow-400 text-black"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-gray-500 hover:text-gray-700",
               )}
             >
-              {tab === "all" ? "All Jobs" : tab === "open" ? "Open Jobs" : "Closed Jobs"}
+              {tab === "all"
+                ? "All Jobs"
+                : tab === "open"
+                  ? "Open Jobs"
+                  : "Closed Jobs"}
             </button>
           ))}
         </div>
 
         {/* Filters */}
         <div className="mb-12">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <form
+            onSubmit={handleSearch}
+            className="flex flex-col sm:flex-row gap-4"
+          >
+            {/* Search input with button inside */}
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              {/* Left icon */}
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+
               <Input
                 placeholder="Search by title, company or location..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-6 rounded-xl border-gray-300 focus:border-yellow-400"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSearch();
+                  }
+                }}
+                className="pl-12 pr-14 py-6 rounded-xl border-gray-300 focus:border-yellow-400"
               />
+
+              {/* Search button inside the input (right side) */}
+              <Button
+                type="submit"
+                size="icon"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-full w-9 h-9 flex items-center justify-center shadow-sm"
+                disabled={isLoading}
+              >
+                <Search className="w-5 h-5" />
+              </Button>
             </div>
 
+            {/* Location Select */}
             <Select value={locationFilter} onValueChange={setLocationFilter}>
-              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl">
+              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl border border-[#616161]">
                 <SelectValue placeholder="All Locations" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dhaka">Dhaka</SelectItem>
-                <SelectItem value="chittagong">Chittagong</SelectItem>
-                <SelectItem value="sylhet">Sylhet</SelectItem>
-                <SelectItem value="rajshahi">Rajshahi</SelectItem>
-                <SelectItem value="khulna">Khulna</SelectItem>
-                <SelectItem value="gazipur">Gazipur</SelectItem>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
+                <SelectItem value="london">London</SelectItem>
+                <SelectItem value="Manchester (M2 5AE)">Manchester</SelectItem>
+                <SelectItem value="Birmingham (B3 2FG)">Birmingham</SelectItem>
+                <SelectItem value="Leeds (LS1 5AB)">Leeds</SelectItem>
+                <SelectItem value="liverpool">Liverpool</SelectItem>
+                <SelectItem value="cardiff">Cardiff</SelectItem>
               </SelectContent>
             </Select>
 
+            {/* Job Type Select */}
             <Select value={jobTypeFilter} onValueChange={setJobTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl">
+              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl !border border-[#616161]">
                 <SelectValue placeholder="Job Types" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
                 <SelectItem value="apprenticeship">Apprenticeship</SelectItem>
-                <SelectItem value="work experience">Work Experience</SelectItem>
-                <SelectItem value="training contract">Training Contract</SelectItem>
+                <SelectItem value="work_experience">Work Experience</SelectItem>
+                <SelectItem value="training_contracts">
+                  Training Contracts
+                </SelectItem>
                 <SelectItem value="paralegal">Paralegal</SelectItem>
-                <SelectItem value="junior">Junior</SelectItem>
-                <SelectItem value="mid-level">Mid-Level</SelectItem>
-                <SelectItem value="senior">Senior</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </form>
         </div>
 
         {/* Job Cards */}
         {applications.length === 0 ? (
           <div className="text-center py-20 text-gray-500 text-xl">
             No matching opportunities found.
-            <p className="text-base mt-3">Try adjusting your search or filters.</p>
+            <p className="text-base mt-3">
+              Try adjusting your search or filters.
+            </p>
           </div>
         ) : (
           <>
@@ -406,15 +472,19 @@ export default function ApplicationTrackerPage() {
                     <div
                       className={cn(
                         "px-4 py-1.5 rounded-full text-sm font-medium",
-                        getStatusColor(app.status)
+                        getStatusColor(app.status),
                       )}
                     >
                       {app.status === "active" ? "Open" : "Closed"}
                     </div>
                   </div>
 
-                  <h3 className="font-bold text-xl mb-2 line-clamp-2">{app.position}</h3>
-                  <p className="text-gray-700 font-medium mb-4">{app.company}</p>
+                  <h3 className="font-bold text-xl mb-2 line-clamp-2">
+                    {app.position}
+                  </h3>
+                  <p className="text-gray-700 font-medium mb-4">
+                    {app.company}
+                  </p>
 
                   <div className="space-y-3 text-sm text-gray-600 mb-6 flex-grow">
                     <div className="flex items-center gap-2">
@@ -423,7 +493,10 @@ export default function ApplicationTrackerPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
-                      <span>Deadline: {new Date(app.deadline).toLocaleDateString("en-GB")}</span>
+                      <span>
+                        Deadline:{" "}
+                        {new Date(app.deadline).toLocaleDateString("en-GB")}
+                      </span>
                     </div>
                     {app.salary && (
                       <div className="flex items-center gap-2">
@@ -442,15 +515,13 @@ export default function ApplicationTrackerPage() {
                     </Button>
 
                     {canApplyToJob(app) && (
-                      <Button
-                        className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-medium"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toast.success(`Applying to ${app.position} at ${app.company}`);
-                        }}
-                      >
+                      <div>
+                        <Link href='/dashboard/application-tracker/CvUploadpage.tsx'>
+                        <Button className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-medium">
                         Apply
                       </Button>
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -469,21 +540,23 @@ export default function ApplicationTrackerPage() {
                   Previous
                 </Button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    onClick={() => handlePageChange(page)}
-                    className={cn(
-                      "min-w-[40px]",
-                      currentPage === page
-                        ? "bg-yellow-400 hover:bg-yellow-500 text-black border-none"
-                        : "border-gray-300"
-                    )}
-                  >
-                    {page}
-                  </Button>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      onClick={() => handlePageChange(page)}
+                      className={cn(
+                        "min-w-[40px]",
+                        currentPage === page
+                          ? "bg-yellow-400 hover:bg-yellow-500 text-black border-none"
+                          : "border-gray-300",
+                      )}
+                    >
+                      {page}
+                    </Button>
+                  ),
+                )}
 
                 <Button
                   variant="outline"
