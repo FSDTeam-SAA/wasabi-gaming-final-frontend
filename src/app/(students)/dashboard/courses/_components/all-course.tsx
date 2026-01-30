@@ -2,6 +2,7 @@
 import { Award, BookOpen, CircleCheckBig, GraduationCap, Search, Star, TrendingUp, Users } from 'lucide-react'
 import CourseCard from './course-card'
 import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
 
 export const metadata = {
@@ -9,10 +10,11 @@ export const metadata = {
     description:
         'Access high-quality courses designed to help you land your dream job.',
 }
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg5NWI5YjE1NTA5NWU5ZDZkYWI1MSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk1MTA1MTMsImV4cCI6MTc3MDExNTMxM30.aVjHeDmvTv3G8z8x8crWSdy13P4j26-eBZ4zbZrMkiA";
 
 export default function AllCourse() {
 
+    const { data: sessionData } = useSession();
+    const token = sessionData?.accessToken;
 
     const { data } = useQuery({
         queryKey: ["dashboardStudents"],

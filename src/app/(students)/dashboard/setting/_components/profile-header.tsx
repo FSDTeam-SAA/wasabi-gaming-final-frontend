@@ -7,12 +7,15 @@ import { Edit2, MapPin, Mail, Phone, Calendar, Upload } from "lucide-react";
 import Image from "next/image";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export default function ProfileHeader() {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
 
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
+    const { data: sessionData } = useSession();
+    const token = sessionData?.accessToken;
+    //  const id = sessionData?.user?.id;
 
     const { data: profile } = useQuery({
         queryKey: ["me"],
@@ -82,7 +85,7 @@ export default function ProfileHeader() {
         .join("")
         .toUpperCase();
 
-   
+
     return (
         <Card className="p-6 border-2 border-[#FFFF00] bg-gradient-to-br from-[#FEFCE8] to-white rounded-xl relative">
             <div className="flex flex-col sm:flex-row gap-6 items-start relative">

@@ -18,13 +18,15 @@ import QuizModal from "./quiz-modal";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { SingleCourseResponse } from "@/types/course";
+import { useSession } from "next-auth/react";
 
 const SingelCourse = ({ id }: { id: string }) => {
   const router = useRouter();
 
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg5NWI5YjE1NTA5NWU5ZDZkYWI1MSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk1MTA1MTMsImV4cCI6MTc3MDExNTMxM30.aVjHeDmvTv3G8z8x8crWSdy13P4j26-eBZ4zbZrMkiA";
-
-  const enrollid = "697895b9b155095e9d6dab51"
+    const { data: sessionData } = useSession();
+    const token = sessionData?.accessToken;
+    const enrollid = sessionData?.user?.id
+  // const enrollid = "697895b9b155095e9d6dab51"
 
   const { data, isLoading, isError } = useQuery<SingleCourseResponse>({
     queryKey: ["single-course", id],
@@ -42,21 +44,21 @@ const SingelCourse = ({ id }: { id: string }) => {
     },
   });
 
-  useEffect(() => {
-    if (!data?.data) return;
+  // useEffect(() => {
+  //   if (!data?.data) return;
 
-    const coursePrice = data.data.coursePrice;
+  //   const coursePrice = data.data.coursePrice;
 
-    // ✅ Free course → no redirect
-    if (coursePrice === 0) return;
+  //   // ✅ Free course → no redirect
+  //   if (coursePrice === 0) return;
 
-    // ✅ Paid course → check enrollment
-    const isEnrolled = data.data.enrolledStudents.includes(enrollid);
+  //   // ✅ Paid course → check enrollment
+  //   const isEnrolled = data.data.enrolledStudents.includes(enrollid);
 
-    if (!isEnrolled) {
-      router.push("/dashboard/courses");
-    }
-  }, [data, enrollid, router]);
+  //   if (!isEnrolled) {
+  //     router.push("/dashboard/courses");
+  //   }
+  // }, [data, enrollid, router]);
 
 
   const course = data?.data;

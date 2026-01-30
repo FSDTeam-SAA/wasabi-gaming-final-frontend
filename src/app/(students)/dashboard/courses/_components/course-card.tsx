@@ -11,6 +11,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { CourseResponse } from "@/types/course";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export default function CourseCard() {
     const router = useRouter();
@@ -18,8 +19,9 @@ export default function CourseCard() {
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     const [selectedCategory, setSelectedCategory] = useState("All");
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg5NWI5YjE1NTA5NWU5ZDZkYWI1MSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk1MTA1MTMsImV4cCI6MTc3MDExNTMxM30.aVjHeDmvTv3G8z8x8crWSdy13P4j26-eBZ4zbZrMkiA";
-    const id = "697895b9b155095e9d6dab51"
+    const { data: sessionData } = useSession();
+    const token = sessionData?.accessToken;
+    const id = sessionData?.user?.id;
 
     useEffect(() => {
         const handler = setTimeout(() => setDebouncedSearchTerm(searchTerm), 500);
@@ -143,7 +145,7 @@ export default function CourseCard() {
                     </div>
 
                     <div className="flex gap-2 flex-wrap">
-                        {["All", "Mathematics", "Science", "English", "History","Technology"].map((cat, i) => (
+                        {["All", "Mathematics", "Science", "English", "History", "Technology"].map((cat, i) => (
                             <button
                                 key={i}
                                 onClick={() => setSelectedCategory(cat)}
@@ -182,9 +184,9 @@ export default function CourseCard() {
 
                         <CardContent className="space-y-6">
                             <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">{course.description}</p>
-                             <div>
-                                <p className="flex text-[#4A5565] items-center gap-1"> <UsersRoundIcon className="w-4 h-4"/> {course.enrolledStudents?.length}</p>
-                             </div>
+                            <div>
+                                <p className="flex text-[#4A5565] items-center gap-1"> <UsersRoundIcon className="w-4 h-4" /> {course.enrolledStudents?.length}</p>
+                            </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-xs font-semibold text-slate-600">
                                     <span>Progress</span>
@@ -197,9 +199,9 @@ export default function CourseCard() {
                         </CardContent>
 
                         <CardFooter className="pb-6">
-                            {course.enrolledStudents?.includes(id) ? (
+                            {id && course?.enrolledStudents?.includes(id) ? (
                                 <Button
-                                    onClick={() => router.push(`/dashboard/courses/${course._id}`)}
+                                    onClick={() => router.push(`/dashboard/courses/${course?._id}`)}
                                     className="w-full bg-[#FFFF00] hover:bg-[#FFFF00]/80 text-slate-900 py-2 rounded-xl transition-all flex items-center justify-center"
                                 >
                                     Continue Learning
@@ -207,11 +209,11 @@ export default function CourseCard() {
                                 </Button>
                             ) : course.coursePrice ? (
                                 <Button
-                                    onClick={() => payMutation.mutate(course._id)}
+                                    onClick={() => payMutation.mutate(course?._id)}
                                     className="w-full flex items-center justify-center hover:bg-[#FFFF00]/5 bg-transparent gap-3 border border-[#0000001A] text-slate-900 py-2 rounded-xl transition-all"
                                 >
                                     <Lock className="ml-2 w-3 h-3" />
-                                    Enroll Now - {course.coursePrice}
+                                    Enroll Now - {course?.coursePrice}
                                 </Button>
                             ) : (
                                 <Button

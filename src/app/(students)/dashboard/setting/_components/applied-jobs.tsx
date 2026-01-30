@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 
 interface Applicant {
     _id: string;
@@ -36,7 +37,9 @@ export default function AppliedJobs() {
     const [currentPage, setCurrentPage] = useState(1);
     const jobsPerPage = 5;
 
-     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc1MTFkNWFkYTgxYzlmNzA5YjUzMiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjczMjMsImV4cCI6MTc3MDAzMjEyM30.xjyA4AxTAzdO0tFYvCB0-Jm8rpTBOQXZHc_bOnpWPEA";
+
+    const { data: sessionData } = useSession();
+    const token = sessionData?.accessToken;
 
     const { data, isLoading, isError } = useQuery<ApiResponse>({
         queryKey: ["applied-job"],

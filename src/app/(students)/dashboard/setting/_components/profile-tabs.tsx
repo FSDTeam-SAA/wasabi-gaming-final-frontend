@@ -7,7 +7,7 @@ export default function ProfileTabs({ activeTab, setActiveTab }: any) {
         // { id: "preferences", label: "Preferences", icon: Settings },
         { id: "security", label: "Security", icon: Lock },
         { id: "invited", label: "Invited Jobs", icon: Briefcase },
-        { id: "applied", label: "Applied Jobs", icon: FileCheck },
+        // { id: "applied", label: "Applied Jobs", icon: FileCheck },
     ];
 
     return (
