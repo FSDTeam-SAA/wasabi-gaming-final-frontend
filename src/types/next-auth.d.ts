@@ -5,6 +5,7 @@ declare module "next-auth" {
     user: {
       id: string;
       role: string;
+      shareLink: string;
       loginHistory?: any[];
     } & DefaultSession["user"];
 
@@ -15,6 +16,7 @@ declare module "next-auth" {
   interface User {
     role: string;
     accessToken?: string;
+    shareLink: string;
     loginHistory?: any[];
   }
 }
@@ -23,6 +25,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
     role?: string;
+    shareLink?: string;
     accessToken?: string;
     loginHistory?: any[];
   }

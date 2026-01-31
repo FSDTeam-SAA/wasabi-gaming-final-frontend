@@ -166,6 +166,8 @@ export default function PsychometricTestPage() {
                 keyStrength={submissionMutation.data?.data?.keyStrength}
                 areaImprovements={submissionMutation.data?.data?.areaImprovements}
                 overallFeedback={submissionMutation.data?.data?.overallFeedback}
+                answers={submissionMutation.data?.data?.answers}
+                totalTime={submissionMutation.data?.data?.totalTime}
                 onTryAgain={() => {
                     setCurrentQuestion(0);
                     setAnswers({});

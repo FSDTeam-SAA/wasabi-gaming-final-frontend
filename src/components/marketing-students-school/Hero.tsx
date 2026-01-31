@@ -127,7 +127,7 @@ const Hero = () => {
             <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
               <SelectValue placeholder="Select Type" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border-none">
               <SelectItem value="type1">Type 1</SelectItem>
               <SelectItem value="type2">Type 2</SelectItem>
               <SelectItem value="type3">Type 3</SelectItem>
@@ -138,7 +138,7 @@ const Hero = () => {
             <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
               <SelectValue placeholder="Select Location" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border-none">
               <SelectItem value="location1">Location 1</SelectItem>
               <SelectItem value="location2">Location 2</SelectItem>
               <SelectItem value="location3">Location 3</SelectItem>

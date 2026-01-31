@@ -9,10 +9,12 @@ export const metadata = {
 
 export default function ManageStudentsPage() {
     return (
-        <main className="max-w-[1600px] mx-auto pb-20">
+        <div>
             <ManageStudentsHeader />
+        <main className="max-w-[1600px] mx-auto pb-20">
             <ManageStudentsTable />
-            <NeedHelpSection />
         </main>
+            <NeedHelpSection />
+        </div>
     );
 }

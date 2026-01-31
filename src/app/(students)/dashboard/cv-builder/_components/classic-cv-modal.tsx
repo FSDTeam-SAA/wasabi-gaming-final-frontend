@@ -1,47 +1,47 @@
-"use client";
+'use client'
 
-import React, { useRef } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Download, Mail, Phone, MapPin, Globe } from "lucide-react";
-import { toast } from "sonner";
-import { CvBuilderFormType } from "./cv-making-form";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import React, { useRef } from 'react'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Download, Mail, Phone, MapPin, Globe } from 'lucide-react'
+import { toast } from 'sonner'
+import { CvBuilderFormType } from './cv-making-form'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 interface ClassicCvProps {
-  isOpen: boolean;
-  onClose: () => void;
-  classicCvData: CvBuilderFormType | null;
+  isOpen: boolean
+  onClose: () => void
+  classicCvData: CvBuilderFormType | null
 }
 
 const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
-  const cvRef = useRef<HTMLDivElement>(null);
+  const cvRef = useRef<HTMLDivElement>(null)
 
-  if (!classicCvData) return null;
+  if (!classicCvData) return null
 
   const handleDownloadPDF = async () => {
     if (!cvRef.current) {
-      toast.error("CV content not found");
-      return;
+      toast.error('CV content not found')
+      return
     }
     try {
-      toast.loading("Generating PDF...");
+      toast.loading('Generating PDF...')
       const canvas = await html2canvas(cvRef.current, {
         scale: 2,
         useCORS: true,
-      });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
-      pdf.save(`${classicCvData.firstName}_CV.pdf`);
-      toast.dismiss();
-      toast.success("Downloaded!");
+      })
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF('p', 'mm', 'a4')
+      pdf.addImage(imgData, 'PNG', 0, 0, 210, 297)
+      pdf.save(`${classicCvData.firstName}_CV.pdf`)
+      toast.dismiss()
+      toast.success('Downloaded!')
     } catch (e) {
-      toast.dismiss();
-      toast.error("Download failed");
+      toast.dismiss()
+      toast.error('Download failed')
     }
-  };
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -52,9 +52,9 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
             ref={cvRef}
             className="bg-white text-[#4a4a4a] shadow-2xl"
             style={{
-              width: "210mm",
-              minHeight: "297mm",
-              padding: "0",
+              width: '210mm',
+              minHeight: '297mm',
+              padding: '0',
               fontFamily: "'Inter', sans-serif",
             }}
           >
@@ -62,11 +62,11 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
             <div className="px-12 pt-16 pb-8">
               <div className="flex flex-col items-end pt-8 border-t-4 border-zinc-200">
                 <h1 className="text-5xl font-light tracking-widest uppercase text-zinc-800">
-                  {classicCvData.firstName}{" "}
+                  {classicCvData.firstName}{' '}
                   <span className="font-bold">{classicCvData.lastName}</span>
                 </h1>
                 <p className="text-xl tracking-[0.2em] text-zinc-500 mt-2">
-                  {classicCvData.profession || "Marketing Manager"}
+                  {classicCvData.profession || 'Marketing Manager'}
                 </p>
               </div>
             </div>
@@ -74,8 +74,8 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
             {/* Dark Contact Bar */}
             <div className="bg-[#666666] text-white py-3 px-12 flex justify-between text-[10px] uppercase tracking-widest">
               <div className="flex items-center gap-2">
-                <MapPin size={12} />{" "}
-                {classicCvData.location || "123 Anywhere St., Any City"}
+                <MapPin size={12} />{' '}
+                {classicCvData.location || '123 Anywhere St., Any City'}
               </div>
               <div className="flex items-center gap-2">
                 <Globe size={12} /> www.reallygreatsite.com
@@ -120,7 +120,7 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
                         <div className="absolute -left-[31px] top-1 w-2 h-2 bg-zinc-500 border border-white"></div>
 
                         <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
-                          {exp.startYear} - {exp.endYear || "Present"}
+                          {exp.startYear} - {exp.endYear || 'Present'}
                         </span>
                         <div className="mb-1 text-xs font-bold text-zinc-500">
                           {exp.organization}
@@ -175,7 +175,7 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
                   <ul className="text-[11px] text-zinc-600 space-y-2">
                     {classicCvData.achievements.skills.map((skill, i) => (
                       <li key={i} className="flex items-center gap-2">
-                        <span className="w-1 h-1 rounded-full bg-zinc-800"></span>{" "}
+                        <span className="w-1 h-1 rounded-full bg-zinc-800"></span>{' '}
                         {skill}
                       </li>
                     ))}
@@ -192,11 +192,11 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
                   </div>
                   <ul className="text-[11px] text-zinc-600 space-y-2">
                     <li className="flex items-center gap-2">
-                      <span className="w-1 h-1 rounded-full bg-zinc-800"></span>{" "}
+                      <span className="w-1 h-1 rounded-full bg-zinc-800"></span>{' '}
                       English
                     </li>
                     <li className="flex items-center gap-2 text-zinc-400">
-                      <span className="w-1 h-1 rounded-full bg-zinc-400"></span>{" "}
+                      <span className="w-1 h-1 rounded-full bg-zinc-400"></span>{' '}
                       Spanish (Basic)
                     </li>
                   </ul>
@@ -220,7 +220,7 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default ClassicCvModal;
+export default ClassicCvModal

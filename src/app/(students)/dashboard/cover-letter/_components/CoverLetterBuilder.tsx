@@ -1,74 +1,84 @@
 'use client'
 
-import React from "react"
-
-import { useState } from 'react'
-import {  SquareMenu, Upload } from 'lucide-react'
+import React, { useState } from 'react'
+import { SquareMenu, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { CoverLetterForm } from "./CoverLetterForm"
-import { CoverLetterTips } from "./CoverLetterTips"
+import { CoverLetterTips } from './CoverLetterTips'
+import CoverLetterModal, { type CoverData } from './CoverLetterModal'
+import { useSession } from 'next-auth/react'
 
 export function CoverLetterBuilder() {
   const [jobDescription, setJobDescription] = useState('')
   const [cvFile, setCvFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [generatedLetter, setGeneratedLetter] = useState('')
-  const [showForm, setShowForm] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [coverData, setCoverData] = useState<CoverData | null>(null)
+
+  const { data: session } = useSession()
+  const token = session?.accessToken || ''
+  const image = session?.user?.image || ''
 
   const handleCvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      setCvFile(file)
-    }
+    if (file) setCvFile(file)
   }
 
   const handleGenerateLetter = async () => {
     if (!jobDescription || !cvFile) {
-      alert('Please upload your CV and job description')
+      alert('Please enter job description and upload your CV')
+      return
+    }
+
+    if (!token) {
+      alert('You must be logged in to generate a cover letter')
       return
     }
 
     setIsLoading(true)
+
     try {
       const formData = new FormData()
       formData.append('jobDescription', jobDescription)
-      formData.append('cv', cvFile)
+      formData.append('uploadCv', cvFile)
 
-      const response = await fetch('/api/generate-letter', {
-        method: 'POST',
-        body: formData,
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/cover-letter/`,
+        {
+          method: 'POST',
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
 
       const data = await response.json()
-      if (data.letter) {
-        setGeneratedLetter(data.letter)
-        setShowForm(true)
+
+      if (response.ok && data.success && data.data?.savedData) {
+        setCoverData(data.data.savedData as CoverData)
+        setModalOpen(true)
+      } else {
+        alert(data.message || 'Failed to generate cover letter')
       }
     } catch (error) {
-      console.error('Error generating letter:', error)
-      alert('Failed to generate cover letter')
+      console.error('Error generating cover letter:', error)
+      alert('Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
 
-  if (showForm && generatedLetter) {
-    return (
-      <CoverLetterForm
-        letter={generatedLetter}
-        onBack={() => {
-          setShowForm(false)
-          setGeneratedLetter('')
-        }}
-      />
-    )
+  const handleStartOver = () => {
+    setCvFile(null)
+    setJobDescription('')
+    setCoverData(null)
   }
 
   return (
     <>
-      <div className="mb-12 ">
+      <div className="mb-12">
         <h1 className="text-4xl md:text-5xl font-semibold text-[#1E1E1E] mb-3 text-balance">
           Cover letter Builder
         </h1>
@@ -93,22 +103,20 @@ export function CoverLetterBuilder() {
         </div>
 
         <div className="space-y-6">
-          {/* Job Description */}
           <div className="space-y-3">
-            <label className="block text-base  font-normal text-[#364153]">
+            <label className="block text-base font-normal text-[#364153]">
               Upload your job description
             </label>
             <Textarea
               placeholder="Input your job description here..."
               value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
+              onChange={e => setJobDescription(e.target.value)}
               className="w-full rounded-[24px] bg-[#F3F3F5] border-0 text-gray-900 placeholder:text-gray-500 p-4 text-base min-h-32 resize-none"
             />
           </div>
 
-          {/* CV Upload */}
           <div className="space-y-3">
-            <label className="bblock text-base  font-normal text-[#364153]">
+            <label className="block text-base font-normal text-[#364153]">
               Upload CV
             </label>
             <div className="relative">
@@ -131,19 +139,23 @@ export function CoverLetterBuilder() {
             </div>
           </div>
 
-          {/* Generate Button */}
           <Button
             onClick={handleGenerateLetter}
             disabled={isLoading || !jobDescription || !cvFile}
-            className="px-6 bg-[#FFFF00] hover:bg-y[#FFFF00]/90 text-[#1E1E1E] font-semibold rounded-[24px] text-base h-12 transition-colors"
+            className="px-6 bg-[#FFFF00] hover:bg-[#FFFF00]/90  text-[#1E1E1E] font-semibold rounded-[24px] text-base h-12 transition-colors"
           >
             {isLoading ? 'Generating...' : 'Build cover letter with AI'}
           </Button>
         </div>
       </Card>
 
-      {/* Tips Section */}
       <CoverLetterTips />
+
+      <CoverLetterModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        data={coverData}
+      />
     </>
   )
 }

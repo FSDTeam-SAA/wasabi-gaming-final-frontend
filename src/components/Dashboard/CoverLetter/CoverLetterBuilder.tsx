@@ -72,7 +72,7 @@ Olivia Wilson`);
                 </div>
 
                 {/* Main Card */}
-                <div className="max-w-6xl p-8 mx-auto bg-white border border-gray-200 shadow-sm rounded-2xl ">
+                <div className="max-w-6xl p-8 mx-auto bg-white border border-gray-500 shadow-sm rounded-2xl ">
                     {/* Card Header */}
                     <div className="flex items-start gap-4 mb-8">
                         <div className="flex-shrink-0 p-3 rounded-full yellow">
@@ -98,7 +98,7 @@ Olivia Wilson`);
                             value={jobDescription}
                             onChange={(e) => setJobDescription(e.target.value)}
                             placeholder="Input your job description here...."
-                            className="w-full px-4 py-3 border border-gray-200 resize-none rounded-2xl bg-gray-50 focus:outline-none focus:ring-2 focus:yellow focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-500 resize-none rounded-2xl bg-gray-50 focus:outline-none focus:ring-2 focus:yellow focus:border-transparent"
                             rows={4}
                         />
                     </div>
@@ -118,7 +118,7 @@ Olivia Wilson`);
                             />
                             <Label
                                 htmlFor="resume-upload"
-                                className="flex items-center w-full gap-2 px-4 py-3 transition-colors border border-gray-200 cursor-pointer rounded-2xl bg-gray-50 hover:bg-gray-100"
+                                className="flex items-center w-full gap-2 px-4 py-3 transition-colors border border-gray-500 cursor-pointer rounded-2xl bg-gray-50 hover:bg-gray-100"
                             >
                                 <FileText className="w-5 h-5 text-gray-400" />
                                 <span className="text-sm text-gray-500">
