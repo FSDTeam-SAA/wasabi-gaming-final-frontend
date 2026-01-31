@@ -14,10 +14,10 @@ export default function NeedHelpSection() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
-        <div className="bg-yellow-400 py-20 px-6 rounded-b-3xl text-center space-y-6 font-poppins relative overflow-hidden shadow-sm">
+        <div className="bg-[#FFFF00] py-20 px-6 rounded-b-3xl text-center space-y-6 font-poppins relative overflow-hidden shadow-sm">
             <div className="absolute top-0 left-0 w-full h-1 bg-black/5" />
 
-            <h3 className="text-3xl md:text-5xl font-bold text-black max-w-2xl mx-auto leading-tight italic">
+            <h3 className="text-3xl md:text-5xl font-normal text-[#1E1E1E] max-w-2xl mx-auto ">
                 Need help managing students?
             </h3>
             <p className="text-black/70 md:text-xl font-medium max-w-xl mx-auto">
