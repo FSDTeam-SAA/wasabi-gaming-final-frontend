@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { Suspense } from 'react'
+import AcceptedContainerPage from './_components/accepted-container'
 
 const AcceptedPage = () => {
   return (
-    <div>AcceptedPage</div>
+    <div className="h-screen flex items-center justify-center">
+      <Suspense>
+        <AcceptedContainerPage/>
+      </Suspense>
+    </div>
   )
 }
 

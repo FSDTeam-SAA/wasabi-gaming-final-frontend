@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import RejectedContainer from './_components/rejected-container'
 
 const RejectedPage = () => {
   return (
     <div>
-        <RejectedContainer/>
+       <Suspense>
+         <RejectedContainer/>
+       </Suspense>
     </div>
   )
 }
