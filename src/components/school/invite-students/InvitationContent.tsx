@@ -32,10 +32,11 @@ export function InvitationContent({ activeTab = "single" }: InvitationContentPro
 
 
     return (
-        <div className="w-full space-y-8 font-poppins">
+        <div className="container mx-auto w-full space-y-8 font-poppins">
             {/* Invitation Form Section */}
-            <div>
+            <div className="border-2 border-red-500">
                 {activeTab === "single" ? (
+
                     <Card className="p-8 bg-white border border-gray-200">
                         <h3 className="text-xl font-bold mb-6">Single Invitation</h3>
                         <div className="space-y-4 text-left">
@@ -73,7 +74,9 @@ export function InvitationContent({ activeTab = "single" }: InvitationContentPro
                             </Button>
                         </div>
                     </Card>
+
                 ) : (
+
                     <Card className="p-8 bg-white border border-gray-200">
                         <h3 className="text-xl font-bold mb-6">Bulk Invitation</h3>
                         <div className="space-y-6">
@@ -117,6 +120,7 @@ export function InvitationContent({ activeTab = "single" }: InvitationContentPro
                             </Button>
                         </div>
                     </Card>
+                    
                 )}
             </div>
 
@@ -160,17 +164,7 @@ export function InvitationContent({ activeTab = "single" }: InvitationContentPro
                 </div>
             </Card>
 
-            {/* CTA Section */}
-            <div className="bg-yellow-400 rounded-2xl p-10 text-center shadow-lg border-2 border-yellow-500">
-                <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Check className="text-yellow-400 w-6 h-6" />
-                </div>
-                <h3 className="text-3xl font-bold text-black mb-3">Start Building Your Student Network</h3>
-                <p className="text-black/80 text-base font-medium max-w-lg mx-auto">Invite students now and help them succeed in their career journey through personalized guidance and opportunities.</p>
-                <Button className="mt-8 bg-black hover:bg-black/90 text-white font-bold h-12 px-10 rounded-full border-none">
-                    Send Invitations Now
-                </Button>
-            </div>
+            
         </div>
     );
 }

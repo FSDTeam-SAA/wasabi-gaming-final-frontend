@@ -6,6 +6,27 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { GetAllRecentInviteApiResponse } from "./recent-invitations-data-type";
 
+function timeAgo(dateString: string) {
+  const now = new Date();
+  const past = new Date(dateString);
+  const diffMs = now.getTime() - past.getTime();
+
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes} minute ago`;
+  }
+
+  if (diffHours < 24) {
+    return `${diffHours} hour ago`;
+  }
+
+  return `${diffDays} day ago`;
+}
+
+
 /* -------------------------------
    Loading Skeleton
 -------------------------------- */
@@ -81,72 +102,68 @@ export function RecentInvitations() {
     });
 
   return (
-    <div className="w-full space-y-8 font-poppins">
-      <Card className="p-8 bg-white border border-gray-200 text-left">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h3 className="text-xl font-bold">Recent Invitations</h3>
-          <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-            {data?.meta?.total ?? 0} Total
-          </span>
-        </div>
+    <div className="container mx-auto w-full space-y-8 font-poppins">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-2xl md:text-3xl lg:text-4xl font-normal text-[#1E1E1E]">Recent Invitations</h3>
+      </div>
 
-        {/* Content */}
-        <div className="space-y-4">
-          {isLoading && <InvitationSkeleton />}
+      {/* Content */}
+      <div className="space-y-4">
+        {isLoading && <InvitationSkeleton />}
 
-          {isError && (
-            <ErrorState message={(error as Error)?.message} />
-          )}
+        {isError && (
+          <ErrorState message={(error as Error)?.message} />
+        )}
 
-          {!isLoading && !isError && data?.data?.length === 0 && (
-            <p className="text-sm text-gray-500 text-center py-6">
-              No invitations found.
-            </p>
-          )}
+        {!isLoading && !isError && data?.data?.length === 0 && (
+          <p className="text-sm text-gray-500 text-center py-6">
+            No invitations found.
+          </p>
+        )}
 
-          {!isLoading &&
-            !isError &&
-            data?.data?.map((invitation) => (
-              <div
-                key={invitation._id}
-                className="flex items-center justify-between p-5 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center gap-4 flex-1">
-                  <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center font-bold text-base text-black">
-                    {invitation.name.charAt(0)}
-                  </div>
-
-                  <div className="flex-1">
-                    <p className="font-bold text-gray-900">
-                      {invitation.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {invitation.email}
-                    </p>
-                  </div>
+        {!isLoading &&
+          !isError &&
+          data?.data?.map((invitation) => (
+            <div
+              key={invitation._id}
+              className="flex items-center justify-between p-5 bg-white rounded-xl border border-[#E5E5E5] shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center gap-4 flex-1">
+                <div className="w-12 h-12 bg-[#FFFF00] rounded-full flex items-center justify-center font-normal text-base text-[#1E1E1E]">
+                  {invitation.name.charAt(0)}
                 </div>
 
-                <div className="flex flex-col items-end gap-2 shrink-0">
-                  <p className="text-xs text-gray-400 font-medium">
-                    {new Date(invitation.createdAt).toLocaleDateString()}
+                <div className="flex-1">
+                  <p className="font-normal text-base text-[#1E1E1E]">
+                    {invitation.name}
                   </p>
-
-                  <span
-                    className={cn(
-                      "text-xs font-bold px-3 py-1 rounded-full",
-                      invitation.status === "accepted"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    )}
-                  >
-                    {invitation.status}
-                  </span>
+                  <p className="font-normal text-base text-[#1E1E1E]">
+                    {invitation.email}
+                  </p>
                 </div>
               </div>
-            ))}
-        </div>
-      </Card>
+
+              <div className="flex items-center gap-6 shrink-0">
+                <p className="text-sm text-[#666666] font-normal">
+                  {timeAgo(invitation.createdAt)}
+                </p>
+
+
+                <span
+                  className={cn(
+                    "text-sm font-normal px-4 py-2 rounded-full",
+                    invitation.status === "accepted"
+                      ? "bg-[#FFFF00] text-[#1E1E1E]"
+                      : "bg-[#F5F5F5] text-[#666666]"
+                  )}
+                >
+                  {invitation.status}
+                </span>
+              </div>
+            </div>
+          ))}
+      </div>
     </div>
   );
 }
