@@ -151,12 +151,17 @@ const ClassicCvModal = ({ isOpen, onClose, cvData }: ClassicCvModalProps) => {
           </section>
         </div>
 
-        <div className="flex justify-end gap-3 mt-4 no-print">
+        <div className="flex justify-end gap-3 mt-3">
           <Button variant="outline" onClick={onClose}>
-            Close
+            Close Preview
           </Button>
-          <Button onClick={handleDownloadPDF} className="text-white bg-black">
-            <Download className="w-4 h-4 mr-2" /> Download PDF
+
+          <Button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-2 bg-primary"
+          >
+            <Download className="w-4 h-4" />
+            Download PDF
           </Button>
         </div>
       </DialogContent>
