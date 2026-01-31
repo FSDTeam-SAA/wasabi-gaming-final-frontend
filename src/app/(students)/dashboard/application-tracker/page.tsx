@@ -84,9 +84,9 @@ interface Application {
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
   if (lower === "active" || lower === "open")
-    return "bg-green-100 text-green-700";
+    return "bg-green-100 text-[#1E1E1E]";
   if (lower === "inactive" || lower === "closed")
-    return "bg-gray-200 text-gray-500";
+    return "bg-[#FFFF00] text-[#1E1E1E]";
   return "bg-gray-100 text-gray-600";
 };
 
@@ -365,7 +365,7 @@ export default function ApplicationTrackerPage() {
               className={cn(
                 "px-6 sm:px-10 py-4 font-semibold text-base sm:text-lg whitespace-nowrap border-b-4",
                 activeTab === tab
-                  ? "border-yellow-400 text-black"
+                  ? "border-[#FFFF00] text-black"
                   : "border-transparent text-gray-500 hover:text-gray-700",
               )}
             >
@@ -399,14 +399,14 @@ export default function ApplicationTrackerPage() {
                     handleSearch();
                   }
                 }}
-                className="pl-12 pr-14 py-6 rounded-xl border-gray-300 focus:border-yellow-400"
+                className="pl-12 pr-14 py-6 rounded-xl bg-[#E9EEF2] border border-gray-300"
               />
 
               {/* Search button inside the input (right side) */}
               <Button
                 type="submit"
                 size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black rounded-full w-9 h-9 flex items-center justify-center shadow-sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#FFFF00] hover:bg-[#FFFF00] text-black rounded-full w-9 h-9 flex items-center justify-center shadow-sm"
                 disabled={isLoading}
               >
                 <Search className="w-5 h-5" />
@@ -415,7 +415,7 @@ export default function ApplicationTrackerPage() {
 
             {/* Location Select */}
             <Select value={locationFilter} onValueChange={setLocationFilter}>
-              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl border border-[#616161]">
+              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl border border-gray-300 bg-[#E9EEF2]">
                 <SelectValue placeholder="All Locations" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
@@ -430,7 +430,7 @@ export default function ApplicationTrackerPage() {
 
             {/* Job Type Select */}
             <Select value={jobTypeFilter} onValueChange={setJobTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl !border border-[#616161]">
+              <SelectTrigger className="w-full sm:w-[220px] py-6 rounded-xl border border-gray-300 bg-[#E9EEF2]">
                 <SelectValue placeholder="Job Types" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
@@ -459,7 +459,7 @@ export default function ApplicationTrackerPage() {
               {applications.map((app) => (
                 <div
                   key={app.id}
-                  className="border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all bg-white flex flex-col h-full cursor-pointer"
+                  className="border border-[#E5E7EB] rounded-2xl p-6 hover:shadow-xl transition-all bg-white flex flex-col h-full cursor-pointer"
                   onClick={() => {
                     setSelectedJob(app);
                     setIsJobModalOpen(true);
@@ -471,7 +471,7 @@ export default function ApplicationTrackerPage() {
                     </div>
                     <div
                       className={cn(
-                        "px-4 py-1.5 rounded-full text-sm font-medium",
+                        "px-4 py-1.5 rounded-full text-sm font-medium bg-[#E5E500]",
                         getStatusColor(app.status),
                       )}
                     >
@@ -509,17 +509,17 @@ export default function ApplicationTrackerPage() {
                   <div className="flex gap-3 mt-auto">
                     <Button
                       variant="outline"
-                      className="flex-1 border-yellow-400 text-black hover:bg-yellow-50"
+                      className="flex-1 bg-[#FFFF00] border-none text-black hover:bg-[#FFFF00] rounded-full"
                     >
                       View Details
                     </Button>
 
                     {canApplyToJob(app) && (
                       <div>
-                        <Link href='/dashboard/application-tracker/CvUploadpage.tsx'>
-                        <Button className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-medium">
-                        Apply
-                      </Button>
+                        <Link href="/dashboard/application-tracker/CvUploadpage.tsx">
+                          <Button className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-medium">
+                            Apply
+                          </Button>
                         </Link>
                       </div>
                     )}
@@ -549,7 +549,7 @@ export default function ApplicationTrackerPage() {
                       className={cn(
                         "min-w-[40px]",
                         currentPage === page
-                          ? "bg-yellow-400 hover:bg-yellow-500 text-black border-none"
+                          ? "bg-[#FFFF00] hover:bg-[#FFFF00] text-black border-none"
                           : "border-gray-300",
                       )}
                     >
@@ -578,7 +578,7 @@ export default function ApplicationTrackerPage() {
         )}
 
         {/* Career Insights Section */}
-        <div className="flex-1 border-2 border-yellow-400 p-5 my-10 rounded-3xl">
+        <div className="flex-1 border-2 border-[#FFFF00] p-5 my-10 rounded-3xl bg-[#FEFCE8]">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Your Career Insights
           </h2>
@@ -611,7 +611,7 @@ export default function ApplicationTrackerPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+          <div className="bg-[#FFFFFF] rounded-xl p-5 border border-[#E5E500] shadow-sm">
             <div className="flex items-start gap-3">
               <TrendingUp className="w-5 h-5 text-gray-700 flex-shrink-0 mt-0.5" />
               <div>
@@ -628,7 +628,7 @@ export default function ApplicationTrackerPage() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300 rounded-3xl py-10 mb-8">
+        <div className="bg-[#E6E600] rounded-3xl py-10 mb-8 shadow-[0px_4px_6px_-4px_#0000001A]">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">
               Ready to Take the Next Step?
@@ -642,7 +642,7 @@ export default function ApplicationTrackerPage() {
                 <Plus className="w-5 h-5" />
                 Add New Application
               </Button>
-              <Button className="flex items-center gap-2 bg-transparent text-gray-900 px-7 py-6 rounded-xl font-semibold border-2 border-gray-900 hover:bg-yellow-500 transition-all text-base">
+              <Button className="flex items-center gap-2 bg-transparent text-gray-900 px-7 py-6 rounded-xl font-semibold border-2 border-gray-900 hover:bg-[#FFFF00] transition-all text-base">
                 <Search className="w-5 h-5" />
                 View Recommended Jobs
               </Button>
