@@ -1,0 +1,13 @@
+import CvMakingForm from "./_components/cv-making-form";
+import CvTips from "./_components/cv-tips";
+
+const page = () => {
+  return (
+    <div className="container p-4 space-y-6">
+      <CvMakingForm />
+      <CvTips />
+    </div>
+  );
+};
+
+export default page;

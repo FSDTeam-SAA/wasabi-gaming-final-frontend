@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { PiCaretUpDownFill } from "react-icons/pi";
+import { Star } from "lucide-react";
 import image1 from "../../../assets/images/stars 1.png";
 import image2 from "../../../assets/images/staro 1.png";
 import image3 from "../../../assets/images/blacko 1.png";
@@ -36,7 +37,7 @@ const StudentHero = () => {
         <div className="flex flex-col justify-center items-center md:space-y-6 space-y-2 lg:space-y-8 z-30">
           <h1 className="banner-color highlight-color source text-xs md:text-2xl lg:text-[34px] 2xl:text-[52px] uppercase font-semibold text-center  z-30 ">
             Pursue your legal <span className="text-[#D9D937]">dreams </span>
-            with confidence
+            with confidence 
           </h1>
           <p className=" source text-[#464646] md:text-base text-xs lg:text-xl font-normal uppercase  z-30 ">
             Join the Aspiring Legal Network - Get the support, tools, and
@@ -132,6 +133,7 @@ const StudentHero = () => {
             </div>
           </div>
           {/* input field for search end*/}
+
           <div className="flex flex-col lg:flex-row gap-7 items-center">
             <button className="yellow main-color font-bold border-2 border-[#D9D937] py-2 px-8 lg:px-16 rounded-full neuton">
               Start Now
@@ -141,7 +143,42 @@ const StudentHero = () => {
             </button>
           </div>
         </div>
+
+        {/* Floating Stats Card - Refined */}
+        <div className="absolute top-[10%] right-[3%] hidden lg:flex bg-white py-3 px-4 rounded-[30px] shadow-2xl flex-col items-start gap-3 z-30 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {/* Avatars */}
+          <div className="flex -space-x-4">
+            {[
+              "/testomonial1.jpg",
+              "/testomonial2.jpg",
+              "/testomonial3.jpg",
+              "/heroimage.jpg",
+              "/career.jpg"
+            ].map((src, i) => (
+              <div key={i} className="relative w-10 h-10 border-[3px] border-white rounded-full overflow-hidden shadow-sm">
+                <img
+                  src={src}
+                  alt="Student"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Stars */}
+          <div className="flex gap-1.5">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="w-5 h-5 fill-[#FFB903] text-[#FFB903]" />
+            ))}
+          </div>
+
+          {/* Text */}
+          <p className="text-black font-semibold text-sm whitespace-nowrap">
+            Joined by 10K+ Students
+          </p>
+        </div>
       </div>
+
 
       {/* card section */}
       <div className="mt-10 relative">
@@ -168,7 +205,7 @@ const StudentHero = () => {
           alt=""
         />
       </div>
-    </div>
+    </div >
   );
 };
 

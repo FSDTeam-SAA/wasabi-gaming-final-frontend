@@ -31,7 +31,7 @@ const SocialLoginButton = () => (
 
 const Login = () => {
   const [activeTab, setActiveTab] = useState(
-    secureStorage.getItem("activeSection") || ActiveSection.Students
+    secureStorage.getItem("activeSection") || ActiveSection.Students,
   );
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -48,17 +48,18 @@ const Login = () => {
     setActiveTab(tab);
     secureStorage.setItem("activeSection", tab);
   };
-  
-  const onSubmit = async(data) => {
+
+  const onSubmit = async (data) => {
     console.log("Login data:", { ...data });
     // Simulate successful login with dummy token since backend is not ready
     try {
       // Dummy token setting
-      const dummyToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+      const dummyToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
       const role = activeTab === ActiveSection.Students ? "student" : "school";
-      secureStorage.setItem('token', `Bearer ${dummyToken}`);
+      secureStorage.setItem("token", `Bearer ${dummyToken}`);
       secureStorage.setItem("user", { role });
-      
+
       // message.success("Login successful!");
 
       const currentTab = secureStorage.getItem("activeSection");
@@ -202,13 +203,13 @@ const Login = () => {
       <Col xs={24} md={12} className="p-6 md:p-12 flex flex-col justify-center">
         <Title level={3} className="mb-4">
           {activeTab === ActiveSection.Students
-              ? "Your All-in-one Platform for Aspiring Legal Professionals!"
-              : "Aspiring — Your All-in-One School Management Platform"}
+            ? "Your All-in-one Platform for Aspiring Legal Professionals!"
+            : "Aspiring — Your All-in-One School Management Platform"}
         </Title>
         <Text className="block mb-8 text-gray-700">
           {activeTab === ActiveSection.Students
-              ? "Aspiring is a simple, powerful tool that helps you create a professional resume in minutes. With modern templates and smart guidance, it lets you showcase your skills confidently and take the next step in your career."
-              : "Aspiring is a simple yet powerful system that helps schools manage students, teachers, and activities with ease. With smart tools and a modern interface, it lets you organize efficiently and focus on better learning outcomes."}
+            ? "Aspiring is a simple, powerful tool that helps you create a professional resume in minutes. With modern templates and smart guidance, it lets you showcase your skills confidently and take the next step in your career."
+            : "Aspiring is a simple yet powerful system that helps schools manage students, teachers, and activities with ease. With smart tools and a modern interface, it lets you organize efficiently and focus on better learning outcomes."}
         </Text>
         <div className="flex space-x-2 mb-8">
           <div className="w-3 h-3 rounded-full bg-[#ffff00]" />

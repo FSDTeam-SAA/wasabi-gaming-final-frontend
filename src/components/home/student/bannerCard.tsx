@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import {
   FileText,
@@ -123,7 +124,7 @@ const BannerCard = () => {
       title: "Mock Interview Simulation",
       description:
         "Practice interviews with AI. Our AI-powered mock interview tool includes a live conversation experience and simulates 30 rounds to prepare you for job interviews.",
-      buttonText: "Take a test",
+      buttonText: "Take a test", 
       icon: Target,
       image:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80",
