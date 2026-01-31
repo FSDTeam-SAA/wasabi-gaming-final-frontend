@@ -1,4 +1,3 @@
-
 'use client'
 
 import React, { useState } from 'react'
@@ -8,6 +7,7 @@ import { Card } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { CoverLetterTips } from './CoverLetterTips'
 import CoverLetterModal, { type CoverData } from './CoverLetterModal'
+import { useSession } from 'next-auth/react'
 
 export function CoverLetterBuilder() {
   const [jobDescription, setJobDescription] = useState('')
@@ -16,9 +16,9 @@ export function CoverLetterBuilder() {
   const [modalOpen, setModalOpen] = useState(false)
   const [coverData, setCoverData] = useState<CoverData | null>(null)
 
-  // NOTE: real app এ session থেকে token নাও, code এ hardcode করো না
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzc2ZTI5Y2Y5Zjk1MGM3ZjM1ZWRjZSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJtYWhhYnVyMTgxNDAzMUBnbWFpbC5jb20iLCJpYXQiOjE3Njk4MjgwNTQsImV4cCI6MTc3MDQzMjg1NH0.l7ndoQlm_AYjwN5ooKC5-DXLbdATfggG0KJW9wFgNgg'
+  const { data: session } = useSession()
+  const token = session?.accessToken || ''
+  const image = session?.user?.image || ''
 
   const handleCvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -51,7 +51,7 @@ export function CoverLetterBuilder() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       )
 
       const data = await response.json()
@@ -110,7 +110,7 @@ export function CoverLetterBuilder() {
             <Textarea
               placeholder="Input your job description here..."
               value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
+              onChange={e => setJobDescription(e.target.value)}
               className="w-full rounded-[24px] bg-[#F3F3F5] border-0 text-gray-900 placeholder:text-gray-500 p-4 text-base min-h-32 resize-none"
             />
           </div>
@@ -142,7 +142,7 @@ export function CoverLetterBuilder() {
           <Button
             onClick={handleGenerateLetter}
             disabled={isLoading || !jobDescription || !cvFile}
-            className="px-6 bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] font-semibold rounded-[24px] text-base h-12 transition-colors"
+            className="px-6 bg-[#FFFF00] hover:bg-[#FFFF00]/90  text-[#1E1E1E] font-semibold rounded-[24px] text-base h-12 transition-colors"
           >
             {isLoading ? 'Generating...' : 'Build cover letter with AI'}
           </Button>
@@ -151,11 +151,11 @@ export function CoverLetterBuilder() {
 
       <CoverLetterTips />
 
-     <CoverLetterModal
-  open={modalOpen}
-  onOpenChange={setModalOpen}
-  data={coverData}
-/>
+      <CoverLetterModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        data={coverData}
+      />
     </>
   )
 }
