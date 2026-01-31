@@ -20,9 +20,9 @@ import PersonalInfo from "./personal-info";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ModernCvModal from "./modern-cv-modal";
-import ClassicCvModal from "./creative-cv-modal";
 import { useSession } from "next-auth/react";
 import CreativeCvModal from "./creative-cv-modal";
+import ClassicCvModal from "./classic-cv-modal";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
 
@@ -33,6 +33,10 @@ const CvMakingForm = () => {
   const [isCreativeModalOpen, setIsCreativeModalOpen] = useState(false);
   const [creativeCvData, setCreativeCvData] =
     useState<CvBuilderFormType | null>(null);
+  const [isClassicModalOpen, setIsClassicModalOpen] = useState(false);
+  const [classicCvData, setClassicCvData] = useState<CvBuilderFormType | null>(
+    null,
+  );
 
   const { data: session } = useSession();
 
@@ -72,7 +76,14 @@ const CvMakingForm = () => {
         if (data?.data?.cvformet === "Modern") {
           setCvData(data.data);
           setIsModalOpen(true);
-        } else {
+        }
+
+        if (data?.data?.cvformet === "Classic") {
+          setClassicCvData(data?.data);
+          setIsClassicModalOpen(true);
+        }
+
+        if (data?.data?.cvformet === "Creative") {
           setCreativeCvData(data?.data);
           setIsCreativeModalOpen(true);
         }
@@ -97,6 +108,10 @@ const CvMakingForm = () => {
 
   const handleCreativeModalClose = () => {
     setIsCreativeModalOpen(false);
+  };
+
+  const handleClassicModalClose = () => {
+    setIsClassicModalOpen(false);
   };
 
   return (
@@ -147,6 +162,12 @@ const CvMakingForm = () => {
                   isOpen={isCreativeModalOpen}
                   onClose={handleCreativeModalClose}
                   classicCvData={creativeCvData}
+                />
+
+                <ClassicCvModal
+                  isOpen={isClassicModalOpen}
+                  onClose={handleClassicModalClose}
+                  cvData={classicCvData}
                 />
               </div>
             </div>
