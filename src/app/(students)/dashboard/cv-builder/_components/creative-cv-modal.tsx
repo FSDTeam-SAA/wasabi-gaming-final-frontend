@@ -15,7 +15,7 @@ interface ClassicCvProps {
   classicCvData: CvBuilderFormType | null
 }
 
-const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
+const CreativeCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
   const cvRef = useRef<HTMLDivElement>(null)
 
   if (!classicCvData) return null
@@ -101,7 +101,7 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
 
             <div className="grid grid-cols-12 gap-0">
               {/* MAIN COLUMN (Left) */}
-              <div className="col-span-7 p-12 pr-8">
+              <div className="col-span-7 p-12 pt-0 pr-8 ">
                 {/* Profile Info */}
 
                 {/* Experience */}
@@ -223,4 +223,4 @@ const ClassicCvModal = ({ isOpen, onClose, classicCvData }: ClassicCvProps) => {
   )
 }
 
-export default ClassicCvModal
+export default CreativeCvModal
