@@ -4,8 +4,15 @@ import React from "react";
 import { IMAGES } from "../../../assets";
 import { PsychometricTest } from "@/lib/api/psychometric/psychometricApi";
 import { Button, Card, CircularProgress } from "./PsychometricUI";
-import { CheckCircle2, RotateCcw, LayoutDashboard, Sparkles, TrendingUp, Target, Users, Brain, BarChart, BookOpen, AlertCircle } from "lucide-react";
+import { CheckCircle2, RotateCcw, LayoutDashboard, Sparkles, TrendingUp, Target, Users, Brain, BarChart, BookOpen, AlertCircle, Clock, Check, X } from "lucide-react";
 import { cn } from "@/utils/cn";
+
+export interface AnswerResult {
+  questionId: string;
+  userAnswer: string;
+  isCorrect: boolean;
+  timeTakenSec: number;
+}
 
 interface ResultsProps {
   score: number;
@@ -15,6 +22,8 @@ interface ResultsProps {
   keyStrength?: string;
   areaImprovements?: string;
   overallFeedback?: string;
+  answers?: AnswerResult[];
+  totalTime?: number;
   onTryAgain: () => void;
   onBackToDashboard: () => void;
 }
@@ -27,9 +36,18 @@ const Results: React.FC<ResultsProps> = ({
   keyStrength,
   areaImprovements,
   overallFeedback,
+  answers = [],
+  totalTime = 0,
   onTryAgain,
   onBackToDashboard
 }) => {
+  // Format total time
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}m ${secs}s`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/50 p-4 md:p-8 font-poppins text-black">
       <div className="container mx-auto max-w-7xl space-y-10">
@@ -105,6 +123,12 @@ const Results: React.FC<ResultsProps> = ({
               <p className="text-2xl font-bold text-[#d8d806]">
                 Score: {correctCount} out of {totalCount} correct
               </p>
+              <div className="flex flex-col md:flex-row gap-4 items-center justify-center md:justify-start text-gray-500">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-gray-400" />
+                  <span>Total Time: <strong>{formatTime(totalTime)}</strong></span>
+                </div>
+              </div>
               <p className="text-lg text-gray-500 leading-relaxed">
                 {overallFeedback || "You've completed the test. While your score shows room for improvement, this is a great opportunity to build stronger analytical and reasoning skills."}
               </p>
@@ -112,37 +136,53 @@ const Results: React.FC<ResultsProps> = ({
           </div>
         </div>
 
-        {/* Key Strengths */}
-        {keyStrength && (
-          <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-10">
-            <h3 className="text-lg font-bold text-gray-900 mb-8 uppercase tracking-wider">Key Strengths</h3>
-            <div className="flex items-start gap-6">
-              <div className="w-14 h-14 bg-yellow-50 rounded-lg flex items-center justify-center text-[#d8d806] shrink-0">
-                <TrendingUp className="w-7 h-7" />
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900 text-lg mb-2">Analysis From AI</h4>
-                <p className="text-lg text-gray-500 leading-relaxed">{keyStrength}</p>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Key Strengths & Areas to Improve Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {keyStrength && (
+            <div className="bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#FFFF00]/20 p-8 md:p-10 relative overflow-hidden group hover:border-[#FFFF00] transition-colors duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFFF00]/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all duration-500 group-hover:bg-[#FFFF00]/10"></div>
 
-        {/* Areas to Improve */}
-        {areaImprovements && (
-          <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-10">
-            <h3 className="text-lg font-bold text-gray-900 mb-8 uppercase tracking-wider">Areas to Improve</h3>
-            <div className="flex items-start gap-6">
-              <div className="w-14 h-14 bg-yellow-50 rounded-lg flex items-center justify-center text-[#d8d806] shrink-0">
-                <Target className="w-7 h-7" />
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900 text-lg mb-2">Recommendation</h4>
-                <p className="text-lg text-gray-500 leading-relaxed">{areaImprovements}</p>
+              <div className="relative z-10">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-[#FFFF00] rounded-2xl flex items-center justify-center text-black shadow-[0_4px_20px_rgba(255,255,0,0.3)]">
+                    <TrendingUp className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Key Strengths</h3>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">AI Analysis</p>
+                  <p className="text-lg text-gray-700 font-medium leading-relaxed">
+                    {keyStrength}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {areaImprovements && (
+            <div className="bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-pink-100 p-8 md:p-10 relative overflow-hidden group hover:border-pink-300 transition-colors duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all duration-500 group-hover:bg-pink-500/10"></div>
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-600 shadow-sm">
+                    <Target className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Areas to Improve</h3>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-bold text-pink-400 uppercase tracking-wider">Recommendation</p>
+                  <p className="text-lg text-gray-700 font-medium leading-relaxed">
+                    {areaImprovements}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
 
         {/* AI Powered Feedback - Fallback */}
         {!keyStrength && !areaImprovements && (
@@ -179,3 +219,4 @@ const Results: React.FC<ResultsProps> = ({
 };
 
 export default Results;
+

@@ -55,6 +55,7 @@ const Navbar = () => {
         }`,
     },
     { name: "Contact us", to: "/contact-us" },
+    { name: "FAQ", to: "/faq" },
   ];
 
   const handleCvSelection = (option: string) => {
@@ -116,19 +117,19 @@ const Navbar = () => {
         <button
           className={`py-0.5 md:py-1 lg:py-1 px-3 md:px-4 lg:px-4 xl:px-4 ${activeSection === ActiveSection.Students
             ? "border-b-2 border-[#FDC700] font-semibold"
-            : "text-gray-700"
+            : isContactPage ? "text-white" : "text-gray-700"
             }`}
           onClick={() => handleSectionChange(ActiveSection.Students)}
         >
           Students
         </button>
-        <span className="mx-1 sm:mx-2 md:mx-2 lg:mx-2 xl:mx-2 text-gray-500">
+        <span className={`mx-1 sm:mx-2 md:mx-2 lg:mx-2 xl:mx-2 ${isContactPage ? "text-white" : "text-gray-500"}`}>
           |
         </span>
         <button
           className={`px-2 py-0.5 sm:px-3 sm:py-0.5 md:px-4 md:py-1 lg:px-4 lg:py-1 ${activeSection === ActiveSection.School
             ? "border-b-2 border-[#FDC700] font-semibold"
-            : "text-gray-700"
+            : isContactPage ? "text-white" : "text-gray-700"
             }`}
           onClick={() => handleSectionChange(ActiveSection.School)}
         >
@@ -154,9 +155,12 @@ const Navbar = () => {
 
         {/* Desktop Navbar Items - Optimized for LG and XL */}
         <div className="hidden lg:flex flex-1 items-center justify-center">
-          <div className="flex items-center space-x-2 lg:space-x-3 xl:space-x-4">
+          <div className={`flex items-center space-x-2 lg:space-x-3 xl:space-x-4 ${isContactPage
+            ? "bg-white/80 backdrop-blur-md shadow-sm border border-white/20 rounded-full px-6 py-2"
+            : ""
+            }`}>
             <div
-              className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-4 py-2 ${isContactPage ? `lg:bg-[#bababb8e]` : `lg:bg-[#FEFACA]`
+              className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-4 py-2 ${isContactPage ? "bg-transparent border-none" : "lg:bg-[#FEFACA]"
                 }`}
             >
               {navItemsData.map((item) => (
@@ -166,7 +170,7 @@ const Navbar = () => {
                   className={`px-2 lg:px-3 xl:px-3 text-center py-1 font-medium transition-colors duration-200 text-xs sm:text-base md:text-lg lg:text-sm xl:text-base ${pathname === item.to
                     ? "yellow text-black rounded-3xl px-3 lg:px-4 xl:px-4 py-2"
                     : isContactPage
-                      ? "text-black"
+                      ? "text-[#1E1E1E] hover:text-black font-semibold"
                       : "text-[#505050] hover:text-black"
                     }`}
                 >
@@ -178,7 +182,7 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className={`flex items-center px-2 lg:px-3 xl:px-4 py-1 ${isContactPage ? `text-black` : `text-[#505050]`
+                  className={`flex items-center px-2 lg:px-3 xl:px-4 py-1 ${isContactPage ? `text-[#1E1E1E] font-semibold` : `text-[#505050]`
                     } font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-lg`}
                 >
                   More
