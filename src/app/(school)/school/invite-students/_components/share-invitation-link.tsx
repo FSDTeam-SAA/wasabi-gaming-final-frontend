@@ -29,13 +29,13 @@ const ShareInvitationLink = () => {
           Generate a unique link that students can use to join your program
         </p>
 
-        <div className="bg-white border-[2px] border-[#E5E5E5] rounded-[24px] p-8 w-full md:w-2/3 mx-auto space-y-6">
+        <div className="bg-white border-[2px] border-[#E5E5E5] rounded-[24px] p-4 md:p-6 lg:p-8 w-full md:w-2/3 mx-auto space-y-6">
           <div className=" flex gap-4">
             <Input
               value={shareLink}
               readOnly
               placeholder="No link available"
-              className="h-[56px] bg-[#FAFAFA] border-[2px] border-black/0 rounded-[16px] flex-1 bg-gray-50 font-medium"
+              className="h-[56px] bg-[#FAFAFA] border-[2px] border-black/0 rounded-[16px] flex-1 font-medium"
             />
             <Button
               onClick={handleCopyLink}
