@@ -103,7 +103,7 @@ const ForgotPasswordForm = () => {
                   id="email"
                   type="email"
                   placeholder="johndoe@example.com"
-                  className="pl-10 h-12 rounded-[12px] "
+                  className="pl-10 h-12 rounded-[12px] text-[#1E1E1E] placeholder:text-[#424242]/50"
                   {...register("email", {
                     required: "Email is required",
                     pattern: {

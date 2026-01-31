@@ -162,7 +162,7 @@ export default function LoginPage() {
                   id="email"
                   type="email"
                   placeholder="johndoe@example.com"
-                  className={`p-4 h-auto ${errors.email ? 'border-red-500' : 'border-gray-300'} pr-10`}
+                  className={`p-4 h-auto ${errors.email ? 'border-red-500' : 'border-gray-300'} pr-10 text-[#1E1E1E] placeholder:text-[#424242]/50`}
                   {...register('email', {
                     required: 'Email is required',
                     pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' },
@@ -189,7 +189,7 @@ export default function LoginPage() {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className={`p-4 h-auto ${errors.password ? 'border-red-500' : 'border-gray-300'} pr-10`}
+                  className={`p-4 h-auto ${errors.password ? 'border-red-500' : 'border-gray-300'} pr-10 text-[#1E1E1E] placeholder:text-[#424242]/50`}
                   {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 6, message: 'Min 6 characters' },

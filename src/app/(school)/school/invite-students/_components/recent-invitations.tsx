@@ -131,7 +131,7 @@ export function RecentInvitations() {
             >
               <div className="flex items-center gap-4 flex-1">
                 <div className="w-12 h-12 bg-[#FFFF00] rounded-full flex items-center justify-center font-normal text-base text-[#1E1E1E]">
-                  {invitation.name.charAt(0)}
+                   {invitation.name?.charAt(0)?.toUpperCase() || "N/A"}
                 </div>
 
                 <div className="flex-1">

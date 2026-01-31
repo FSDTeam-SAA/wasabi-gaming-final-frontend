@@ -51,6 +51,7 @@ export const authOptions: NextAuthOptions = {
           name: user.schoolName,
           role: user.role,
           image: user.profileImage,
+          shareLink: user.shareLink,
           accessToken,
           loginHistory: user.loginHistory ?? [], // 🔥 FIX
         };
@@ -71,6 +72,7 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.role = user.role;
         token.image = user.image;
+        token.shareLink = user.shareLink;
         token.accessToken = user.accessToken;
 
         // 🔥 VERY IMPORTANT
@@ -87,6 +89,7 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name as string;
         session.user.role = token.role as string;
         session.user.image = token.image as string;
+        session.user.shareLink = token.shareLink as string;
 
         // 🔥 FIX
         session.user.loginHistory = token.loginHistory as any[];
