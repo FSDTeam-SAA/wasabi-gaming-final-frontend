@@ -143,7 +143,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
           <DialogTitle className="text-2xl">Your Cover Letter</DialogTitle>
         </DialogHeader>
 
-        {/* ✅ Preview always shows */}
+       
         <div className="bg-white p-10 my-6 border shadow-sm min-h-[680px] font-serif text-base leading-relaxed">
           <div className="mb-10 space-y-1">
             <p className="font-bold text-lg">{fullName}</p>
@@ -184,7 +184,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
           </div>
         </div>
 
-        {/* ✅ Edit panel shows only after clicking Edit */}
+        {/*  Edit panel shows only after clicking Edit */}
         {isEditMode && (
           <div className="border rounded-xl p-4 md:p-5 mb-4">
             <h3 className="font-semibold text-lg mb-4">Edit Letter</h3>
@@ -227,7 +227,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
 
             <Button onClick={handleDownloadPDF} className="gap-2">
               <Download className="h-4 w-4" />
-              Download PDF
+              Download PDF 
             </Button>
           </div>
         </DialogFooter>
