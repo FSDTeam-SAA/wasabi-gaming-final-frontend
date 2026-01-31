@@ -65,6 +65,26 @@ const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
             </p>
           </div>
         </div>
+
+        <div
+          onClick={() => setCvFormat("Creative")}
+          className={`p-4  h-[500px] rounded-xl cursor-pointer ${cvFormat === "Creative" ? "border-2 border-primary shadow-lg" : "border border-gray-200"}`}
+        >
+          <div className="h-[420px] border-b">
+            <Image
+              src={`/resume/creative.png`}
+              alt="img.png"
+              width={1000}
+              height={1000}
+              className="w-full h-full"
+            />
+          </div>
+
+          <div className="pt-2">
+            <h1 className="font-bold">Creative</h1>
+            <p className="text-sm text-gray-500">Bold and distinctive</p>
+          </div>
+        </div>
       </div>
     </div>
   );
