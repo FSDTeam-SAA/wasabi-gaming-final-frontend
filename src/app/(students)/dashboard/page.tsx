@@ -126,16 +126,14 @@ export default function CareerDashboard() {
         <div className="flex flex-wrap gap-3">
           <button
             onClick={() => router.push('/dashboard/cv-builder')}
-            className="bg-white main-color px-6 py-2.5 rounded-full text-base flex items-center gap-2 hover:bg-gray-50 transition-colors inter"
+            className="bg-white main-color px-6 py-2.5 rounded-full text-base flex items-center gap-2 hover:bg-gray-100 transition-colors inter"
           >
             <FileText className="w-5 h-5 text-black" />
             Complete Your Resume
           </button>
           <button
-            onClick={() =>
-              router.push('/dashboard/student/application-tracker')
-            }
-            className="bg-transparent border-2 border-gray-900 text-gray-900 px-6 py-2.5 rounded-full font-medium text-sm flex items-center gap-2 hover:bg-gray-900 hover:text-white transition-colors main-color inter"
+            onClick={() => router.push('/dashboard/application-tracker')}
+            className="bg-transparent border-[2px] border-gray-800 text-gray-900 px-6 py-2.5 rounded-full font-medium text-sm flex items-center gap-2 hover:bg-gray-900 hover:text-white transition-colors main-color inter"
           >
             View Applications
             <ArrowRight className="w-4 h-4" />
@@ -272,7 +270,7 @@ export default function CareerDashboard() {
         </div>
 
         {/* Success Quote */}
-        <div className="max-w-5xl p-8 mx-auto mt-12 text-center border border-[#FFFF00] bg-yellow-50 rounded-3xl inter">
+        <div className="max-w-5xl p-8 mx-auto mt-12 text-center border border-[#FFFF00] bg-yellow-100/20 rounded-3xl inter">
           <p className="max-w-3xl mx-auto text-lg italic text-[#1E1E1E]">
             “Success is the sum of small efforts repeated day in and day out.”
           </p>
