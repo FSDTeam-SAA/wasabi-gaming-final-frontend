@@ -69,8 +69,8 @@ export default function AllCourse() {
                         </p>
 
                         <div className="flex flex-wrap gap-6 text-sm">
-                            <span className='flex items-center gap-2'><Award className='text-[#FFFF00]' size={20} /> {data?.data?.totalFreeCourses} Free Courses</span>
-                            <span className='flex items-center gap-2'><Users className='text-[#FFFF00]' size={20} /> {data?.data?.totalStudents} Students</span>
+                            <span className='flex items-center gap-2 text-[16px]'><Award className='text-[#FFFF00]' size={20} /> {data?.data?.totalFreeCourses} Free Courses</span>
+                            <span className='flex items-center gap-2 text-[16px]'><Users className='text-[#FFFF00]' size={20} /> {data?.data?.totalStudents} Students</span>
                             {/* <span className='flex items-center gap-2'><Star className='text-[#FFFF00]' size={20} /> 4.8 Average Rating</span> */}
                         </div>
                     </div>
@@ -93,7 +93,7 @@ export default function AllCourse() {
 
                                 <div>
                                     <p className="text-lg ">{s.value}</p>
-                                    <p className="text-xs text-muted-foreground">{s.label}</p>
+                                    <p className="text-[16px] text-muted-foreground ">{s.label}</p>
                                 </div>
                             </div>
                         ))}
