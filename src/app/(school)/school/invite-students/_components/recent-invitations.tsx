@@ -132,7 +132,7 @@ export function RecentInvitations() {
           data?.data?.map((invitation) => (
             <div
               key={invitation._id}
-              className="flex items-center justify-between p-3 md:p-4 lg:p-5 bg-white rounded-xl border border-[#E5E5E5] shadow-sm hover:shadow-md transition-shadow"
+              className="flex items-center justify-between p-3 md:p-4 lg:p-5 bg-white cursor-pointer rounded-xl border border-[#E5E5E5] shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-2 md:gap-3 lg:gap-4 flex-1">
                 <div className="w-8 md:w-10 lg:w-12 h-8 md:h-10 lg:h-12 bg-[#FFFF00] rounded-full flex items-center justify-center font-normal text-base text-[#1E1E1E]">
