@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CheckCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 /* ------------------ Schema ------------------ */
 const acceptedSchema = z.object({
@@ -39,7 +39,7 @@ type AcceptedFormValues = z.infer<typeof acceptedSchema>;
 const AcceptedContainerPage = () => {
   const session = useSession();
   const token = session?.data?.accessToken;
-
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const status = searchParams?.get('status') || 'rejected';
@@ -81,6 +81,7 @@ const AcceptedContainerPage = () => {
       }
       toast.success(data?.message || "Accepted successfully");
       form.reset();
+      router.push("/")
     },
   });
 
@@ -129,7 +130,7 @@ const AcceptedContainerPage = () => {
                 <FormControl>
                   <Input
                     placeholder="Enter first name"
-                    className="h-12 bg-[#FAFAFA] rounded-[16px]"
+                    className="h-12 bg-[#FAFAFA] rounded-[16px] placeholder:text-[#424242]/40"
                     {...field}
                   />
                 </FormControl>
@@ -150,7 +151,7 @@ const AcceptedContainerPage = () => {
                 <FormControl>
                   <Input
                     placeholder="Enter last name"
-                    className="h-12 bg-[#FAFAFA] rounded-[16px]"
+                    className="h-12 bg-[#FAFAFA] rounded-[16px] placeholder:text-[#424242]/40"
                     {...field}
                   />
                 </FormControl>
@@ -173,7 +174,7 @@ const AcceptedContainerPage = () => {
                     disabled
                     type="email"
                     placeholder="student@email.com"
-                    className="h-12 bg-[#FAFAFA] rounded-[16px]"
+                    className="h-12 bg-[#FAFAFA] rounded-[16px] placeholder:text-[#424242]/40"
                     {...field}
                   />
                 </FormControl>
@@ -194,7 +195,7 @@ const AcceptedContainerPage = () => {
                 <FormControl>
                   <Input
                     placeholder="+880 1XXXXXXXXX"
-                    className="h-12 bg-[#FAFAFA] rounded-[16px]"
+                    className="h-12 bg-[#FAFAFA] rounded-[16px] placeholder:text-[#424242]/40"
                     {...field}
                   />
                 </FormControl>
