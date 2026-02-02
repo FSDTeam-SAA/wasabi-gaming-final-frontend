@@ -1,10 +1,13 @@
+ 
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { MapPin, Users, Heart, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 
 export interface LawFirm {
   aboutFirm: any;
@@ -18,44 +21,154 @@ export interface LawFirm {
   tags: string[];
   gradient: string;
   featured?: boolean;
-  // optional (future use)
-  // isBookmarked?: boolean;
+  disabled?: boolean;
+
+  
+  bookmarkedUser?: string[];
 }
 
-const LawFirmCard = ({ firm }: { firm: LawFirm }) => {
-  const visibleTags = firm.tags.slice(0, 2);
-  const extraCount = firm.tags.length - visibleTags.length;
+const LawFirmCard = ({
+  firm,
+  isBookmarked,
+  disabled,
+}: {
+  firm: LawFirm;
+  isBookmarked: boolean;
+  disabled: boolean;
+}) => {
+  const visibleTags = firm.tags?.slice(0, 2) ?? [];
+  const extraCount = (firm.tags?.length ?? 0) - visibleTags.length;
 
-  // 🔖 Bookmark state
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { data: session } = useSession();
+  const token = (session as any)?.accessToken as string | undefined;
+  const userId = (session as any)?.user?.id as string | undefined;
+
+  const queryClient = useQueryClient();
+
+  // ✅ helper for optimistic map update
+  const updateBookmarkMap = (
+    current: Record<string, string[]>,
+    firmId: string,
+    userId: string,
+    makeBookmarked: boolean
+  ) => {
+    const next = { ...current };
+    const list = next[firmId] ? [...next[firmId]] : [];
+
+    if (makeBookmarked) {
+      if (!list.includes(userId)) list.push(userId);
+      next[firmId] = list;
+      return next;
+    }
+
+    next[firmId] = list.filter((id) => id !== userId);
+    return next;
+  };
 
   const { mutate: toggleBookmark, isPending } = useMutation({
     mutationFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/book-mark`,
-        {
-          method: "POST", // backend toggle (add/remove)
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ lawFirmId: firm._id }),
+      if (!token || !userId) throw new Error("Not authenticated");
+
+      if (isBookmarked) {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/law-bookmark/${firm._id}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!res.ok) throw new Error("Failed to remove bookmark");
+        return { action: "deleted" as const };
+      } else {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/law-bookmark`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ bookmarkedLaws: firm._id }),
+          }
+        );
+        if (!res.ok) throw new Error("Failed to add bookmark");
+        return { action: "added" as const };
+      }
+    },
+
+    onMutate: async () => {
+      if (!userId) return;
+
+      // ✅ bookmark cache cancel
+      await queryClient.cancelQueries({ queryKey: ["law-bookmarks", userId] });
+
+      // ✅ snapshot previous
+      const previous =
+        queryClient.getQueryData<Record<string, string[]>>([
+          "law-bookmarks",
+          userId,
+        ]) ?? {};
+
+      // ✅ optimistic update bookmarkMap
+      queryClient.setQueryData<Record<string, string[]>>(
+        ["law-bookmarks", userId],
+        (old = {}) => updateBookmarkMap(old, firm._id, userId, !isBookmarked)
+      );
+
+      // ✅ ALSO: optimistic update all lawfirms caches (সব variation)
+      queryClient.setQueriesData(
+        { queryKey: ["lawfirms"] },
+        (oldData: any) => {
+          if (!oldData?.data || !Array.isArray(oldData.data)) return oldData;
+
+          return {
+            ...oldData,
+            data: oldData.data.map((f: any) => {
+              if (f._id !== firm._id) return f;
+
+              const prevUsers = Array.isArray(f.bookmarkedUser)
+                ? f.bookmarkedUser
+                : [];
+
+              const nextUsers = !isBookmarked
+                ? prevUsers.includes(userId)
+                  ? prevUsers
+                  : [...prevUsers, userId]
+                : prevUsers.filter((id: string) => id !== userId);
+
+              return { ...f, bookmarkedUser: nextUsers };
+            }),
+          };
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to toggle bookmark");
+      return { previous };
+    },
+
+    onError: (_err, _vars, ctx) => {
+      if (!userId) return;
+
+      // rollback bookmarks
+      if (ctx?.previous) {
+        queryClient.setQueryData(["law-bookmarks", userId], ctx.previous);
       }
 
-      return response.json();
+      // rollback firms (refetch)
+      queryClient.invalidateQueries({ queryKey: ["lawfirms"] });
     },
-    onSuccess: () => {
-      setIsBookmarked((prev) => !prev);
+
+    onSettled: () => {
+      if (!userId) return;
+
+      // ✅ real-time refetch both
+      queryClient.invalidateQueries({ queryKey: ["law-bookmarks", userId] });
+      queryClient.invalidateQueries({ queryKey: ["lawfirms"] });
     },
   });
 
   return (
     <Card className="rounded-3xl overflow-hidden border-gray-200 shadow-sm w-full max-w-full mx-auto flex flex-col h-full hover:shadow-md transition-shadow">
-      {/* ---------- Header – Gradient + Logo ---------- */}
+      {/* Header */}
       <div
         className={`bg-gradient-to-r ${
           firm.gradient || "from-blue-50 to-blue-100"
@@ -75,7 +188,7 @@ const LawFirmCard = ({ firm }: { firm: LawFirm }) => {
             />
           ) : (
             <div className="text-white font-bold text-xl">
-              {firm.firmName[0]}
+              {firm.firmName?.[0]}
             </div>
           )}
         </div>
@@ -87,11 +200,12 @@ const LawFirmCard = ({ firm }: { firm: LawFirm }) => {
         )}
       </div>
 
-      {/* ---------- Body ---------- */}
+      {/* Body */}
       <div className="p-4 md:p-6 flex-1 flex flex-col">
         <h3 className="text-lg md:text-xl font-medium text-gray-900">
           {firm.firmName}
         </h3>
+
         <p className="text-xs md:text-sm text-gray-600 mt-1 line-clamp-2">
           {firm.tagline}
         </p>
@@ -127,18 +241,19 @@ const LawFirmCard = ({ firm }: { firm: LawFirm }) => {
           )}
         </div>
 
-        {/* ---------- Actions ---------- */}
+        {/* Actions */}
         <div className="mt-auto pt-6 flex items-center gap-3">
           <button
-            disabled={isPending}
+            disabled={disabled || isPending}
             onClick={() => toggleBookmark()}
-            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50"
+            title={isBookmarked ? "Remove bookmark" : "Bookmark"}
           >
             <Heart
-              className={`w-5 h-5 transition-colors ${
+              className={`w-5 h-5 transition-all ${
                 isBookmarked
-                  ? "text-red-500 fill-red-500"
-                  : "text-gray-400 hover:text-red-500"
+                  ? "text-red-500 fill-red-500 scale-110"
+                  : "text-gray-400 hover:text-red-400"
               }`}
             />
           </button>

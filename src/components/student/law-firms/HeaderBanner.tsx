@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 const HeaderBanner = () => {
     return (
         <div
-            className="container mx-auto relative p-6 md:p-8 lg:p-12 rounded-3xl border border-blue-100 overflow-hidden"
+            className="container mx-auto relative p-6 md:p-8 lg:p-12 rounded-3xl border-2 border-[#FFFF00] overflow-hidden"
             style={{
                 background:
                     "linear-gradient(117deg, #FEFCE8 0%, #FFFFFF 50%, #EFF6FF 100%)",
@@ -19,7 +19,7 @@ const HeaderBanner = () => {
                 Law Firm Directory
             </div>
 
-            <div className="mt-8 md:mt-10 lg:mt-12">
+            <div className="mt-8 md:mt-10 lg:mt-12 ">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-normal text-gray-900 mb-3 md:mb-4 max-w-4xl">
                     Discover Top Law Firms for Your Legal Career
                 </h1>
