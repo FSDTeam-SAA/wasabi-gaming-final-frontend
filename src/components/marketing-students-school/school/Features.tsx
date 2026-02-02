@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '../ui/button'
@@ -55,13 +56,15 @@ const Features = () => {
                 prepare, and excel in your career.
               </p>
 
-              <Button
-                size="lg"
-                className="rounded-s bg-white text-gray-900 hover:bg-gray-100 shadow-lg transition-colors"
-              >
-                <Sparkles className="mr-2 h-5 w-5" />
-                Get Started
-              </Button>
+              <Link href="/school/dashboard">
+                <Button
+                  size="lg"
+                  className="rounded-full bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                >
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -75,11 +78,10 @@ const Features = () => {
               <Button
                 key={btn.name}
                 variant="secondary"
-                className={`rounded-full px-6 py-3 transition-colors ${
-                  activeButton === btn.name
-                    ? 'bg-gray-900 text-white hover:bg-gray-900'
-                    : 'bg-[#E7E7E7] backdrop-blur text-gray-900 hover:bg-[#dcdcdc]'
-                }`}
+                className={`rounded-full px-6 py-3 transition-colors ${activeButton === btn.name
+                  ? 'bg-gray-900 text-white hover:bg-gray-900'
+                  : 'bg-[#E7E7E7] backdrop-blur text-gray-900 hover:bg-[#dcdcdc]'
+                  }`}
                 onMouseEnter={() => {
                   setActiveImage(btn.image)
                   setActiveButton(btn.name)

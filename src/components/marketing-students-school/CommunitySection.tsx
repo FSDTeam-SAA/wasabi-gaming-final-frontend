@@ -1,5 +1,5 @@
 import Image from 'next/image'
-
+import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 import { Button } from '../ui/button'
 
@@ -49,9 +49,11 @@ const CommunitySection = () => {
             about your next steps.
           </p>
 
-          <Button className="py-3 px-8 mt-6 rounded-full hover:bg-[#E4E403]/90  bg-[#FFFF00] text-[#0A0A0A] font-bold">
-            Start Assessment
-          </Button>
+          <Link href="/dashboard/psychometric-test">
+            <Button className="py-3 px-8 mt-6 rounded-full hover:bg-[#E4E403]/90 bg-[#FFFF00] text-[#0A0A0A] font-bold shadow-lg hover:shadow-xl hover:scale-105 hover:-translate-y-1 transition-all duration-300">
+              Start Assessment
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -14,8 +14,8 @@ import {
   BarChart,
   Lightbulb,
   Users,
-  Loader2,
 } from 'lucide-react'
+import PsychometricAssessmentSkeleton from './PsychometricAssessmentSkeleton'
 import { cn } from '@/utils/cn'
 import {
   getAllPsychometricTests,
@@ -81,12 +81,8 @@ const PsychometricAssessment = () => {
     }
   }
 
-  if (isLoadingTests) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-      </div>
-    )
+  if (isLoadingTests || isLoadingMyAnswers) {
+    return <PsychometricAssessmentSkeleton />
   }
 
   return (

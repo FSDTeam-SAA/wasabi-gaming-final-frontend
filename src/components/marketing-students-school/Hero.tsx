@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import {
   Select,
   SelectContent,
@@ -145,7 +146,7 @@ const Hero = () => {
             </SelectContent>
           </Select>
 
-          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-gray-900 border border-[#CACA00] font-bold py-3 px-6 rounded-full shadow-lg">
+          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-gray-900 border border-[#CACA00] font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
             Search
           </Button>
         </div>
@@ -153,9 +154,11 @@ const Hero = () => {
 
       {/* CTA */}
       <div className="flex justify-center mt-10 sm:mt-12">
-        <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl text-lg">
-          Join the Community!
-        </Button>
+        <Link href="/dashboard">
+          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg">
+            Join the Community!
+          </Button>
+        </Link>
       </div>
     </section>
   )
