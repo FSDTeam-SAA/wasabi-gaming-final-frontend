@@ -1,4 +1,6 @@
- 
+
+
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -22,8 +24,6 @@ export interface LawFirm {
   gradient: string;
   featured?: boolean;
   disabled?: boolean;
-
-  
   bookmarkedUser?: string[];
 }
 
@@ -65,6 +65,52 @@ const LawFirmCard = ({
     return next;
   };
 
+  // ✅ helper for optimistic firm list update
+  const patchFirmList = (oldData: any) => {
+    if (!oldData) return oldData;
+
+    // case: api returns { data: [...] }
+    if (Array.isArray(oldData?.data)) {
+      return {
+        ...oldData,
+        data: oldData.data.map((f: any) => {
+          if (f._id !== firm._id) return f;
+
+          const prevUsers = Array.isArray(f.bookmarkedUser)
+            ? f.bookmarkedUser
+            : [];
+
+          const nextUsers = !isBookmarked
+            ? prevUsers.includes(userId)
+              ? prevUsers
+              : [...prevUsers, userId]
+            : prevUsers.filter((id: string) => id !== userId);
+
+          return { ...f, bookmarkedUser: nextUsers };
+        }),
+      };
+    }
+
+    // case: api returns array directly
+    if (Array.isArray(oldData)) {
+      return oldData.map((f: any) => {
+        if (f._id !== firm._id) return f;
+
+        const prevUsers = Array.isArray(f.bookmarkedUser) ? f.bookmarkedUser : [];
+
+        const nextUsers = !isBookmarked
+          ? prevUsers.includes(userId)
+            ? prevUsers
+            : [...prevUsers, userId]
+          : prevUsers.filter((id: string) => id !== userId);
+
+        return { ...f, bookmarkedUser: nextUsers };
+      });
+    }
+
+    return oldData;
+  };
+
   const { mutate: toggleBookmark, isPending } = useMutation({
     mutationFn: async () => {
       if (!token || !userId) throw new Error("Not authenticated");
@@ -80,17 +126,14 @@ const LawFirmCard = ({
         if (!res.ok) throw new Error("Failed to remove bookmark");
         return { action: "deleted" as const };
       } else {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/law-bookmark`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ bookmarkedLaws: firm._id }),
-          }
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/law-bookmark`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ bookmarkedLaws: firm._id }),
+        });
         if (!res.ok) throw new Error("Failed to add bookmark");
         return { action: "added" as const };
       }
@@ -99,15 +142,18 @@ const LawFirmCard = ({
     onMutate: async () => {
       if (!userId) return;
 
-      // ✅ bookmark cache cancel
+      // ✅ cancel queries
       await queryClient.cancelQueries({ queryKey: ["law-bookmarks", userId] });
+      await queryClient.cancelQueries({ queryKey: ["lawfirms"] });
+      await queryClient.cancelQueries({ queryKey: ["featuredLawFirms"] });
 
       // ✅ snapshot previous
-      const previous =
-        queryClient.getQueryData<Record<string, string[]>>([
-          "law-bookmarks",
-          userId,
-        ]) ?? {};
+      const previousBookmarks =
+        queryClient.getQueryData<Record<string, string[]>>(["law-bookmarks", userId]) ??
+        {};
+
+      const previousFeatured = queryClient.getQueryData(["featuredLawFirms"]);
+      const previousLawfirms = queryClient.getQueriesData({ queryKey: ["lawfirms"] });
 
       // ✅ optimistic update bookmarkMap
       queryClient.setQueryData<Record<string, string[]>>(
@@ -115,54 +161,47 @@ const LawFirmCard = ({
         (old = {}) => updateBookmarkMap(old, firm._id, userId, !isBookmarked)
       );
 
-      // ✅ ALSO: optimistic update all lawfirms caches (সব variation)
-      queryClient.setQueriesData(
-        { queryKey: ["lawfirms"] },
-        (oldData: any) => {
-          if (!oldData?.data || !Array.isArray(oldData.data)) return oldData;
-
-          return {
-            ...oldData,
-            data: oldData.data.map((f: any) => {
-              if (f._id !== firm._id) return f;
-
-              const prevUsers = Array.isArray(f.bookmarkedUser)
-                ? f.bookmarkedUser
-                : [];
-
-              const nextUsers = !isBookmarked
-                ? prevUsers.includes(userId)
-                  ? prevUsers
-                  : [...prevUsers, userId]
-                : prevUsers.filter((id: string) => id !== userId);
-
-              return { ...f, bookmarkedUser: nextUsers };
-            }),
-          };
-        }
+      // ✅ optimistic update all lawfirms caches (সব variation)
+      queryClient.setQueriesData({ queryKey: ["lawfirms"] }, (oldData: any) =>
+        patchFirmList(oldData)
       );
 
-      return { previous };
+      // ✅ optimistic update featured list cache (IMPORTANT FIX)
+      queryClient.setQueryData(["featuredLawFirms"], (oldData: any) =>
+        patchFirmList(oldData)
+      );
+
+      return { previousBookmarks, previousFeatured, previousLawfirms };
     },
 
     onError: (_err, _vars, ctx) => {
       if (!userId) return;
 
-      // rollback bookmarks
-      if (ctx?.previous) {
-        queryClient.setQueryData(["law-bookmarks", userId], ctx.previous);
+      // ✅ rollback bookmark map
+      if (ctx?.previousBookmarks) {
+        queryClient.setQueryData(["law-bookmarks", userId], ctx.previousBookmarks);
       }
 
-      // rollback firms (refetch)
-      queryClient.invalidateQueries({ queryKey: ["lawfirms"] });
+      // ✅ rollback featured list
+      if (ctx?.previousFeatured) {
+        queryClient.setQueryData(["featuredLawFirms"], ctx.previousFeatured);
+      }
+
+      // ✅ rollback all lawfirms variations
+      if (ctx?.previousLawfirms && Array.isArray(ctx.previousLawfirms)) {
+        ctx.previousLawfirms.forEach(([key, data]: any) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
     },
 
     onSettled: () => {
       if (!userId) return;
 
-      // ✅ real-time refetch both
+      // ✅ refetch all relevant lists
       queryClient.invalidateQueries({ queryKey: ["law-bookmarks", userId] });
       queryClient.invalidateQueries({ queryKey: ["lawfirms"] });
+      queryClient.invalidateQueries({ queryKey: ["featuredLawFirms"] });
     },
   });
 
@@ -258,10 +297,7 @@ const LawFirmCard = ({
             />
           </button>
 
-          <Link
-            href={`/dashboard/law-firm-profiles/${firm._id}`}
-            className="flex-1"
-          >
+          <Link href={`/dashboard/law-firm-profiles/${firm._id}`} className="flex-1">
             <Button className="w-full bg-[#ffff00] hover:bg-[#e6e600] text-black font-medium border-none rounded-xl h-10 md:h-11">
               View Profile <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
