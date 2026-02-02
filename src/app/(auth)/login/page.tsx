@@ -67,7 +67,7 @@ export default function LoginPage() {
     if (saved) setActiveTab(saved)
   }, [])
 
-  const [rememberMe, setRememberMe] = useState(false)
+  const [rememberMe, setRememberMe] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
 
@@ -129,7 +129,7 @@ export default function LoginPage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex justify-center mb-6">
+          {/* <div className="flex justify-center mb-6">
             {['Students', 'School'].map(tab => (
               <Button
                 key={tab}
@@ -141,7 +141,7 @@ export default function LoginPage() {
                 {tab === 'Students' ? 'Student' : 'School'}
               </Button>
             ))}
-          </div>
+          </div> */}
 
           <h2 className="text-3xl font-bold text-center mb-2">
             Welcome back, Future Legal Professional!
