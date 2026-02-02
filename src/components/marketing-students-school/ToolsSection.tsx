@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { Button } from './ui/button'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
@@ -60,13 +61,15 @@ const ToolsSection = () => {
                 prepare, and excel in your career.
               </p>
 
-              <Button
-                size="lg"
-                className="rounded-s bg-white text-gray-900 hover:bg-gray-100 shadow-lg transition-colors"
-              >
-                <Sparkles className="mr-2 h-5 w-5" />
-                Get Started
-              </Button>
+              <Link href="/dashboard">
+                <Button
+                  size="lg"
+                  className="rounded-full bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                >
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

@@ -20,6 +20,8 @@ import PersonalInfo from "./personal-info";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ModernCvModal from "./modern-cv-modal";
+import { useSession } from "next-auth/react";
+import CreativeCvModal from "./creative-cv-modal";
 import ClassicCvModal from "./classic-cv-modal";
 
 export type CvBuilderFormType = z.infer<typeof cvBuilderSchema>;
@@ -28,12 +30,17 @@ const CvMakingForm = () => {
   const { isActive } = useFormState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cvData, setCvData] = useState<CvBuilderFormType | null>(null);
-  const [isClassModalOpen, setIsClassicModalOpen] = useState(false);
+  const [isCreativeModalOpen, setIsCreativeModalOpen] = useState(false);
+  const [creativeCvData, setCreativeCvData] =
+    useState<CvBuilderFormType | null>(null);
+  const [isClassicModalOpen, setIsClassicModalOpen] = useState(false);
   const [classicCvData, setClassicCvData] = useState<CvBuilderFormType | null>(
     null,
   );
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg5NWI5YjE1NTA5NWU5ZDZkYWI1MSIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk1OTI1MjYsImV4cCI6MTc3MDE5NzMyNn0.pEkkBnwUA4chMqdg1sxjO-Sys3GRIXvqMEL1_Dg59CU";
+
+  const { data: session } = useSession();
+
+  const token = session?.accessToken || "";
 
   const form = useForm<CvBuilderFormType>({
     resolver: zodResolver(cvBuilderSchema),
@@ -69,9 +76,16 @@ const CvMakingForm = () => {
         if (data?.data?.cvformet === "Modern") {
           setCvData(data.data);
           setIsModalOpen(true);
-        } else {
+        }
+
+        if (data?.data?.cvformet === "Classic") {
           setClassicCvData(data?.data);
           setIsClassicModalOpen(true);
+        }
+
+        if (data?.data?.cvformet === "Creative") {
+          setCreativeCvData(data?.data);
+          setIsCreativeModalOpen(true);
         }
       }
     },
@@ -90,6 +104,10 @@ const CvMakingForm = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+  };
+
+  const handleCreativeModalClose = () => {
+    setIsCreativeModalOpen(false);
   };
 
   const handleClassicModalClose = () => {
@@ -140,10 +158,16 @@ const CvMakingForm = () => {
                   cvData={cvData}
                 />
 
+                <CreativeCvModal
+                  isOpen={isCreativeModalOpen}
+                  onClose={handleCreativeModalClose}
+                  classicCvData={creativeCvData}
+                />
+
                 <ClassicCvModal
-                  isOpen={isClassModalOpen}
+                  isOpen={isClassicModalOpen}
                   onClose={handleClassicModalClose}
-                  classicCvData={classicCvData}
+                  cvData={classicCvData}
                 />
               </div>
             </div>

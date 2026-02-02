@@ -58,7 +58,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
   }, [data])
 
   const handleParagraphChange = (index: number, value: string) => {
-    setParagraphs((prev) => prev.map((p, i) => (i === index ? value : p)))
+    setParagraphs(prev => prev.map((p, i) => (i === index ? value : p)))
   }
 
   const handleDownloadPDF = () => {
@@ -90,7 +90,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
         year: 'numeric',
       }),
       margin,
-      y
+      y,
     )
     y += 35
 
@@ -113,7 +113,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
       }
     }
 
-    paragraphs.forEach((para) => {
+    paragraphs.forEach(para => {
       const clean = (para || '').trim()
       if (!clean) return
 
@@ -143,8 +143,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
           <DialogTitle className="text-2xl">Your Cover Letter</DialogTitle>
         </DialogHeader>
 
-       
-        <div className="bg-white p-10 my-6 border shadow-sm min-h-[680px] font-serif text-base leading-relaxed">
+        <div className="bg-white p-10 my-6 border-[3px] border-gray-200 shadow-sm min-h-[680px] font-serif text-base leading-relaxed">
           <div className="mb-10 space-y-1">
             <p className="font-bold text-lg">{fullName}</p>
             <p>{data.applicant.location}</p>
@@ -171,7 +170,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
             <p>Dear Hiring Manager,</p>
 
             {paragraphs
-              .map((x) => (x || '').trim())
+              .map(x => (x || '').trim())
               .filter(Boolean)
               .map((text, idx) => (
                 <p key={idx}>{text}</p>
@@ -186,12 +185,15 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
 
         {/*  Edit panel shows only after clicking Edit */}
         {isEditMode && (
-          <div className="border rounded-xl p-4 md:p-5 mb-4">
+          <div className="border border-gray-200 rounded-xl p-4 md:p-5 mb-4">
             <h3 className="font-semibold text-lg mb-4">Edit Letter</h3>
 
             <div className="space-y-3">
               <label className="text-sm text-gray-600">Subject</label>
-              <Input value={subject} onChange={(e) => setSubject(e.target.value)} />
+              <Input
+                value={subject}
+                onChange={e => setSubject(e.target.value)}
+              />
             </div>
 
             <div className="mt-5 space-y-4">
@@ -200,8 +202,8 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
                   <p className="text-sm font-medium">Paragraph {i + 1}</p>
                   <Textarea
                     value={p}
-                    onChange={(e) => handleParagraphChange(i, e.target.value)}
-                    className="min-h-28"
+                    onChange={e => handleParagraphChange(i, e.target.value)}
+                    className="min-h-28 border border-gray-200"
                   />
                 </div>
               ))}
@@ -218,7 +220,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setIsEditMode((v) => !v)}
+              onClick={() => setIsEditMode(v => !v)}
               className="gap-2"
             >
               <PencilLine className="h-4 w-4" />
@@ -227,7 +229,7 @@ export default function CoverLetterModal({ open, onOpenChange, data }: Props) {
 
             <Button onClick={handleDownloadPDF} className="gap-2">
               <Download className="h-4 w-4" />
-              Download PDF 
+              Download PDF
             </Button>
           </div>
         </DialogFooter>

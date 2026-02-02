@@ -241,7 +241,7 @@ export default function SignUpPage() {
                                         <Input
                                             id="firstName"
                                             placeholder="John"
-                                            className="p-4 h-auto text-black"
+                                            className="p-4 h-auto text-[#1E1E1E] placeholder:text-[#424242]/50"
                                             {...register("firstName", { required: "First name is required" })}
                                         />
                                         {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName.message as string}</p>}
@@ -251,7 +251,7 @@ export default function SignUpPage() {
                                         <Input
                                             id="lastName"
                                             placeholder="Doe"
-                                            className="p-4 h-auto text-black"
+                                            className="p-4 h-auto text-[#1E1E1E] placeholder:text-[#424242]/50"
                                             {...register("lastName", { required: "Last name is required" })}
                                         />
                                         {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName.message as string}</p>}
@@ -263,7 +263,7 @@ export default function SignUpPage() {
                                     <Input
                                         id="schoolName"
                                         placeholder="St Paul's School"
-                                        className="p-4 h-auto text-black"
+                                        className="p-4 h-auto text-[#1E1E1E] placeholder:text-[#424242]/50"
                                         {...register("schoolName", { required: "School name is required" })}
                                     />
                                     {errors.schoolName && <p className="text-red-500 text-sm mt-1">{errors.schoolName.message as string}</p>}
@@ -278,7 +278,7 @@ export default function SignUpPage() {
                                     id="email"
                                     type="email"
                                     placeholder="johndoe@example.com"
-                                    className="p-4 h-auto pr-10 text-black"
+                                    className="p-4 h-auto pr-10 text-[#1E1E1E] placeholder:text-[#424242]/50"
                                     {...register("email", {
                                         required: "Email is required",
                                         pattern: { value: /^\S+@\S+$/i, message: "Invalid email" }
@@ -297,7 +297,7 @@ export default function SignUpPage() {
                                 <Input
                                     id="phone"
                                     placeholder="+447480734898"
-                                    className="p-4 h-auto pr-10 text-black"
+                                    className="p-4 h-auto pr-10 text-[#1E1E1E] placeholder:text-[#424242]/50"
                                     {...register("phone", { required: "Phone is required" })}
                                 />
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -314,7 +314,7 @@ export default function SignUpPage() {
                                     id="password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="••••••••"
-                                    className={`p-4 h-auto text-black pr-10 ${errors.password ? "border-red-500" : "border-gray-300"}`}
+                                    className={`p-4 h-auto pr-10 ${errors.password ? "border-red-500" : "border-gray-300"} text-[#1E1E1E] placeholder:text-[#424242]/50`}
                                     {...register("password", {
                                         required: "Password is required",
                                         minLength: { value: 8, message: "Min 8 characters" },

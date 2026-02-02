@@ -112,6 +112,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
@@ -170,16 +171,20 @@ export function SchoolHero() {
 
                         {/* Buttons */}
                         <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center w-full lg:justify-start">
-                            <Button className="bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-black font-semibold rounded-full px-10 sm:px-12 py-3 text-base flex items-center gap-2">
-                                <Sparkles className="h-4 w-4 text-black" /> Get Started
-                            </Button>
+                            <Link href="/school/dashboard">
+                                <Button className="bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-black font-semibold rounded-full px-10 sm:px-12 py-3 text-base flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                                    <Sparkles className="h-4 w-4 text-black" /> Get Started
+                                </Button>
+                            </Link>
 
-                            <Button
-                                variant="outline"
-                                className="border-2 border-black bg-black text-white hover:bg-black/90 hover:text-white font-semibold rounded-full px-8 py-3 text-base"
-                            >
-                                Start Demo Trial
-                            </Button>
+                            <Link href="/school/demo">
+                                <Button
+                                    variant="outline"
+                                    className="border-2 border-black bg-black text-white hover:bg-black/90 hover:text-white font-semibold rounded-full px-8 py-3 text-base shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                                >
+                                    Start Demo Trial
+                                </Button>
+                            </Link>
                         </div>
                     </div>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import {
   Select,
   SelectContent,
@@ -127,7 +128,7 @@ const Hero = () => {
             <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
               <SelectValue placeholder="Select Type" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border-none">
               <SelectItem value="type1">Type 1</SelectItem>
               <SelectItem value="type2">Type 2</SelectItem>
               <SelectItem value="type3">Type 3</SelectItem>
@@ -138,14 +139,14 @@ const Hero = () => {
             <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
               <SelectValue placeholder="Select Location" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border-none">
               <SelectItem value="location1">Location 1</SelectItem>
               <SelectItem value="location2">Location 2</SelectItem>
               <SelectItem value="location3">Location 3</SelectItem>
             </SelectContent>
           </Select>
 
-          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-gray-900 border border-[#CACA00] font-bold py-3 px-6 rounded-full shadow-lg">
+          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-gray-900 border border-[#CACA00] font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
             Search
           </Button>
         </div>
@@ -153,9 +154,11 @@ const Hero = () => {
 
       {/* CTA */}
       <div className="flex justify-center mt-10 sm:mt-12">
-        <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl text-lg">
-          Join the Community!
-        </Button>
+        <Link href="/dashboard">
+          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg">
+            Join the Community!
+          </Button>
+        </Link>
       </div>
     </section>
   )
