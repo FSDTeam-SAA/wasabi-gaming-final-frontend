@@ -36,7 +36,7 @@ const FeaturedFirms = () => {
       {featuredFirms.length > 0 ? (
         featuredFirms.map((firm) => (
           <div key={firm._id} className="h-full">
-            <LawFirmCard firm={firm} />
+            <LawFirmCard firm={firm} isBookmarked={false} disabled />
           </div>
         ))
       ) : (

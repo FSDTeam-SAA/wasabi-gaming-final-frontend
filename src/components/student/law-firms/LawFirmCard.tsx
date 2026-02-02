@@ -1,6 +1,3 @@
-
-
-
  
 "use client";
 
@@ -24,8 +21,9 @@ export interface LawFirm {
   tags: string[];
   gradient: string;
   featured?: boolean;
+  disabled?: boolean;
 
-  // API তে থাকতে পারে, কিন্তু UI source of truth হবে bookmarkMap
+  
   bookmarkedUser?: string[];
 }
 
