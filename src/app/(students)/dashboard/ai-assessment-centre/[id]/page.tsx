@@ -5,7 +5,7 @@ import React from "react"
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
-import { AlertCircle, Clock, BookOpen } from 'lucide-react'
+import { AlertCircle, Clock, ChevronRight, Briefcase } from 'lucide-react'
 // import Navbar from "../_components/navbar"
 // import Footer from "../_components/footer"
 
@@ -114,13 +114,15 @@ export default function AssessmentPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">{content.module}</p>
-              <h1 className="text-3xl font-bold text-foreground">{content.title}</h1>
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-[#0A0A0A]">{content.module}</p>
+              <h1 className="text-2xl md:text-3xl lg:text-[40px] font-bold text-[#0A0A0A]">{content.title}</h1>
             </div>
-            <div className={`rounded-lg border-2 px-4 py-2 flex items-center gap-2 ${isTimeWarning ? 'border-red-500 bg-red-50' : 'border-primary bg-primary/10'}`}>
-              <Clock className={`w-5 h-5 ${isTimeWarning ? 'text-red-600' : 'text-foreground'}`} />
-              <span className={`font-bold ${isTimeWarning ? 'text-red-600' : 'text-foreground'}`}>
+            <div className={` rounded-[12px] border-2 border-[#131313] px-4 py-2 flex items-center gap-3 ${isTimeWarning ? ' border-red-500 bg-red-50' : 'border-primary bg-[#FFFF00]'}`}>
+              <div className="bg-[#0A0A0A] p-[6px] rounded-[8px] flex-shrink-0 inline-flex items-center justify-center">
+                <Clock className={`w-5 h-5 ${isTimeWarning ? 'text-red-600' : 'text-[#FBBF24]'}`}/>
+              </div>
+              <span className={`font-bold text-base ${isTimeWarning ? 'text-red-600' : 'text-[#0A0A0A]'}`}>
                 {minutes}:{seconds.toString().padStart(2, '0')}
               </span>
             </div>
@@ -128,42 +130,50 @@ export default function AssessmentPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Case Brief */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 bg-white shadow rounded-[20px] border border-gray-200">
               {/* Case Briefing */}
-              <div className="bg-black rounded-lg p-6 text-white">
+              <div className="bg-[#0A0A0A] rounded-t-[20px] py-6 px-8 text-white border-b-[4px] border-[#FBBF24]">
                 <div className="flex items-center gap-2 mb-3">
-                  <BookOpen className="w-5 h-5 text-primary" />
-                  <h3 className="font-semibold">Case Briefing</h3>
+                  <div className="bg-[#FBBF24] p-2 rounded-[8px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+                <Briefcase className="text-[#0A0A0A]"/>
+              </div>
+                  <h3 className="font-bold">Case Briefing</h3>
                 </div>
               </div>
 
-              {/* Role Context */}
-              <div className="bg-yellow-100 rounded-lg p-4">
-                <h4 className="font-semibold text-foreground mb-2">Role Context</h4>
-                <p className="text-sm text-foreground">{content.roleContext}</p>
+              <div className="p-6">
+                {/* Role Context */}
+              <div className="bg-[#FEF3C7] border-[2px] border-[#FBBF244D]/30 rounded-[12px] p-5">
+                <h4 className="font-bold text-[#0A0A0A] text-xs mb-2">Role Context</h4>
+                <p className="text-xs text-medium text-[#0F172A]">{content.roleContext}</p>
               </div>
 
               {/* Case Description */}
-              <div className="space-y-3">
-                <h3 className="text-xl font-bold text-foreground">{content.caseName}</h3>
-                <p className="text-muted-foreground border-b border-border pb-4">
+              <div className="space-y-3 pt-6 md:pt-7 lg:pt-8">
+                <h3 className="text-lg md:text-xl font-bold text-[#0A0A0A] border-b-[3px] border-[#FBBF24]">{content.caseName}</h3>
+                <p className="text-xs text-[#64748B] font-normal pb-6 md:pb-7 lg:pb-8">
                   {content.caseDescription}
                 </p>
 
                 {/* Instructions */}
-                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="bg-[#F9FAFB] border-[2px] border-[#E5E7EB] rounded-[12px] p-5 md:p-6 space-y-3">
                   <p className="font-semibold text-foreground text-sm">
                     In your email to your manager:
                   </p>
                   <ul className="space-y-2">
                     {content.instructions.map((instruction, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm">
-                        <span className="text-primary font-bold flex-shrink-0">▶</span>
-                        <span className="text-foreground">{instruction}</span>
+                      <li key={idx} className="flex items-center gap-2 text-sm">
+                        <div className="bg-[#FBBF24] p-1 rounded-[8px] flex-shrink-0 inline-flex items-center justify-center">
+                <ChevronRight className="text-[#0A0A0A] w-4 h-4 "/>
+              </div>
+                        <span className="text-[#64748B] text-xs font-medium">{instruction}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
+              </div>
+
+
               </div>
             </div>
 
@@ -187,7 +197,7 @@ export default function AssessmentPage() {
                 placeholder="Dear [Manager],
 
 Start typing your email here..."
-                className="w-full h-80 p-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white text-foreground resize-none"
+                className="w-full h-80 p-1 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white text-foreground resize-none"
               />
 
               {/* Requirements Section */}
