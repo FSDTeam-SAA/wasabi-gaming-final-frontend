@@ -8,7 +8,7 @@ import { Clock } from 'lucide-react';
 import { PresentationPromptSection } from '../_components/presentation-prompt-section';
 import { ResponseEditor } from '../_components/response-editor';
 import { RequirementsSection } from '../_components/requirements-section';
-import Footer from '../_components/footer';
+// import Footer from '../_components/footer';
 
 export default function PresentationTaskPage() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function PresentationTaskPage() {
     setIsSubmitting(true);
     // Simulate submission
     await new Promise(resolve => setTimeout(resolve, 1000));
-    router.push('/results/presentation');
+    router.push('/dashboard/ai-assessment-centre/results/presentation');
   };
 
   const handleCancel = () => {
@@ -134,7 +134,7 @@ export default function PresentationTaskPage() {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

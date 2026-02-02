@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation'
 
 import { CheckCircle2, AlertCircle, Lightbulb, ArrowRight, BookOpen } from 'lucide-react'
-import Footer from '../../_components/footer'
+// import Footer from '../../_components/footer'
 // import Navbar from '../../_components/navbar'
 
 
@@ -313,7 +313,7 @@ export default function ResultsPage() {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }

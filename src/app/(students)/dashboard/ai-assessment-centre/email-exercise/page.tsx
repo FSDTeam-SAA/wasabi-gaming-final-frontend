@@ -8,7 +8,7 @@ import { Clock, Save } from 'lucide-react';
 // import Navbar from '../_components/navbar';
 import { EmailInbox } from '../_components/email-inbox';
 import { EmailDisplay } from '../_components/email-display';
-import Footer from '../_components/footer';
+// import Footer from '../_components/footer';
 
 const mockEmails = [
   {
@@ -165,7 +165,7 @@ export default function EmailExercisePage() {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

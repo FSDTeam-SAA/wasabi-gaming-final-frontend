@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation'
 
 import { AlertCircle, Clock, BookOpen } from 'lucide-react'
 // import Navbar from "../_components/navbar"
-import Footer from "../_components/footer"
+// import Footer from "../_components/footer"
 
 const assessmentContent = {
   'case-study': {
@@ -240,7 +240,7 @@ Start typing your email here..."
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }

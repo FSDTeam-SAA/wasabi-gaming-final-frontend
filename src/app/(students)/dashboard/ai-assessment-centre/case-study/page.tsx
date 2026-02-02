@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { CaseParticipantSidebar } from '../_components/case-participant-sidebar';
 import { CaseSection } from '../_components/case-section';
-import Footer from '../_components/footer';
+// import Footer from '../_components/footer';
 
 const participants = [
   { id: '1', name: 'William Stevenson' },
@@ -174,7 +174,7 @@ export default function CaseStudyPage() {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
