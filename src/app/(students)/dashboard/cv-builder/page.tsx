@@ -3,7 +3,7 @@ import CvTips from "./_components/cv-tips";
 
 const page = () => {
   return (
-    <div className="container p-4 space-y-6">
+    <div className="container mt-4 space-y-6">
       <CvMakingForm />
       <CvTips />
     </div>

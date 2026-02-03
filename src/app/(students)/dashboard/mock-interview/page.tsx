@@ -1,8 +1,19 @@
+import MockInterview from "./_components/mock-interview";
+import Title from "./_components/title";
+import WhyMockInterview from "./_components/why-mock-interview";
+
 export default function MockInterviewPage() {
-    return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-24">
-            <h1 className="text-4xl font-bold">Mock Interviews</h1>
-            <p className="mt-4">Page under construction</p>
-        </div>
-    );
+  return (
+    <div className="container mt-5 mb-10 space-y-6">
+      <Title />
+
+      <div>
+        <MockInterview />
+      </div>
+
+      <div>
+        <WhyMockInterview />
+      </div>
+    </div>
+  );
 }
