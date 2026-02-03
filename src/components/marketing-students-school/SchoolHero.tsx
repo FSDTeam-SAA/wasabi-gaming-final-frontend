@@ -170,7 +170,7 @@ export function SchoolHero() {
                 className="flex justify-center"
                 href="/school/manage-students"
               >
-                <Button className="bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-black font-semibold rounded-full px-10 sm:px-12 py-3 text-base flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                <Button className="bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-black font-semibold rounded-full px-16 sm:px-12 py-3 text-base flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
                   <Sparkles className="h-4 w-4 text-black" /> Get Started
                 </Button>
               </Link>
