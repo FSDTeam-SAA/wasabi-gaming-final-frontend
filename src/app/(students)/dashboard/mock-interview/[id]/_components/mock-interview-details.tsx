@@ -6,9 +6,8 @@ import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const MockInterviewDetails = () => {
+const MockInterviewDetails = ({ onProceed }: { onProceed: any }) => {
   const { id } = useParams();
-  const router = useRouter();
   const { data: session } = useSession();
   const token = session?.accessToken || "";
 
@@ -30,6 +29,15 @@ const MockInterviewDetails = () => {
   });
 
   const interview = apiResponse?.data;
+
+  const handleProceedClick = () => {
+    onProceed({
+      token,
+      interviewId: id,
+      role: interview?.role,
+      duration: interview?.duration,
+    });
+  };
 
   if (isLoading) return <DetailsSkeleton />;
 
@@ -120,7 +128,7 @@ const MockInterviewDetails = () => {
 
       {/* Action Button */}
       <Button
-        onClick={() => router.push(`/interview/${id}/start`)}
+        onClick={handleProceedClick}
         className="w-[200px] mt-8 rounded-3xl text-lg font-semibold"
       >
         Proceed
