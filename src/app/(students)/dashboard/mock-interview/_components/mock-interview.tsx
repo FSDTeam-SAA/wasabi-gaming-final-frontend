@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
 import MockSkeleton from "./mock-skeleton";
+import Link from "next/link";
 
 interface Interview {
   _id: string;
@@ -134,12 +135,14 @@ const MockInterview = () => {
             </div>
 
             <div className="mt-2">
-              <Button className="flex items-center w-full gap-3 text-lg font-semibold rounded-xl">
-                <span>
-                  <Play className="w-4 h-4" />
-                </span>{" "}
-                <span>Start Test</span>
-              </Button>
+              <Link href={`/dashboard/mock-interview/${interview._id}`}>
+                <Button className="flex items-center w-full gap-3 text-lg font-semibold rounded-xl">
+                  <span>
+                    <Play className="w-4 h-4" />
+                  </span>{" "}
+                  <span>Start Test</span>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
