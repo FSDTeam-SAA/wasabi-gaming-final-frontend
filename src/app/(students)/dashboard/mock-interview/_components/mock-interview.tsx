@@ -35,6 +35,21 @@ interface ApiResponse {
   };
 }
 
+const getInterviewImage = (title: string): string => {
+  switch (title) {
+    case "Motivational Interview":
+      return "/mock-interview/motivational_interview.png";
+    case "Situational Interview":
+      return "/mock-interview/situational_interview.png";
+    case "Technical Interview":
+      return "/mock-interview/technical_interview.png";
+    case "Behavioural Interview":
+      return "/mock-interview/behavioural_interview.png";
+    default:
+      return "/mock-interview/default_interview.png";
+  }
+};
+
 const MockInterview = () => {
   const { data: session } = useSession();
   const token = session?.accessToken || "";
@@ -89,10 +104,10 @@ const MockInterview = () => {
         >
           <div className="flex items-center gap-4">
             <Image
-              src={"/mock-interview/behavioural_interview.png"}
+              src={getInterviewImage(interview.title)}
               alt={interview.title}
-              width={1000}
-              height={1000}
+              width={48}
+              height={48}
               className="object-cover w-12 h-12"
             />
 
@@ -100,7 +115,7 @@ const MockInterview = () => {
               <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold">{interview.title}</h1>
                 <button
-                  className={`px-5 py-1 text-sm  rounded-3xl ${interview.status === "available" && "bg-[#fcf9c2] border border-[#894b01] text-[#894b01]"}  ${interview.status === "completed" && "bg-green-100 border border-green-700 text-green-700"}`}
+                  className={`px-5 py-[2px] text-sm rounded-3xl ${interview.status === "available" ? "bg-[#fcf9c2] border border-[#894b01] text-[#894b01]" : ""} ${interview.status === "completed" ? "bg-green-100 border border-green-700 text-green-700" : ""}`}
                 >
                   {interview.status}
                 </button>
