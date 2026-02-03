@@ -2,7 +2,7 @@ import MockInterview from "./_components/mock-interview";
 
 export default function MockInterviewPage() {
   return (
-    <div className="container mt-5 space-y-6">
+    <div className="container mt-5 mb-10 space-y-6 mb-">
       <div>
         <h1 className="text-3xl font-bold">Mock Interview Simulation</h1>
         <p className="text-gray-600">
