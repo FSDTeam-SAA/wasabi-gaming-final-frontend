@@ -42,6 +42,8 @@ const SchoolNavbar = () => {
     return pathname === path || pathname.startsWith(path + '/')
   }
 
+  // console.log('school profile image', session?.user?.image)
+
   return (
     <div>
       <nav className="w-full border border-[#E5E7EB] bg-slate-50">

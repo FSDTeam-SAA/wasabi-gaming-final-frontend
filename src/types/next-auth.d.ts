@@ -18,6 +18,7 @@ declare module "next-auth" {
     accessToken?: string;
     shareLink: string;
     loginHistory?: any[];
+    image?: string | null;
   }
 }
 
@@ -28,6 +29,7 @@ declare module "next-auth/jwt" {
     shareLink?: string;
     accessToken?: string;
     loginHistory?: any[];
+    image?: string | null;
   }
 }
 
