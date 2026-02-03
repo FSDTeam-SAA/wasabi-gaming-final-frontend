@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       // 🔑 first login only
       if (user) {
         token.id = user.id;
@@ -77,6 +77,14 @@ export const authOptions: NextAuthOptions = {
 
         // 🔥 VERY IMPORTANT
         token.loginHistory = user.loginHistory;
+      }
+
+      // Handle session update
+      if (trigger === "update" && session) {
+        if (session.user) {
+          token.name = session.user.name ?? token.name;
+          token.image = session.user.image ?? token.image;
+        }
       }
 
       return token;
@@ -96,7 +104,7 @@ export const authOptions: NextAuthOptions = {
         session.accessToken = token.accessToken as string;
       }
 
-      
+
 
       return session;
     },

@@ -1,6 +1,6 @@
 import { getSession } from 'next-auth/react'
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1'
 
 async function request(endpoint: string, options: RequestInit = {}) {
   const session = await getSession()
@@ -10,7 +10,8 @@ async function request(endpoint: string, options: RequestInit = {}) {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (session?.accessToken) {
+  // Use token from headers if provided, otherwise fallback to session
+  if (!headers.has('Authorization') && session?.accessToken) {
     headers.set('Authorization', `Bearer ${session.accessToken}`)
   }
 
@@ -39,17 +40,16 @@ const api = {
   get: (url: string, config?: RequestInit) =>
     request(url, { ...config, method: 'GET' }),
   post: (url: string, data?: any, config?: RequestInit) =>
-    request(url, { ...config, method: 'POST', body: JSON.stringify(data) }),
+    request(url, { ...config, method: 'POST', body: data instanceof FormData ? data : JSON.stringify(data) }),
   put: (url: string, data?: any, config?: RequestInit) =>
-    request(url, { ...config, method: 'PUT', body: JSON.stringify(data) }),
+    request(url, { ...config, method: 'PUT', body: data instanceof FormData ? data : JSON.stringify(data) }),
   patch: (url: string, data?: any, config?: RequestInit) =>
-    request(url, { ...config, method: 'PATCH', body: JSON.stringify(data) }),
+    request(url, { ...config, method: 'PATCH', body: data instanceof FormData ? data : JSON.stringify(data) }),
   delete: (url: string, config?: RequestInit) =>
     request(url, { ...config, method: 'DELETE' }),
-  // Mocking interceptors access if used elsewhere, though currently unused outside this file except definition
   interceptors: {
-    request: { use: () => {} },
-    response: { use: () => {} },
+    request: { use: () => { } },
+    response: { use: () => { } },
   },
 }
 

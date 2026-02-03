@@ -1,366 +1,534 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     Calendar,
-    Check,
-    X,
-    Trash2,
     Edit2,
     MapPin,
-    Globe,
-    Info,
     Lock,
     Mail,
     Phone,
     Upload,
     User,
+    LogOut,
+    Sparkles,
+    CheckCircle2,
+    Eye,
+    EyeOff,
+    Building2,
+    Briefcase,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
-import { cn } from "@/utils/cn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getProfile, updateProfile } from "@/lib/api/profileApi";
+import { toast } from "sonner";
+import { signOut, useSession } from "next-auth/react";
+import { cn } from "@/utils/cn";
+import LogoutModal from "@/components/shared/LogoutModal";
 
 const SchoolProfile = () => {
+    const queryClient = useQueryClient();
+    const { data: session, update: updateSession } = useSession();
     const [isEditing, setIsEditing] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-    // Realistic UK Law School dummy data
-    const schoolData = {
-        name: "Westminster Law School",
-        fullName: "Westminster Law School, University of Westminster",
-        type: "Public University Law School",
-        established: "1838 (University), Law School established 1968",
-        location: "London, United Kingdom",
-        address: "4–12 Little Titchfield Street, London W1W 7BY",
-        email: "admissions@westminster.ac.uk",
-        phone: "+44 (0)20 7911 5000",
-        website: "www.westminster.ac.uk/law",
-        about:
-            "Westminster Law School is one of the UK’s leading providers of legal education, located in the heart of legal London. We offer qualifying law degrees (LLB), the Solicitors Qualifying Examination (SQE) preparation courses, LLM programmes, and professional development for solicitors and barristers. Our strong links with the legal profession, chambers, and law firms ensure excellent employability outcomes.",
-        studentIntake: "Approximately 1,200 undergraduate and postgraduate law students",
-        ranking: "Top 50 UK Law Schools (Guardian University Guide 2025)",
-        profileCompletion: 92,
-    };
+    // Password visibility states
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const [formData, setFormData] = useState(schoolData);
+    // @ts-ignore
+    const token = session?.accessToken || session?.user?.accessToken || '';
+
+    const { data: profileResponse, isLoading } = useQuery({
+        queryKey: ["profile", token],
+        queryFn: () => getProfile(token),
+        enabled: !!token,
+    });
+
+    const [formData, setFormData] = useState<any>({
+        firstName: "",
+        lastName: "",
+        schoolName: "",
+        schoolType: "",
+        schoolCategory: "",
+        jobTitle: "",
+        company: "",
+        aboutSchool: "",
+        email: "",
+        phone: "",
+        address: "",
+        bio: "",
+        profileImage: "",
+    });
+
+    useEffect(() => {
+        if (profileResponse?.data) {
+            const user = profileResponse.data;
+            setFormData({
+                firstName: user.firstName || "",
+                lastName: user.lastName || "",
+                schoolName: user.schoolName || "",
+                schoolType: user.schoolType || "",
+                schoolCategory: user.schoolCategory || "",
+                jobTitle: user.jobTitle || "",
+                company: user.company || "",
+                aboutSchool: user.aboutSchool || "",
+                email: user.email || "",
+                phone: user.phone || "",
+                address: user.address || "",
+                bio: user.bio || "",
+                profileImage: user.profileImage || "",
+            });
+        }
+    }, [profileResponse]);
+
+    const updateProfileMutation = useMutation({
+        mutationFn: (data: FormData) => updateProfile(data, token),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["profile"] });
+            toast.success("Profile updated successfully");
+            setIsEditing(false);
+
+            // Update session with new data if available
+            if (data?.data) {
+                updateSession({
+                    ...session,
+                    user: {
+                        ...session?.user,
+                        name: data.data.schoolName,
+                        image: data.data.profileImage,
+                    }
+                });
+            }
+        },
+        onError: (error: any) => {
+            toast.error(error.message || "Failed to update profile");
+        },
+    });
 
     const handleInputChange = (field: string, value: string) => {
-        setFormData((prev) => ({
+        setFormData((prev: any) => ({
             ...prev,
             [field]: value,
         }));
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const data = new FormData();
+            data.append("profileImage", file);
+            updateProfileMutation.mutate(data);
+        }
+    };
+
     const handleSave = () => {
-        setIsEditing(false);
+        const data = new FormData();
+        Object.keys(formData).forEach((key) => {
+            if (key !== "profileImage") {
+                data.append(key, formData[key]);
+            }
+        });
+        updateProfileMutation.mutate(data);
     };
 
-    const handleCancel = () => {
-        setFormData(schoolData);
-        setIsEditing(false);
+    const confirmLogout = async () => {
+        await signOut({ callbackUrl: "/" });
+        setIsLogoutModalOpen(false);
     };
 
-    const renderSchoolInfo = () => (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Edit Mode Notice */}
-            {isEditing && (
-                <Card className="bg-yellow-50 border-yellow-200 rounded-3xl overflow-hidden shadow-sm">
-                    <CardContent className="p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center shrink-0">
-                                <Info className="w-5 h-5 text-black" />
+    if (isLoading || !session) {
+        return (
+            <div className="min-h-screen bg-transparent pt-8 pb-20 px-4 md:px-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                        <div className="space-y-3">
+                            <Skeleton className="h-10 w-64 rounded-xl" />
+                            <Skeleton className="h-6 w-96 rounded-lg" />
+                        </div>
+                        <div className="flex gap-4">
+                            <Skeleton className="h-10 w-32 rounded-2xl" />
+                            <Skeleton className="h-12 w-32 rounded-2xl" />
+                        </div>
+                    </div>
+                    <div className="border-[3px] border-slate-100 rounded-[40px] p-8 md:p-12 mb-10 bg-white">
+                        <div className="flex flex-col md:flex-row gap-10 items-center">
+                            <div className="flex flex-col items-center gap-6">
+                                <Skeleton className="w-40 h-40 rounded-full" />
+                                <Skeleton className="h-11 w-32 rounded-2xl" />
                             </div>
-                            <p className="text-gray-900 font-bold">You are currently editing your school profile.</p>
-                        </div>
-                        <div className="flex gap-3 w-full sm:w-auto">
-                            <Button variant="outline" onClick={handleCancel} className="flex-1 bg-white border-gray-200 font-bold h-11 px-6">
-                                Cancel
-                            </Button>
-                            <Button onClick={handleSave} className="flex-1 bg-black hover:bg-black/90 text-white font-bold h-11 px-6 border-none shadow-md">
-                                Save Changes
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* School Overview */}
-            <Card className="border-none ring-1 ring-gray-100 rounded-[32px] overflow-hidden shadow-sm bg-white">
-                <CardContent className="p-10">
-                    <h3 className="text-2xl font-bold text-black mb-8 border-l-4 border-yellow-400 pl-4">School Overview</h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">School Name</label>
-                            <Input
-                                value={formData.name}
-                                onChange={(e) => handleInputChange("name", e.target.value)}
-                                disabled={!isEditing}
-                                className="h-12 rounded-xl text-base font-bold bg-gray-50/50 border-gray-100 focus:bg-white"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Full Legal Name</label>
-                            <Input
-                                value={formData.fullName}
-                                onChange={(e) => handleInputChange("fullName", e.target.value)}
-                                disabled={!isEditing}
-                                className="h-12 rounded-xl text-base font-bold bg-gray-50/50 border-gray-100 focus:bg-white"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Institution Type</label>
-                            <Input
-                                value={formData.type}
-                                onChange={(e) => handleInputChange("type", e.target.value)}
-                                disabled={!isEditing}
-                                className="h-12 rounded-xl text-base font-bold bg-gray-50/50 border-gray-100 focus:bg-white"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Year Established</label>
-                            <Input
-                                value={formData.established}
-                                onChange={(e) => handleInputChange("established", e.target.value)}
-                                disabled={!isEditing}
-                                className="h-12 rounded-xl text-base font-bold bg-gray-50/50 border-gray-100 focus:bg-white"
-                            />
+                            <div className="flex-1 space-y-6">
+                                <div className="space-y-2">
+                                    <Skeleton className="h-12 w-1/2 rounded-xl" />
+                                    <Skeleton className="h-8 w-1/3 rounded-lg" />
+                                </div>
+                                <Skeleton className="h-24 w-full rounded-2xl" />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
+                                    <Skeleton className="h-14 rounded-2xl" />
+                                    <Skeleton className="h-14 rounded-2xl" />
+                                    <Skeleton className="h-14 rounded-2xl" />
+                                    <Skeleton className="h-14 rounded-2xl" />
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <Skeleton className="h-16 w-1/3 rounded-[24px] mb-10" />
+                    <Skeleton className="h-96 w-full rounded-[40px]" />
+                </div>
+            </div>
+        );
+    }
 
-                    <div className="mt-8 space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Campus Address</label>
-                        <div className="relative">
-                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <Input
-                                value={formData.address}
-                                onChange={(e) => handleInputChange("address", e.target.value)}
-                                disabled={!isEditing}
-                                className="h-12 rounded-xl text-base font-bold bg-gray-50/50 border-gray-100 focus:bg-white pl-12"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="mt-8 space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest">About the Law School</label>
-                        <Textarea
-                            value={formData.about}
-                            onChange={(e) => handleInputChange("about", e.target.value)}
-                            disabled={!isEditing}
-                            rows={6}
-                            className="rounded-xl text-base font-medium leading-relaxed bg-gray-50/50 border-gray-100 focus:bg-white p-4"
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 mt-8">
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Student Intake</label>
-                            <Input
-                                value={formData.studentIntake}
-                                onChange={(e) => handleInputChange("studentIntake", e.target.value)}
-                                disabled={!isEditing}
-                                className="h-12 rounded-xl text-base font-bold bg-gray-50/50 border-gray-100 focus:bg-white"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Current Ranking</label>
-                            <Input
-                                value={formData.ranking}
-                                onChange={(e) => handleInputChange("ranking", e.target.value)}
-                                disabled={!isEditing}
-                                className="h-12 rounded-xl text-base font-bold bg-gray-50/50 border-gray-100 focus:bg-white"
-                            />
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Contact & Links */}
-            <Card className="border-none ring-1 ring-gray-100 rounded-[32px] overflow-hidden shadow-sm bg-white">
-                <CardContent className="p-10">
-                    <h3 className="text-2xl font-bold text-black mb-8 border-l-4 border-yellow-400 pl-4">Contact & Digital Presence</h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <Input
-                                value={formData.email}
-                                disabled={!isEditing}
-                                className="h-14 rounded-xl font-bold bg-gray-50/50 border-gray-100 pl-12"
-                            />
-                        </div>
-                        <div className="relative">
-                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <Input
-                                value={formData.phone}
-                                disabled={!isEditing}
-                                className="h-14 rounded-xl font-bold bg-gray-50/50 border-gray-100 pl-12"
-                            />
-                        </div>
-                        <div className="relative">
-                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <Input
-                                value={formData.website}
-                                disabled={!isEditing}
-                                className="h-14 rounded-xl font-bold bg-gray-50/50 border-gray-100 pl-12"
-                            />
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-    );
-
-    const renderSecurity = () => (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <Card className="border-none ring-1 ring-gray-100 rounded-[32px] overflow-hidden shadow-sm bg-white">
-                <CardContent className="p-10">
-                    <h3 className="text-2xl font-bold text-black mb-8 border-l-4 border-yellow-400 pl-4">Change Password</h3>
-                    <div className="max-w-md space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Current Password</label>
-                            <Input type="password" placeholder="••••••••" className="h-12 rounded-xl bg-gray-50 border-gray-100" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">New Password</label>
-                            <Input type="password" placeholder="••••••••" className="h-12 rounded-xl bg-gray-50 border-gray-100" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Confirm New Password</label>
-                            <Input type="password" placeholder="••••••••" className="h-12 rounded-xl bg-gray-50 border-gray-100" />
-                        </div>
-                        <Button className="w-full h-14 bg-yellow-400 hover:bg-yellow-500 text-black font-black text-lg rounded-2xl border-none shadow-lg mt-4">
-                            Update Security Credentials
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card className="border-none ring-1 ring-red-100 rounded-[32px] overflow-hidden shadow-sm bg-red-50/50">
-                <CardContent className="p-10 flex flex-col sm:flex-row justify-between items-center gap-8">
-                    <div className="space-y-2">
-                        <h3 className="text-2xl font-bold text-red-600">Danger Zone</h3>
-                        <p className="text-gray-500 font-medium">Permanently delete your school account and all associated student data. This action cannot be undone.</p>
-                    </div>
-                    <Button variant="destructive" className="h-14 px-10 rounded-2xl font-black text-lg shrink-0">
-                        <Trash2 className="w-5 h-5 mr-3" /> Delete School Account
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
-    );
+    const user = profileResponse?.data;
 
     return (
-        <div className="min-h-screen bg-gray-50/30 font-poppins pt-8 pb-20">
-            <div className="max-w-7xl mx-auto px-6">
-                {/* Header */}
-                <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="min-h-screen bg-transparent pt-8 pb-20 px-4 md:px-6 poppins">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                     <div>
-                        <h1 className="text-3xl md:text-5xl font-black text-black italic tracking-tighter mb-2">
-                            Profile Settings
-                        </h1>
-                        <p className="text-lg text-gray-400 font-bold max-w-xl">
-                            Manage your institution's digital footprint and security protocols.
-                        </p>
+                        <h1 className="text-4xl font-bold text-gray-900 tracking-tight neuton">Profile Settings</h1>
+                        <p className="text-gray-500 text-lg mt-1 font-medium italic">Manage your account information and preferences</p>
                     </div>
-                </header>
-
-                {/* School Header Card */}
-                <Card className="border-none overflow-hidden rounded-[40px] shadow-2xl bg-white mb-12 ring-2 ring-yellow-400/20">
-                    <div className="h-40 bg-black relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-purple-400/10 blur-3xl opacity-50" />
-                        <div className="absolute -bottom-16 left-12 w-32 h-32 bg-yellow-400 rounded-3xl flex items-center justify-center text-black text-4xl font-black shadow-2xl border-4 border-white rotate-3">
-                            WLS
-                        </div>
-                    </div>
-                    <CardContent className="pt-20 pb-12 px-12">
-                        <div className="flex flex-col lg:flex-row justify-between items-start gap-8">
-                            <div className="flex-1 space-y-4">
-                                <div className="flex flex-col sm:flex-row items-center gap-4">
-                                    <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">{formData.name}</h2>
-                                    <div className="bg-green-100 text-green-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Verified Institution</div>
-                                </div>
-                                <p className="text-gray-500 font-bold text-lg">{formData.fullName}</p>
-                                <p className="text-gray-600 font-medium leading-relaxed max-w-3xl">
-                                    {formData.about}
-                                </p>
-                                <div className="flex flex-wrap gap-6 pt-4">
-                                    <div className="flex items-center gap-2 text-gray-400 font-bold text-sm">
-                                        <MapPin className="w-4 h-4" /> {formData.location}
-                                    </div>
-                                    <div className="flex items-center gap-2 text-gray-400 font-bold text-sm">
-                                        <Calendar className="w-4 h-4" /> Est. {formData.established.split(",")[1]?.trim() || "1968"}
-                                    </div>
-                                    <div className="flex items-center gap-2 text-gray-400 font-bold text-sm">
-                                        <Mail className="w-4 h-4" /> {formData.email}
-                                    </div>
-                                </div>
+                    <div className="flex items-center gap-4 flex-wrap">
+                        {user?.isSubscription && (
+                            <div className="bg-[#f3f0ff] text-[#7c3aed] px-5 py-2 rounded-2xl text-sm font-bold flex items-center gap-2 shadow-sm">
+                                <Sparkles size={16} fill="#7c3aed" /> Premium account
                             </div>
+                        )}
+                        <Button
+                            onClick={() => setIsLogoutModalOpen(true)}
+                            className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black h-12 px-8 rounded-2xl flex items-center gap-3 shadow-md border-none transition-all active:scale-95 neuton"
+                        >
+                            <LogOut size={20} strokeWidth={2.5} /> Logout
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Main Profile Card */}
+                <div className="border-[3px] border-[#FFFF00] rounded-[40px] p-8 md:p-12 mb-10 relative bg-white shadow-xl shadow-yellow-100/20 group transition-all duration-300">
+                    <div className="flex flex-col md:flex-row gap-10 items-start md:items-center">
+                        {/* Profile Image Column */}
+                        <div className="flex flex-col items-center gap-6">
+                            <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-2xl ring-4 ring-yellow-50">
+                                <img
+                                    src={user?.profileImage || "https://avatar.iran.liara.run/public/26.png"}
+                                    alt="Profile"
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                            </div>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                                accept="image/*"
+                            />
                             <Button
-                                onClick={() => setIsEditing(!isEditing)}
-                                className={cn(
-                                    "h-14 px-8 rounded-2xl font-black text-lg transition-all shadow-lg border-none",
-                                    isEditing ? "bg-gray-100 text-gray-500 hover:bg-gray-200" : "bg-yellow-400 text-black hover:bg-yellow-500"
-                                )}
+                                onClick={() => fileInputRef.current?.click()}
+                                variant="outline"
+                                className="border-2 border-slate-200 text-gray-700 hover:border-[#FFFF00] hover:bg-[#FFFF00] hover:text-black rounded-2xl text-sm font-bold h-11 px-6 flex items-center gap-3 transition-all neuton"
                             >
-                                {isEditing ? <><X className="w-5 h-5 mr-3" /> Stop Editing</> : <><Edit2 className="w-5 h-5 mr-3" /> Edit School Profile</>}
+                                <Upload size={18} /> Upload Photo
                             </Button>
                         </div>
-                    </CardContent>
-                </Card>
 
-                {/* Tabs Control */}
-                <Tabs defaultValue="school-info" className="w-full">
-                    <TabsList className="bg-transparent h-16 p-1 gap-4 mb-12 flex justify-start overflow-x-auto">
+                        {/* Profile Info Column */}
+                        <div className="flex-1 space-y-6">
+                            <div className="flex items-start justify-between">
+                                <div>
+                                    <h2 className="text-4xl font-bold text-gray-900 group-hover:text-black flex items-center gap-3 neuton">
+                                        {user?.firstName || user?.lastName ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : user?.schoolName || "New User"}
+                                        {user?.verified && <CheckCircle2 className="text-blue-500" size={24} fill="currentColor" fillOpacity={0.1} />}
+                                    </h2>
+                                    <p className="text-xl text-gray-500 font-semibold mt-1 inter">{user?.schoolName}</p>
+                                </div>
+                            </div>
+
+                            <p className="text-gray-600 max-w-3xl text-[1.1rem] leading-relaxed font-medium inter">
+                                {user?.bio || user?.aboutSchool || "Welcome to your profile. Add a bio to tell students and others about your mission and expertise."}
+                            </p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-12 pt-6">
+                                <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
+                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Mail size={20} /></div>
+                                    <span className="font-semibold text-gray-500 inter">{user?.email}</span>
+                                </div>
+                                <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
+                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Phone size={20} /></div>
+                                    <span className="font-semibold text-gray-500 inter">{user?.phone || "Phone not set"}</span>
+                                </div>
+                                <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
+                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><MapPin size={20} /></div>
+                                    <span className="font-semibold text-gray-500 inter">{user?.address || "Location not set"}</span>
+                                </div>
+                                <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
+                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Calendar size={20} /></div>
+                                    <span className="font-semibold text-gray-500 inter">Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "N/A"}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {!isEditing && (
+                            <Button
+                                onClick={() => setIsEditing(true)}
+                                className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black rounded-2xl h-12 px-10 absolute top-8 right-8 shadow-lg border-none hidden lg:flex items-center gap-3 transition-all active:scale-95 neuton"
+                            >
+                                <Edit2 size={18} /> Edit Profile
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Tabs Section */}
+                <Tabs defaultValue="personal" className="w-full">
+                    <TabsList className="bg-slate-100/80 p-1.5 h-16 rounded-[24px] mb-10 flex justify-start w-fit border border-slate-200/50">
                         <TabsTrigger
-                            value="school-info"
-                            className="data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-2xl h-14 px-10 font-black text-lg transition-all text-gray-400"
+                            value="personal"
+                            className="data-[state=active]:bg-[#FFFF00] data-[state=active]:text-black data-[state=active]:shadow-lg rounded-[18px] px-10 h-full font-black text-slate-500 transition-all border-none neuton"
                         >
-                            <Info className="w-5 h-5 mr-3" /> School Info
+                            <User size={20} className="mr-3" /> Personal Info
                         </TabsTrigger>
                         <TabsTrigger
                             value="security"
-                            className="data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-2xl h-14 px-10 font-black text-lg transition-all text-gray-400"
+                            className="data-[state=active]:bg-[#FFFF00] data-[state=active]:text-black data-[state=active]:shadow-lg rounded-[18px] px-10 h-full font-black text-slate-500 transition-all border-none neuton"
                         >
-                            <Lock className="w-5 h-5 mr-3" /> Security & Admin
+                            <Lock size={20} className="mr-3" /> Security
                         </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="school-info">
-                        {renderSchoolInfo()}
+                    <TabsContent value="personal" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {isEditing ? (
+                            <Card className="border-none shadow-2xl rounded-[40px] p-10 bg-white">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                    {/* Row 1 */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">First Name</label>
+                                        <Input
+                                            value={formData.firstName}
+                                            onChange={(e) => handleInputChange("firstName", e.target.value)}
+                                            placeholder="Enter first name"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Last Name</label>
+                                        <Input
+                                            value={formData.lastName}
+                                            onChange={(e) => handleInputChange("lastName", e.target.value)}
+                                            placeholder="Enter last name"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+
+                                    {/* Row 2 */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">School Name</label>
+                                        <Input
+                                            value={formData.schoolName}
+                                            onChange={(e) => handleInputChange("schoolName", e.target.value)}
+                                            placeholder="Institution Name"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">School Type</label>
+                                        <Input
+                                            value={formData.schoolType}
+                                            onChange={(e) => handleInputChange("schoolType", e.target.value)}
+                                            placeholder="e.g. University, High School"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+
+                                    {/* Row 3 */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">School Category</label>
+                                        <Input
+                                            value={formData.schoolCategory}
+                                            onChange={(e) => handleInputChange("schoolCategory", e.target.value)}
+                                            placeholder="e.g. Law, Medicine, Tech"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Phone</label>
+                                        <Input
+                                            value={formData.phone}
+                                            onChange={(e) => handleInputChange("phone", e.target.value)}
+                                            placeholder="Contact number"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+
+                                    {/* Row 4 */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Job Title</label>
+                                        <Input
+                                            value={formData.jobTitle}
+                                            onChange={(e) => handleInputChange("jobTitle", e.target.value)}
+                                            placeholder="Your role (e.g. Dean, Professor)"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Company / Branch</label>
+                                        <Input
+                                            value={formData.company}
+                                            onChange={(e) => handleInputChange("company", e.target.value)}
+                                            placeholder="Specific branch or company"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Address</label>
+                                        <Input
+                                            value={formData.address}
+                                            onChange={(e) => handleInputChange("address", e.target.value)}
+                                            placeholder="Full address"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Bio / About School</label>
+                                        <Textarea
+                                            value={formData.bio}
+                                            onChange={(e) => handleInputChange("bio", e.target.value)}
+                                            placeholder="Write a brief bio about yourself or your school..."
+                                            className="rounded-[24px] min-h-[160px] border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 p-5 leading-relaxed inter"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex justify-end gap-5 mt-12">
+                                    <Button variant="outline" onClick={() => setIsEditing(false)} className="rounded-2xl h-14 px-10 font-bold border-2 hover:bg-slate-50 transition-all neuton">Cancel</Button>
+                                    <Button
+                                        onClick={handleSave}
+                                        className="bg-black text-white hover:bg-zinc-800 rounded-2xl h-14 px-12 font-black text-lg shadow-xl transition-all active:scale-95 disabled:opacity-70 neuton"
+                                        disabled={updateProfileMutation.isPending}
+                                    >
+                                        {updateProfileMutation.isPending ? "Validating & Saving..." : "Save Profile Changes"}
+                                    </Button>
+                                </div>
+                            </Card>
+                        ) : (
+                            <Card className="border-none shadow-2xl rounded-[40px] p-10 bg-white grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                                <div className="space-y-1">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><User size={14} /> Personal Details</h4>
+                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.firstName || "—"} {user?.lastName || "—"}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Mail size={14} /> Email Identity</h4>
+                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.email}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Building2 size={14} /> Institution & Type</h4>
+                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.schoolName || "Self-Managed"} <span className="text-gray-400 font-medium ml-2 text-base">({user?.schoolType || "N/A"})</span></p>
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Briefcase size={14} /> Role & Company</h4>
+                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.jobTitle || "Member"} <span className="text-gray-400 font-medium ml-2 text-base">@ {user?.company || "Main Office"}</span></p>
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Phone size={14} /> Member Status</h4>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                                        <p className="text-xl font-semibold text-gray-800 capitalize leading-none tracking-tight inter">{user?.status || "Active"}</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Sparkles size={14} /> Category</h4>
+                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.schoolCategory || "General"}</p>
+                                </div>
+                                <div className="md:col-span-2 space-y-1 border-t border-slate-100 pt-8">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><MapPin size={14} /> Primary Address</h4>
+                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.address || "Remote / Global"}</p>
+                                </div>
+                                <div className="md:col-span-2 space-y-1">
+                                    <Button
+                                        onClick={() => setIsEditing(true)}
+                                        className="w-full md:w-fit bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black rounded-2xl h-14 px-12 shadow-lg border-none mt-4 transition-all active:scale-95 neuton"
+                                    >
+                                        Modify Current Details
+                                    </Button>
+                                </div>
+                            </Card>
+                        )}
                     </TabsContent>
-                    <TabsContent value="security">
-                        {renderSecurity()}
+
+                    <TabsContent value="security" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <Card className="border-none shadow-2xl rounded-[40px] p-10 bg-white">
+                            <h3 className="text-xl font-bold mb-8 text-gray-900 border-l-[6px] border-[#FFFF00] pl-5 uppercase tracking-tight neuton">Security & Privacy</h3>
+                            <div className="max-w-xl space-y-6">
+                                <div className="space-y-3">
+                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1 inter">Current Password</label>
+                                    <div className="relative">
+                                        <Input
+                                            type={showCurrentPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] inter"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                        >
+                                            {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1 inter">New Secure Password</label>
+                                    <div className="relative">
+                                        <Input
+                                            type={showNewPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] inter"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                        >
+                                            {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1 inter">Verify New Password</label>
+                                    <div className="relative">
+                                        <Input
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] inter"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                        >
+                                            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </button>
+                                    </div>
+                                </div>
+                                <Button className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-bold h-12 px-12 rounded-2xl mt-6 shadow-xl border-none transition-all active:scale-95 neuton">Update Security Protocol</Button>
+                            </div>
+                        </Card>
                     </TabsContent>
                 </Tabs>
-
-                {/* Completion Status */}
-                <div className="mt-16 bg-black rounded-[40px] p-12 relative overflow-hidden shadow-2xl ring-1 ring-white/10">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-yellow-400" />
-                    <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
-                        <div className="w-24 h-24 bg-yellow-400 rounded-[32px] flex items-center justify-center text-black shadow-2xl shrink-0 rotate-3">
-                            <Check className="w-12 h-12" />
-                        </div>
-                        <div className="flex-1 text-center md:text-left space-y-4">
-                            <h3 className="text-3xl font-black text-white italic tracking-tight">Institutional Profile Strength</h3>
-                            <p className="text-gray-400 text-lg font-medium max-w-2xl">
-                                A complete institutional profile increases student visibility by <span className="text-yellow-400 font-bold">42%</span> across the network.
-                            </p>
-                            <div className="space-y-3 pt-2">
-                                <div className="flex justify-between items-end">
-                                    <span className="text-sm font-black text-gray-500 uppercase tracking-widest">Global Readiness Score</span>
-                                    <span className="text-3xl font-black text-yellow-400">{formData.profileCompletion}%</span>
-                                </div>
-                                <Progress value={formData.profileCompletion} indicatorClassName="bg-yellow-400" className="h-4 bg-white/5 rounded-full" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
+            <LogoutModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onLogout={confirmLogout}
+            />
         </div>
     );
 };
