@@ -5,7 +5,11 @@ import React from "react"
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
-import { AlertCircle, Clock, ChevronRight, Briefcase } from 'lucide-react'
+import { AlertCircle, Clock, ChevronRight, Briefcase, PenTool } from 'lucide-react'
+// import { useMutation } from "@tanstack/react-query"
+// import { toast } from "sonner"
+// import { useSession } from "next-auth/react"
+
 // import Navbar from "../_components/navbar"
 // import Footer from "../_components/footer"
 
@@ -69,8 +73,17 @@ export default function AssessmentPage() {
   const [wordCount, setWordCount] = useState(0)
   const [submitted, setSubmitted] = useState(false)
 
+
+
+    // console.log(content)
+
   const assessmentId = params.id as string
   const content = assessmentContent[assessmentId as keyof typeof assessmentContent] || assessmentContent['case-study']
+
+
+
+   
+
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -91,7 +104,14 @@ export default function AssessmentPage() {
     setWordCount(text.trim().split(/\s+/).filter((word) => word.length > 0).length)
   }
 
+
+
+ 
+
   const handleSubmit = () => {
+
+
+
     setSubmitted(true)
     setTimeout(() => {
       router.push(`/dashboard/ai-assessment-centre/results/${assessmentId}`)
@@ -105,6 +125,10 @@ export default function AssessmentPage() {
   const minutes = Math.floor(timeLeft / 60)
   const seconds = timeLeft % 60
   const isTimeWarning = timeLeft < 300
+
+
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -178,15 +202,21 @@ export default function AssessmentPage() {
             </div>
 
             {/* Right Column - Response Area */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-6 rounded-[16px] border border-gray-200 shadow">
               {/* Response Header */}
-              <div className="bg-yellow-100 rounded-lg p-4 flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold text-foreground">Your Response</h3>
-                  <p className="text-sm text-muted-foreground">Internal Email Draft</p>
+              <div className="bg-[#FEF3C7] rounded-t-[16px] p-4 flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="bg-[#FBBF24] p-2 rounded-[8px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+                <PenTool className="text-[#0A0A0A]"/>
+              </div>
+                  <div>
+<h3 className="font-bold text-[#0A0A0A] text-base">Your Response</h3>
+                  <p className="text-xs text-[#64748B] font-semibold">Internal Email Draft</p>
+                  </div>
+                  
                 </div>
-                <span className="text-sm font-semibold text-muted-foreground">
-                  {wordCount}/300 words
+                <span className="text-sx font-semibold text-[#64748B] bg-white border-[2px] border-[#FBBF244D] py-2 px-3 rounded-[12px]">
+                  {wordCount}/300  words
                 </span>
               </div>
 
@@ -194,17 +224,16 @@ export default function AssessmentPage() {
               <textarea
                 value={response}
                 onChange={handleResponseChange}
-                placeholder="Dear [Manager],
+                placeholder={`Dear [Manager],\nStart typing your email here...`}
 
-Start typing your email here..."
-                className="w-full h-80 p-1 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white text-foreground resize-none"
+                className="w-full h-80 py-1 rounded-lg focus:outline-none px-4 bg-white text-foreground resize-none"
               />
 
               {/* Requirements Section */}
-              <div className="bg-yellow-100 rounded-lg p-4 space-y-3">
+              <div className="bg-[#FEF3C7] border-t-[3px] border-[#FBBF2480] p-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 text-foreground" />
-                  <h4 className="font-semibold text-foreground">Requirements</h4>
+                  <h4 className="font-bold text-[#0A0A0A] text-sm">Requirements</h4>
                 </div>
                 <div className="flex flex-wrap gap-4">
                   {content.requirements.map((req, idx) => (
@@ -215,7 +244,7 @@ Start typing your email here..."
                         defaultChecked={idx === 0}
                         className="w-4 h-4"
                       />
-                      <span className="text-sm text-foreground">{req}</span>
+                      <span className="text-sm text-[#64748B] font-semibold">{req}</span>
                     </label>
                   ))}
                 </div>
@@ -230,17 +259,17 @@ Start typing your email here..."
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-4 justify-end pt-4">
+              <div className="flex gap-4 justify-end pb-6 pt-2 pr-4">
                 <button
                   onClick={handleCancel}
-                  className="px-6 py-3 border-2 border-foreground text-foreground font-semibold rounded-lg hover:bg-muted transition-colors"
+                  className="px-6 py-3 border-[2px] border-[#0A0A0A] text-[#0A0A0A] rounded-[12px] text-sm font-bold"
                 >
                   Cancel Assessment
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={submitted}
-                  className="px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className="px-6 py-3 bg-[#FFFF00] rounded-[12px] text-[#0A0A0A] text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {submitted ? 'Submitting...' : 'Submit Response'}
                 </button>
@@ -254,3 +283,6 @@ Start typing your email here..."
     </div>
   )
 }
+
+
+
