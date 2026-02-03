@@ -1,6 +1,6 @@
 import React from "react";
 import Title from "../_components/title";
-import MockInterviewDetails from "./_components/mock-interview-details";
+import DetailsLayout from "./_components/details-layout";
 
 const page = () => {
   return (
@@ -10,7 +10,7 @@ const page = () => {
       <div className="w-full h-[1px] bg-black"></div>
 
       <div>
-        <MockInterviewDetails />
+        <DetailsLayout />
       </div>
     </div>
   );
