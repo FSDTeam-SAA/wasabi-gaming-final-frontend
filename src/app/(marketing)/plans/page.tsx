@@ -31,7 +31,7 @@ export default function PlansPage() {
     price: 'Free',
     period: '',
     subscriptionCategory: 'students',
-    type: 'monthly',
+    type: 'weekly',
     description: 'Perfect for getting started on your legal journey',
     features: [
       'Community Access',
@@ -165,10 +165,10 @@ export default function PlansPage() {
                   {/* Category Badge */}
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1 ${isHighlighted
-                        ? 'bg-black text-[#FEE64D] border border-[#FEE64D]'
-                        : isSchool
-                          ? 'bg-slate-800 text-white border border-slate-700'
-                          : 'bg-[#FEE64D] text-black border border-white'
+                      ? 'bg-black text-[#FEE64D] border border-[#FEE64D]'
+                      : isSchool
+                        ? 'bg-slate-800 text-white border border-slate-700'
+                        : 'bg-[#FEE64D] text-black border border-white'
                       }`}>
                       {categoryLabel}
                     </span>
@@ -183,8 +183,8 @@ export default function PlansPage() {
                       <span className="text-4xl font-extrabold text-gray-900">
                         {typeof plan.price === 'number' ? `£${plan.price}` : plan.price}
                       </span>
-                      {(plan.type === 'monthly' || plan.type === 'yearly') && (
-                        <span className="text-gray-700 font-medium">/{plan.type === 'monthly' ? 'month' : 'year'}</span>
+                      {(plan.type === 'monthly' || plan.type === 'yearly' || plan.type === 'weekly') && (
+                        <span className="text-gray-700 font-medium">/{plan.type === 'monthly' ? 'month' : plan.type === 'yearly' ? 'year' : 'weekly'}</span>
                       )}
                     </div>
                     <p className="text-gray-600 mt-3 text-sm min-h-[40px]">
