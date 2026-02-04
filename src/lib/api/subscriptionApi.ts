@@ -1,3 +1,5 @@
+import { getSession } from 'next-auth/react'
+
 export interface IReview {
   user: string
   rating: number
@@ -49,6 +51,23 @@ export const getAllPremiums = async (interval: string): Promise<IPremiumResponse
 
   if (!res.ok) {
     throw new Error('Failed to fetch premiums')
+  }
+
+  return res.json()
+}
+
+export const createPaymentSession = async (planId: string): Promise<any> => {
+  const session = await getSession()
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/premium/pay/${planId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session?.accessToken}`,
+    },
+  })
+
+  if (!res.ok) {
+    throw new Error('Failed to create payment session')
   }
 
   return res.json()

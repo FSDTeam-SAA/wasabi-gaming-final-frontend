@@ -3,49 +3,31 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Check, AlertCircle } from 'lucide-react'
+import { Check, AlertCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
-import { getAllPremiums, IPremiumPlan } from '@/lib/api/subscriptionApi'
+import { getAllPremiums, createPaymentSession } from '@/lib/api/subscriptionApi'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function PlansPage() {
   const [isYearly, setIsYearly] = useState(false)
+  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null)
   const { data: session } = useSession()
+  const router = useRouter()
 
   // Determine interval string for API
-  const interval = isYearly ? 'yearly' : 'monthly'
+  const typeQuery = isYearly ? 'yearly' : 'monthly&type=weekly'
 
   // Fetch premiums with query param
   const { data: apiResponse, isLoading, isError } = useQuery({
-    queryKey: ['premiums', interval],
-    queryFn: () => getAllPremiums(interval),
+    queryKey: ['premiums', typeQuery],
+    queryFn: () => getAllPremiums(typeQuery),
     retry: 1,
   })
 
   const apiPlans = apiResponse?.data || []
-
-  // Static Free Plan
-  const freePlan = {
-    name: 'Free Plan',
-    price: 'Free',
-    period: '',
-    subscriptionCategory: 'students',
-    type: 'weekly',
-    description: 'Perfect for getting started on your legal journey',
-    features: [
-      'Community Access',
-      'Access to All Legal Opportunities',
-      'Limited Law Firm Profile Opportunities',
-      'Application Tracker',
-      'CV Builder',
-      'Mock Interview',
-      'Learning Resources',
-    ],
-    cta: 'Get Started',
-    ctaLink: '/signup',
-    highlighted: false,
-  }
 
   // Filter Logic
   const filteredPlans = apiPlans.filter((plan) => {
@@ -57,7 +39,41 @@ export default function PlansPage() {
   })
 
   // Combine for display
-  const plansToDisplay = isYearly ? [...filteredPlans] : [freePlan, ...filteredPlans]
+  const plansToDisplay = filteredPlans
+
+  const handleSubscribe = async (plan: any) => {
+    if (!session) {
+      router.push('/login')
+      return
+    }
+
+    /* 
+    // Removed client-side free plan check to allow backend to handle all "purchases" / subscriptions 
+    // including free trials or zero-cost plans via the same checkout flow if configured.
+    if (plan.price === 0 || plan.price === 'Free') {
+       toast.info('Free plan selected')
+       // If we wanted to bypass payment for free plans entirely on client side, we'd do it here.
+       // But user requested "direct payment" flow for logged in users.
+       // We will proceed to createPaymentSession.
+    } 
+    */
+
+    try {
+      setProcessingPlanId(plan._id)
+      const response = await createPaymentSession(plan._id)
+
+      if (response.success && response.data?.url) {
+        window.location.href = response.data.url
+      } else {
+        toast.error(response.message || 'Failed to initiate payment')
+      }
+    } catch (error) {
+      console.error('Payment error:', error)
+      toast.error('Something went wrong. Please try again.')
+    } finally {
+      setProcessingPlanId(null)
+    }
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center py-16 px-1 md:px-8 bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4]">
@@ -108,7 +124,7 @@ export default function PlansPage() {
       <div className="container mx-auto w-full min-h-[400px] flex items-center justify-center">
         {isLoading ? (
           // Skeleton Loading
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="relative flex flex-col p-8 rounded-2xl bg-white border border-gray-200 shadow-xl h-[600px]">
                 <div className="text-center mb-6 space-y-3">
@@ -143,7 +159,7 @@ export default function PlansPage() {
             <p className="text-lg">No subscription plans available for this category/period.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full items-start">
+          <div className="flex flex-wrap justify-center gap-8 w-full max-w-7xl items-start">
             {plansToDisplay.map((plan: any, index) => {
               const isSchool = plan.subscriptionCategory === 'school'
               const isHighlighted = !isSchool && ((plan.name || '').toLowerCase().includes('premium') || (plan.name || '').toLowerCase().includes('pro'))
@@ -152,10 +168,12 @@ export default function PlansPage() {
                 plan.subscriptionCategory === 'school' ? 'School' :
                   'Student'
 
+              const isProcessing = processingPlanId === plan._id
+
               return (
                 <div
                   key={index}
-                  className={`relative flex flex-col p-2 lg:p-8 rounded-2xl transition-transform hover:-translate-y-1 duration-300 ${isHighlighted
+                  className={`relative flex flex-col p-2 lg:p-8 rounded-2xl transition-transform hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[400px] ${isHighlighted
                     ? 'bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4] shadow-2xl scale-105 z-10 border border-[#FEE64D]'
                     : isSchool
                       ? 'bg-slate-50 border border-slate-200 shadow-xl'
@@ -181,7 +199,7 @@ export default function PlansPage() {
                     </h3>
                     <div className="flex items-baseline justify-center gap-1">
                       <span className="text-4xl font-extrabold text-gray-900">
-                        {typeof plan.price === 'number' ? `£${plan.price}` : plan.price}
+                        {typeof plan.price === 'number' && plan.price === 0 ? 'Free' : (typeof plan.price === 'number' ? `£${plan.price}` : plan.price)}
                       </span>
                       {(plan.type === 'monthly' || plan.type === 'yearly' || plan.type === 'weekly') && (
                         <span className="text-gray-700 font-medium">/{plan.type === 'monthly' ? 'month' : plan.type === 'yearly' ? 'year' : 'weekly'}</span>
@@ -204,11 +222,18 @@ export default function PlansPage() {
                     ))}
                   </ul>
 
-                  <Link href={plan.ctaLink || (plan.price === 'Free' ? '/signup' : '/payment')} className="mt-auto">
-                    <Button className={`w-full rounded-full py-6 font-bold text-base ${isHighlighted ? 'bg-black text-white hover:bg-gray-800' : 'bg-[#f3db40] text-black hover:bg-[#dfc836] border-2 border-[#f3db40]'}`}>
-                      {plan.price === 'Free' ? 'Get Started' : 'Purchase Plan'}
-                    </Button>
-                  </Link>
+                  <Button
+                    className={`w-full rounded-full py-6 font-bold text-base mt-auto ${isHighlighted ? 'bg-black text-white hover:bg-gray-800' : 'bg-[#f3db40] text-black hover:bg-[#dfc836] border-2 border-[#f3db40]'}`}
+                    onClick={() => handleSubscribe(plan)}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (plan.price === 0 || plan.price === 'Free' ? 'Get Started' : 'Purchase Plan')}
+                  </Button>
                 </div>
               )
             })}
