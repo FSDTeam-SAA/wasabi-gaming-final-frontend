@@ -3,6 +3,8 @@
 import { useParams, useRouter } from 'next/navigation'
 
 import { CheckCircle2, AlertCircle, Lightbulb, ArrowRight, BookOpen } from 'lucide-react'
+import { WrittenAiAssessmentApiResponse } from '../../_components/written-assessment-data-type'
+import { useQuery } from '@tanstack/react-query'
 // import Footer from '../../_components/footer'
 // import Navbar from '../../_components/navbar'
 
@@ -188,7 +190,32 @@ export default function ResultsPage() {
   const router = useRouter()
 
   const assessmentId = params.id as string
-  const data = resultsData[assessmentId as keyof typeof resultsData] || resultsData['case-study']
+
+  console.log(assessmentId)
+  // const data = resultsData[assessmentId as keyof typeof resultsData] || resultsData['case-study']
+
+
+
+    // written case study get api
+    const { data, isLoading, isError } =
+    useQuery<WrittenAiAssessmentApiResponse>({
+      queryKey: ["written-case-study", assessmentId],
+      queryFn: async () => {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/writtencasestudy/${assessmentId}`
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch invitations");
+        }
+
+        return res.json();
+      },
+    });
+
+    console.log(data)
+
+    const writtentData = data?.data
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -203,7 +230,7 @@ export default function ResultsPage() {
                 AI Assessment Result 🎉
               </h1>
               <p className="text-muted-foreground">
-                Great job! Here's how you performed in this {data.title.toLowerCase()} session.
+                Great job! Here's how you performed in this Written Case Study session.
               </p>
             </div>
             <button
@@ -219,38 +246,74 @@ export default function ResultsPage() {
             <BookOpen className="w-6 h-6 text-primary flex-shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-semibold text-primary mb-1">Assessment Subject</p>
-              <h2 className="text-xl font-bold text-white">{data.subject}</h2>
+              <h2 className="text-xl font-bold text-white">Brief Email About A Recent Client Case Study</h2>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-4xl font-bold text-primary">{data.score}</p>
-              <p className="text-sm text-white">/{data.totalScore}</p>
+              <p className="text-4xl font-bold text-primary">{writtentData?.totalScore}</p>
+              <p className="text-sm text-white">/100</p>
             </div>
           </div>
 
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 bg-white rounded-lg p-6 border border-border">
-            <div className="md:col-span-2">
+          <div className=" mb-8 bg-white p-6 border border-[#F4F4F5] rounded-[12px]">
+            <div className="">
               <div className="flex items-center gap-2 mb-4">
                 <BookOpen className="w-5 h-5 text-foreground" />
-                <h3 className="text-lg font-semibold text-foreground">{data.title}</h3>
+                <h3 className="text-lg font-semibold text-foreground">Written assessment</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">{data.program}</p>
+              <p className="text-sm text-muted-foreground mb-4">Artoon Project Management Degree Apprenticeship</p>
             </div>
 
-            {data.metrics.map((metric, idx) => (
-              <div key={idx} className="space-y-2">
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-foreground">{metric.label}</span>
-                  <span className="text-sm font-semibold text-foreground">{metric.value}</span>
+                  <span className="text-sm font-medium text-foreground">Words Completed</span>
+                  <span className="text-sm font-semibold text-foreground">{writtentData?.wordsCompleted || 0}</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full transition-all"
-                    style={{ width: `${metric.progress}%` }}
+                    style={{ width: `${writtentData?.wordsCompleted}%` }}
                   />
                 </div>
               </div>
-            ))}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-foreground">Completion Rate</span>
+                  <span className="text-sm font-semibold text-foreground">{writtentData?.completionRate || 0}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all"
+                    style={{ width: `${writtentData?.completionRate}%` }}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-foreground">Writing Speed</span>
+                  <span className="text-sm font-semibold text-foreground">{writtentData?.writingSpeed || 0}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all"
+                    style={{ width: `${writtentData?.writingSpeed}%` }}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-foreground">Overall Grade</span>
+                  <span className="text-sm font-semibold text-foreground">{writtentData?.overallGrade || ""}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all"
+                    style={{ width: `${writtentData?.overallGrade}%` }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* AI Feedback & Recommendations */}
@@ -259,15 +322,21 @@ export default function ResultsPage() {
               <Lightbulb className="w-5 h-5 text-foreground" />
               <h3 className="font-semibold text-foreground">AI Feedback & Recommendations</h3>
             </div>
-            <ul className="space-y-3">
-              {data.feedback.map((item, idx) => (
+
+               <ul className="space-y-3">
+              {writtentData?.recommendations?.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  {item.type === 'positive' ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  ) : (
-                    <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  )}
-                  <span className="text-foreground text-sm">{item.text}</span>
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
+
+             <ul className="space-y-3">
+              {writtentData?.recommendations?.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm">{item}</span>
                 </li>
               ))}
             </ul>
@@ -278,17 +347,17 @@ export default function ResultsPage() {
             <div className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-foreground" />
               <h3 className="font-semibold text-foreground">
-                {data.title} Success Tips
+                Written Case Study Success Tips Success Tips
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {data.tips.map((tip, idx) => (
+              {writtentData?.successTips?.map((tip, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex items-center gap-2">
                     <ArrowRight className="w-5 h-5 text-primary flex-shrink-0" />
-                    <h4 className="font-semibold text-foreground">{tip.title}</h4>
+                    <h4 className="font-semibold text-foreground">{tip}</h4>
                   </div>
-                  <p className="text-sm text-muted-foreground ml-7">{tip.description}</p>
+                  {/* <p className="text-sm text-muted-foreground ml-7">{tip.description}</p> */}
                 </div>
               ))}
             </div>

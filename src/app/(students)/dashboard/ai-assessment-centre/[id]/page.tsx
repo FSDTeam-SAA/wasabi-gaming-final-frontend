@@ -129,6 +129,8 @@ export default function AssessmentPage() {
 
     console.log(data)
 
+    const writtentData = data?.data
+
 
 
     // written case study put api 
@@ -151,6 +153,9 @@ export default function AssessmentPage() {
         return 0;
       }
       toast.success(data?.message || "Written Case Study updated successfully")
+       setTimeout(() => {
+      router.push(`/dashboard/ai-assessment-centre/results/${assessmentId}`)
+    }, 1500)
     }
   })
 
@@ -171,9 +176,7 @@ export default function AssessmentPage() {
     mutate({yourResponse})
 
 
-    setTimeout(() => {
-      router.push(`/dashboard/ai-assessment-centre/results/${assessmentId}`)
-    }, 1500)
+   
   }
 
   const handleCancel = () => {
@@ -227,14 +230,14 @@ export default function AssessmentPage() {
                 {/* Role Context */}
                 <div className="bg-[#FEF3C7] border-[2px] border-[#FBBF244D]/30 rounded-[12px] p-5">
                   <h4 className="font-bold text-[#0A0A0A] text-xs mb-2">Role Context</h4>
-                  <p className="text-xs text-medium text-[#0F172A]">{content.roleContext}</p>
+                  <p className="text-xs text-medium text-[#0F172A]">{writtentData?.roleContext || "N/A"}</p>
                 </div>
 
                 {/* Case Description */}
                 <div className="space-y-3 pt-6 md:pt-7 lg:pt-8">
                   <h3 className="text-lg md:text-xl font-bold text-[#0A0A0A] border-b-[3px] border-[#FBBF24]">{content.caseName}</h3>
                   <p className="text-xs text-[#64748B] font-normal pb-6 md:pb-7 lg:pb-8">
-                    {content.caseDescription}
+                    {writtentData?.ventaraAutomotive || "N/A"}
                   </p>
 
                   {/* Instructions */}

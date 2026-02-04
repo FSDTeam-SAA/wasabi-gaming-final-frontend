@@ -11,17 +11,28 @@ export type AiAssessmentData = {
   aiassigmentId: AiAssignment
   roleContext: string
   ventaraAutomotive: string
+
   successTips: string[]
   recommendations: string[]
+
   applicant: Applicant
+
   createdAt: string
   updatedAt: string
   __v: number
+
+  completionRate: number
+  feedback: string[]
+  overallGrade: "A" | "B" | "C" | "D" | "E" | "F"
+  totalScore: number
+  wordsCompleted: number
+  writingSpeed: number
+  yourResponse: string
 }
 
 
 export type AiAssignment = {
-  _id: string
+    _id: string
   logo: string
   title: string
   discription: string
@@ -36,7 +47,7 @@ export type AiAssignment = {
 
 
 export type Applicant = {
-  _id: string
+    _id: string
   firstName: string
   lastName: string
   email: string
