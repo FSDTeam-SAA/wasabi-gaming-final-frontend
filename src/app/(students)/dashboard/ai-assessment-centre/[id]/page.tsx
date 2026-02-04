@@ -10,12 +10,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useSession } from "next-auth/react"
 import { WrittenAiAssessmentApiResponse } from "../_components/written-assessment-data-type"
-// import { useMutation } from "@tanstack/react-query"
-// import { toast } from "sonner"
-// import { useSession } from "next-auth/react"
 
-// import Navbar from "../_components/navbar"
-// import Footer from "../_components/footer"
 
 const assessmentContent = {
   'case-study': {
@@ -75,7 +70,6 @@ export default function AssessmentPage() {
   const token = session?.data?.accessToken
   const [timeLeft, setTimeLeft] = useState(45 * 60)
   const [yourResponse, setYourResponse] = useState('')
-  const [showRequirements, setShowRequirements] = useState(true)
   const [wordCount, setWordCount] = useState(0)
 
 
@@ -200,8 +194,8 @@ export default function AssessmentPage() {
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div className="space-y-2">
-              <p className="text-xs font-bold text-[#0A0A0A]">{content.module}</p>
-              <h1 className="text-2xl md:text-3xl lg:text-[40px] font-bold text-[#0A0A0A]">{content.title}</h1>
+              <p className="text-xs font-bold text-[#0A0A0A]">Assessment Module 01</p>
+              <h1 className="text-2xl md:text-3xl lg:text-[40px] font-bold text-[#0A0A0A]">Written Assessment</h1>
             </div>
             <div className={` rounded-[12px] border-2 border-[#131313] px-4 py-2 flex items-center gap-3 ${isTimeWarning ? ' border-red-500 bg-red-50' : 'border-primary bg-[#FFFF00]'}`}>
               <div className="bg-[#0A0A0A] p-[6px] rounded-[8px] flex-shrink-0 inline-flex items-center justify-center">
