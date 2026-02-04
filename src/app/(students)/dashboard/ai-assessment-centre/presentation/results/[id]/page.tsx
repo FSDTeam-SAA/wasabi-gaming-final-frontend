@@ -3,8 +3,8 @@
 import { useParams, useRouter } from 'next/navigation'
 
 import { CheckCircle2, AlertCircle, Lightbulb, ArrowRight, BookOpen } from 'lucide-react'
-import { WrittenAiAssessmentApiResponse } from '../../_components/written-assessment-data-type'
 import { useQuery } from '@tanstack/react-query'
+import { PresentationTaskApiResponse } from '../../../_components/written-presentation-data-type'
 // import Footer from '../../_components/footer'
 // import Navbar from '../../_components/navbar'
 
@@ -198,11 +198,11 @@ export default function ResultsPage() {
 
     // written case study get api
     const { data, isLoading, isError } =
-    useQuery<WrittenAiAssessmentApiResponse>({
-      queryKey: ["written-case-study", assessmentId],
+    useQuery<PresentationTaskApiResponse>({
+      queryKey: ["written-presentation", assessmentId],
       queryFn: async () => {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/writtencasestudy/${assessmentId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/presentationtask/${assessmentId}`
         );
 
         if (!res.ok) {
@@ -215,7 +215,7 @@ export default function ResultsPage() {
 
     console.log(data)
 
-    const writtentData = data?.data
+    const presentationData = data?.data
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -249,7 +249,7 @@ export default function ResultsPage() {
               <h2 className="text-xl font-bold text-white">Brief Email About A Recent Client Case Study</h2>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-4xl font-bold text-primary">{writtentData?.totalScore}</p>
+              <p className="text-4xl font-bold text-primary">{presentationData?.totalScore}</p>
               <p className="text-sm text-white">/100</p>
             </div>
           </div>
@@ -268,48 +268,48 @@ export default function ResultsPage() {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-foreground">Words Completed</span>
-                  <span className="text-sm font-semibold text-foreground">{writtentData?.wordsCompleted || 0}</span>
+                  <span className="text-sm font-semibold text-foreground">{presentationData?.wordsCompleted || 0}</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full transition-all"
-                    style={{ width: `${writtentData?.wordsCompleted}%` }}
+                    style={{ width: `${presentationData?.wordsCompleted}%` }}
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-foreground">Completion Rate</span>
-                  <span className="text-sm font-semibold text-foreground">{writtentData?.completionRate || 0}</span>
+                  <span className="text-sm font-semibold text-foreground">{presentationData?.completionRate || 0}</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full transition-all"
-                    style={{ width: `${writtentData?.completionRate}%` }}
+                    style={{ width: `${presentationData?.completionRate}%` }}
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-foreground">Writing Speed</span>
-                  <span className="text-sm font-semibold text-foreground">{writtentData?.writingSpeed || 0}</span>
+                  <span className="text-sm font-semibold text-foreground">{presentationData?.writingSpeed || 0}</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full transition-all"
-                    style={{ width: `${writtentData?.writingSpeed}%` }}
+                    style={{ width: `${presentationData?.writingSpeed}%` }}
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-foreground">Overall Grade</span>
-                  <span className="text-sm font-semibold text-foreground">{writtentData?.overallGrade || ""}</span>
+                  <span className="text-sm font-semibold text-foreground">{presentationData?.overallGrade || ""}</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full transition-all"
-                    style={{ width: `${writtentData?.overallGrade}%` }}
+                    style={{ width: `${presentationData?.overallGrade}%` }}
                   />
                 </div>
               </div>
@@ -324,7 +324,7 @@ export default function ResultsPage() {
             </div>
 
                <ul className="space-y-3">
-              {writtentData?.feedback?.map((item, idx) => (
+              {presentationData?.feedback?.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <span className="text-foreground text-sm">{item}</span>
@@ -333,7 +333,7 @@ export default function ResultsPage() {
             </ul>
 
              <ul className="space-y-3">
-              {writtentData?.recommendations?.map((item, idx) => (
+              {presentationData?.recommendations?.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <span className="text-foreground text-sm">{item}</span>
@@ -351,7 +351,7 @@ export default function ResultsPage() {
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {writtentData?.successTips?.map((tip, idx) => (
+              {presentationData?.successTips?.map((tip, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex items-center gap-2">
                     <ArrowRight className="w-5 h-5 text-primary flex-shrink-0" />
