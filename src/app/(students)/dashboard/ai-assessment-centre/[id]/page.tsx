@@ -6,6 +6,10 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
 import { AlertCircle, Clock, ChevronRight, Briefcase, PenTool } from 'lucide-react'
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { useSession } from "next-auth/react"
+import { WrittenAiAssessmentApiResponse } from "../_components/written-assessment-data-type"
 // import { useMutation } from "@tanstack/react-query"
 // import { toast } from "sonner"
 // import { useSession } from "next-auth/react"
@@ -67,22 +71,23 @@ const assessmentContent = {
 export default function AssessmentPage() {
   const params = useParams()
   const router = useRouter()
+  const session = useSession();
+  const token = session?.data?.accessToken
   const [timeLeft, setTimeLeft] = useState(45 * 60)
-  const [response, setResponse] = useState('')
+  const [yourResponse, setYourResponse] = useState('')
   const [showRequirements, setShowRequirements] = useState(true)
   const [wordCount, setWordCount] = useState(0)
-  const [submitted, setSubmitted] = useState(false)
 
 
 
-    // console.log(content)
+  // console.log(content)
 
   const assessmentId = params.id as string
   const content = assessmentContent[assessmentId as keyof typeof assessmentContent] || assessmentContent['case-study']
 
 
+  console.log(assessmentId)
 
-   
 
 
   useEffect(() => {
@@ -100,26 +105,72 @@ export default function AssessmentPage() {
 
   const handleResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value
-    setResponse(text)
+    setYourResponse(text)
     setWordCount(text.trim().split(/\s+/).filter((word) => word.length > 0).length)
   }
 
 
+  // written case study get api
+    const { data, isLoading, isError } =
+    useQuery<WrittenAiAssessmentApiResponse>({
+      queryKey: ["written-case-study", assessmentId],
+      queryFn: async () => {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/writtencasestudy/${assessmentId}`
+        );
 
- 
+        if (!res.ok) {
+          throw new Error("Failed to fetch invitations");
+        }
+
+        return res.json();
+      },
+    });
+
+    console.log(data)
+
+
+
+    // written case study put api 
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["written-case-study-put", assessmentId],
+    mutationFn: async (values: { yourResponse: string }) => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/writtencasestudy/${assessmentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(values)
+      })
+      return res.json()
+    },
+    onSuccess: (data) => {
+      if (!data?.success) {
+        toast.error(data?.message || "Something went wrong");
+        return 0;
+      }
+      toast.success(data?.message || "Written Case Study updated successfully")
+    }
+  })
+
+
+
+
 
   const handleSubmit = () => {
 
-     // 🔥 console data
-  console.log("===== ASSESSMENT SUBMISSION =====");
-  console.log("Assessment ID:", assessmentId);
-  console.log("Response Text:", response);
-  console.log("Word Count:", wordCount);
-  console.log("Submitted At:", new Date().toISOString());
-  console.log("================================");
+    // 🔥 console data
+    console.log("===== ASSESSMENT SUBMISSION =====");
+    console.log("Assessment ID:", assessmentId);
+    console.log("Response Text:", yourResponse);
+    console.log("Word Count:", wordCount);
+    console.log("Submitted At:", new Date().toISOString());
+    console.log("================================");
+
+    mutate({yourResponse})
 
 
-    setSubmitted(true)
     setTimeout(() => {
       router.push(`/dashboard/ai-assessment-centre/results/${assessmentId}`)
     }, 1500)
@@ -151,7 +202,7 @@ export default function AssessmentPage() {
             </div>
             <div className={` rounded-[12px] border-2 border-[#131313] px-4 py-2 flex items-center gap-3 ${isTimeWarning ? ' border-red-500 bg-red-50' : 'border-primary bg-[#FFFF00]'}`}>
               <div className="bg-[#0A0A0A] p-[6px] rounded-[8px] flex-shrink-0 inline-flex items-center justify-center">
-                <Clock className={`w-5 h-5 ${isTimeWarning ? 'text-red-600' : 'text-[#FBBF24]'}`}/>
+                <Clock className={`w-5 h-5 ${isTimeWarning ? 'text-red-600' : 'text-[#FBBF24]'}`} />
               </div>
               <span className={`font-bold text-base ${isTimeWarning ? 'text-red-600' : 'text-[#0A0A0A]'}`}>
                 {minutes}:{seconds.toString().padStart(2, '0')}
@@ -166,43 +217,43 @@ export default function AssessmentPage() {
               <div className="bg-[#0A0A0A] rounded-t-[20px] py-6 px-8 text-white border-b-[4px] border-[#FBBF24]">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="bg-[#FBBF24] p-2 rounded-[8px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
-                <Briefcase className="text-[#0A0A0A]"/>
-              </div>
+                    <Briefcase className="text-[#0A0A0A]" />
+                  </div>
                   <h3 className="font-bold">Case Briefing</h3>
                 </div>
               </div>
 
               <div className="p-6">
                 {/* Role Context */}
-              <div className="bg-[#FEF3C7] border-[2px] border-[#FBBF244D]/30 rounded-[12px] p-5">
-                <h4 className="font-bold text-[#0A0A0A] text-xs mb-2">Role Context</h4>
-                <p className="text-xs text-medium text-[#0F172A]">{content.roleContext}</p>
-              </div>
-
-              {/* Case Description */}
-              <div className="space-y-3 pt-6 md:pt-7 lg:pt-8">
-                <h3 className="text-lg md:text-xl font-bold text-[#0A0A0A] border-b-[3px] border-[#FBBF24]">{content.caseName}</h3>
-                <p className="text-xs text-[#64748B] font-normal pb-6 md:pb-7 lg:pb-8">
-                  {content.caseDescription}
-                </p>
-
-                {/* Instructions */}
-                <div className="bg-[#F9FAFB] border-[2px] border-[#E5E7EB] rounded-[12px] p-5 md:p-6 space-y-3">
-                  <p className="font-semibold text-foreground text-sm">
-                    In your email to your manager:
-                  </p>
-                  <ul className="space-y-2">
-                    {content.instructions.map((instruction, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm">
-                        <div className="bg-[#FBBF24] p-1 rounded-[8px] flex-shrink-0 inline-flex items-center justify-center">
-                <ChevronRight className="text-[#0A0A0A] w-4 h-4 "/>
-              </div>
-                        <span className="text-[#64748B] text-xs font-medium">{instruction}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="bg-[#FEF3C7] border-[2px] border-[#FBBF244D]/30 rounded-[12px] p-5">
+                  <h4 className="font-bold text-[#0A0A0A] text-xs mb-2">Role Context</h4>
+                  <p className="text-xs text-medium text-[#0F172A]">{content.roleContext}</p>
                 </div>
-              </div>
+
+                {/* Case Description */}
+                <div className="space-y-3 pt-6 md:pt-7 lg:pt-8">
+                  <h3 className="text-lg md:text-xl font-bold text-[#0A0A0A] border-b-[3px] border-[#FBBF24]">{content.caseName}</h3>
+                  <p className="text-xs text-[#64748B] font-normal pb-6 md:pb-7 lg:pb-8">
+                    {content.caseDescription}
+                  </p>
+
+                  {/* Instructions */}
+                  <div className="bg-[#F9FAFB] border-[2px] border-[#E5E7EB] rounded-[12px] p-5 md:p-6 space-y-3">
+                    <p className="font-semibold text-foreground text-sm">
+                      In your email to your manager:
+                    </p>
+                    <ul className="space-y-2">
+                      {content.instructions.map((instruction, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-sm">
+                          <div className="bg-[#FBBF24] p-1 rounded-[8px] flex-shrink-0 inline-flex items-center justify-center">
+                            <ChevronRight className="text-[#0A0A0A] w-4 h-4 " />
+                          </div>
+                          <span className="text-[#64748B] text-xs font-medium">{instruction}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
 
 
               </div>
@@ -214,13 +265,13 @@ export default function AssessmentPage() {
               <div className="bg-[#FEF3C7] rounded-t-[16px] p-4 flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <div className="bg-[#FBBF24] p-2 rounded-[8px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
-                <PenTool className="text-[#0A0A0A]"/>
-              </div>
-                  <div>
-<h3 className="font-bold text-[#0A0A0A] text-base">Your Response</h3>
-                  <p className="text-xs text-[#64748B] font-semibold">Internal Email Draft</p>
+                    <PenTool className="text-[#0A0A0A]" />
                   </div>
-                  
+                  <div>
+                    <h3 className="font-bold text-[#0A0A0A] text-base">Your Response</h3>
+                    <p className="text-xs text-[#64748B] font-semibold">Internal Email Draft</p>
+                  </div>
+
                 </div>
                 <span className="text-sx font-semibold text-[#64748B] bg-white border-[2px] border-[#FBBF244D] py-2 px-3 rounded-[12px]">
                   {wordCount}/300  words
@@ -229,7 +280,7 @@ export default function AssessmentPage() {
 
               {/* Text Editor */}
               <textarea
-                value={response}
+                value={yourResponse}
                 onChange={handleResponseChange}
                 placeholder={`Dear [Manager],\nStart typing your email here...`}
 
@@ -275,10 +326,10 @@ export default function AssessmentPage() {
                 </button>
                 <button
                   onClick={handleSubmit}
-                  disabled={submitted}
+                  disabled={isPending}
                   className="px-6 py-3 bg-[#FFFF00] rounded-[12px] text-[#0A0A0A] text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
-                  {submitted ? 'Submitting...' : 'Submit Response'}
+                  {isPending ? 'Submitting...' : 'Submit Response'}
                 </button>
               </div>
             </div>
