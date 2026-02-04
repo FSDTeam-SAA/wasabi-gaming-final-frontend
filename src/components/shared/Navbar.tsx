@@ -59,7 +59,7 @@ const Navbar = () => {
         ...(isLoggedIn ? [{ name: 'Dashboard', to: '/dashboard' }] : []),
         { name: 'Application Tracker', to: '/dashboard/application-tracker' },
         { name: 'Law Firm Profiles', to: '/dashboard/law-firm-profiles' },
-        { name: 'Portfolio', to: '/portfolio' },
+        { name: 'Portfolio', to: '/dashboard/portfolio' },
         { name: 'Courses', to: '/dashboard/courses' },
         { name: 'Mock Interviews', to: '/dashboard/mock-interview' },
       ]

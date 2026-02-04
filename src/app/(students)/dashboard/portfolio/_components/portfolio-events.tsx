@@ -257,7 +257,7 @@ export default function PortfolioEvents() {
 
                                             <Button
                                                 onClick={() =>
-                                                    router.push(`/portfolio/${event._id}`)
+                                                    router.push(`/dashboard/portfolio/${event._id}`)
                                                 }
                                                 variant="outline"
                                                 className="mt-10 rounded-full border-[#FFFF00] text-[#B2B200] font-bold text-xs h-10 px-6 hover:bg-yellow-50"

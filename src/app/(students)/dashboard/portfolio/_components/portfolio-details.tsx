@@ -47,7 +47,7 @@ const PortfolioDetails = ({ id }: { id: string }) => {
 
   return (
     <div className="min-h-screen font-sans bg-[#FCFCFC]">
-      <div className="relative h-[420px] sm:h-[480px] w-full overflow-hidden bg-black">
+      <div className="relative h-[420px] sm:h-[580px] w-full overflow-hidden bg-black">
         {event.thumbnail ? (
           <Image
             src={event.thumbnail}
@@ -62,7 +62,7 @@ const PortfolioDetails = ({ id }: { id: string }) => {
         )}
 
         {/* Back Button */}
-        <Link href="/portfolio" className="absolute top-4 left-4 z-20">
+        <Link href="/dashboard/portfolio" className="absolute top-4 left-4 z-20">
           <Button
             variant="secondary"
             size="sm"
