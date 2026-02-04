@@ -920,7 +920,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                     ? "Recording in progress..."
                     : isVideoRecorded
                       ? "Recording completed!"
-                      : `Think about your answer. ${isCameraActive ? "Ready to record" : `Recording starts in ${prepTimer}s`}`}
+                      : `Think about your answer. ${isCameraActive ? "Ready to record" : `Recording starts in ${autoStartTimer}s`}`}
                 </p>
                 {/* Progress Bar */}
                 <div className="w-full h-3 overflow-hidden bg-gray-300 rounded-full">
