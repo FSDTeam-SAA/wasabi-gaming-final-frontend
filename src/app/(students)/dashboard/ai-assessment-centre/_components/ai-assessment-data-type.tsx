@@ -19,8 +19,6 @@ export interface AiAssessment {
   discription: string;
   duration: number;
   status: "AVAILABLE" | "COMPLETED" | "PENDING";
-
-  // 🔥 IMPORTANT
   type: "WRITTEN_CASE" | "PRESENTATION" | "EMAIL_EXERCISE" | "DUTY_OF_CARE";
 
   applicationUser: string[];

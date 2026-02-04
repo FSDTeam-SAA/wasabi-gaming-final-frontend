@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
-import { PresentationPromptSection } from '../_components/presentation-prompt-section';
-import { ResponseEditor } from '../_components/response-editor';
-import { RequirementsSection } from '../_components/requirements-section';
+import { PresentationPromptSection } from '../../../_components/presentation-prompt-section';
+import { ResponseEditor } from '../../../_components/response-editor';
+import { RequirementsSection } from '../../../_components/requirements-section';
+
 // import Footer from '../_components/footer';
 
-export default function PresentationTaskPage() {
+export default function PresentationTaskPage({id}:{id:string}) {
+  console.log(id)
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(3599); // 59:59
   const [requirements, setRequirements] = useState([

@@ -24,21 +24,21 @@ const assessmentServiceConfig = {
   // },
 
   PRESENTATION: {
-    api: (id: string) => `/presentation/creat/${id}`,
+    api: (id: string) => `/presentationtask/create/${id}`,
     route: (id: string) =>
       `/dashboard/ai-assessment-centre/presentation/${id}`,
   },
 
   EMAIL_EXERCISE: {
-    api: (id: string) => `/emailexercise/creat/${id}`,
+    api: (id: string) => `/intrayemail/create/${id}`,
     route: (id: string) =>
       `/dashboard/ai-assessment-centre/email-exercise/${id}`,
   },
 
   DUTY_OF_CARE: {
-    api: (id: string) => `/dutyofcare/creat/${id}`,
+    api: (id: string) => `/careanalysis/create/${id}`,
     route: (id: string) =>
-      `/dashboard/ai-assessment-centre/duty-of-care/${id}`,
+      `/dashboard/ai-assessment-centre/case-study/${id}`,
   },
 } as const;
 
@@ -80,8 +80,8 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
       type,
     }: {
       assessmentId: string;
-      // type: keyof typeof assessmentServiceConfig;
-      type : "WRITTEN_CASE"
+      type: keyof typeof assessmentServiceConfig;
+      // type : "WRITTEN_CASE"
     }) => {
       const service = assessmentServiceConfig[type];
 
@@ -129,10 +129,10 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
     return;
   }
 
-  // if (!data?.type) {
-  //   toast.error("Assessment type missing");
-  //   return;
-  // }
+  if (!data?.type) {
+    toast.error("Assessment type missing");
+    return;
+  }
 
   if (!token) {
     toast.error("Please login again");
@@ -141,8 +141,7 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
 
   startAssessment({
     assessmentId: data._id,
-    // type: data.type,
-    type: "WRITTEN_CASE"
+    type: data.type,
   });
 };
 
