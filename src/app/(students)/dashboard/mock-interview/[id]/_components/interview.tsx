@@ -42,7 +42,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(96);
   const [apiError, setApiError] = useState<string | null>(null);
 
   // Refs
@@ -57,6 +56,28 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const sessionId = sessionData?._id || "";
   const questions: Question[] = sessionData?.questions || [];
   const currentQuestion = questions[currentQuestionIndex];
+
+  // Calculate dynamic progress based on answers submitted
+  const calculateProgress = (): number => {
+    const totalQuestions = questions.length;
+    if (totalQuestions === 0) return 0;
+    
+    const submittedAnswers = answers.filter(a => a.submitted).length;
+    const baseProgress = 96; // Starting progress
+    
+    // Distribute remaining 4% across all questions
+    const progressPerQuestion = 4 / totalQuestions;
+    const currentQuestionProgress = (submittedAnswers / totalQuestions) * 4;
+    
+    return Math.min(baseProgress + currentQuestionProgress, 100);
+  };
+
+  const [progress, setProgress] = useState<number>(calculateProgress());
+
+  // Update progress whenever answers change
+  useEffect(() => {
+    setProgress(calculateProgress());
+  }, [answers, questions.length]);
 
   // Start camera function
   const startCamera = async (): Promise<MediaStream | null> => {
@@ -98,6 +119,33 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     return !!blob && blob.type.startsWith("video/");
   };
 
+  // Get supported MIME type (prefer mp4 for backend compatibility)
+  const getSupportedMimeType = (): string => {
+    const types = [
+      "video/mp4", // MP4 - most compatible with backend
+      "video/webm;codecs=vp9,opus",
+      "video/webm;codecs=vp8,opus",
+      "video/webm",
+    ];
+
+    for (const type of types) {
+      if (MediaRecorder.isTypeSupported(type)) {
+        console.log("Using MIME type:", type);
+        return type;
+      }
+    }
+
+    // Fallback to empty string, browser will choose default
+    return "";
+  };
+
+  // Get file extension based on MIME type
+  const getFileExtension = (mimeType: string): string => {
+    if (mimeType.includes("mp4")) return "mp4";
+    if (mimeType.includes("webm")) return "webm";
+    return "mp4"; // Default to mp4
+  };
+
   // Save answer to server
   const saveAnswer = async (videoUrl: string, blob: Blob) => {
     if (!isValidVideoFile(blob)) {
@@ -119,10 +167,14 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       // Create FormData
       const formData = new FormData();
 
+      // Use MP4 extension for backend compatibility
+      const mimeType = getSupportedMimeType();
+      const extension = getFileExtension(mimeType);
+      
       formData.append(
         "videoPath",
         blob,
-        `question-${currentQuestionIndex + 1}.webm`,
+        `question-${currentQuestionIndex + 1}.${extension}`,
       );
       formData.append("sessionId", sessionId);
       formData.append("questionIndex", currentQuestionIndex.toString());
@@ -143,6 +195,12 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       if (!apiUrl) {
         throw new Error("API base URL is not configured");
       }
+
+      console.log("Sending video to server...", {
+        size: blob.size,
+        type: blob.type,
+        extension: extension,
+      });
 
       const response = await fetch(
         `${apiUrl}/mock-interview-session/start-interview`,
@@ -180,9 +238,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
         return newAnswers;
       });
 
-      // Update progress based on answers
-      const newProgress = Math.min(96 + (currentQuestionIndex + 1) * 2, 100);
-      setProgress(newProgress);
+      // Progress will be updated via useEffect
     } catch (error) {
       console.error("Error saving answer:", error);
       setApiError(
@@ -244,22 +300,17 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       return;
     }
 
-    // Setup media recorder
-    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
-      ? "video/webm;codecs=vp9,opus"
-      : MediaRecorder.isTypeSupported("video/webm")
-        ? "video/webm"
-        : "";
-
+    // Setup media recorder with preferred MP4 format
+    const mimeType = getSupportedMimeType();
+    
     if (!mimeType) {
-      alert("No supported video format found");
+      alert("No supported video format found in this browser");
       return;
     }
 
     try {
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: mimeType,
-      });
+      const options: MediaRecorderOptions = { mimeType };
+      const mediaRecorder = new MediaRecorder(streamRef.current, options);
 
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
@@ -279,8 +330,14 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
           }
 
           // Create video blob
-          const blob = new Blob(chunksRef.current, {
-            type: mimeType,
+          const blob = new Blob(chunksRef.current, { 
+            type: mimeType 
+          });
+
+          console.log("Video recorded:", {
+            size: blob.size,
+            type: blob.type,
+            duration: recordingTime,
           });
 
           // Validate blob
@@ -328,7 +385,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       }, 1000);
     } catch (error) {
       console.error("Error starting recording:", error);
-      setApiError("Error starting recording");
+      setApiError("Error starting recording: " + (error as Error).message);
     }
   };
 
@@ -375,6 +432,14 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       if (prevAnswer) {
         setRecordedVideoUrl(prevAnswer.videoUrl);
         setIsVideoRecorded(true);
+        
+        if (videoRef.current) {
+          videoRef.current.srcObject = null;
+          videoRef.current.src = prevAnswer.videoUrl;
+          videoRef.current.muted = false;
+          videoRef.current.controls = true;
+          videoRef.current.load();
+        }
       }
     }
   };
@@ -424,6 +489,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   // Handle retake recording
   const handleRetake = () => {
     resetRecordingState();
+    startCamera();
   };
 
   // Handle interview completion
@@ -603,24 +669,32 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
               }`}
             />
 
-            {/* Recording overlay - Centered properly */}
+            {/* Recording indicator - Top right corner */}
             {isRecording && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30">
-                <div className="max-w-md p-8 mx-4 text-center text-white bg-black/80 rounded-2xl">
-                  <div className="mb-4 text-4xl animate-pulse">
-                    ⏺️ RECORDING
+              <div className="absolute z-30 top-4 right-4">
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 px-4 py-2 mb-2 text-white bg-red-600 rounded-full animate-pulse">
+                    <div className="w-3 h-3 bg-white rounded-full"></div>
+                    <span className="font-bold">REC</span>
+                    <span className="font-mono">{formatTime(recordingTime)}</span>
                   </div>
-                  <div className="mb-4 text-6xl font-bold">
-                    {formatTime(recordingTime)}
+                  <div className="px-3 py-1 text-sm text-white rounded-full bg-black/80">
+                    Max 2:00
                   </div>
-                  <div className="mb-6 text-lg opacity-90">Max 2:00</div>
-                  <button
-                    onClick={stopRecording}
-                    className="px-6 py-3 font-bold text-white transition-all bg-red-600 rounded-lg hover:bg-red-700"
-                  >
-                    ⏹️ Stop Recording
-                  </button>
                 </div>
+              </div>
+            )}
+
+            {/* Stop Recording button - Bottom center when recording */}
+            {isRecording && (
+              <div className="absolute z-30 transform -translate-x-1/2 bottom-6 left-1/2">
+                <button
+                  onClick={stopRecording}
+                  className="flex items-center gap-2 px-6 py-3 text-white transition-all bg-red-600 rounded-full shadow-lg hover:bg-red-700 animate-pulse"
+                >
+                  <span className="text-xl">⏹️</span>
+                  <span className="font-bold">Stop Recording</span>
+                </button>
               </div>
             )}
 
@@ -638,13 +712,13 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                 <div className="relative w-40 h-40 mx-auto mb-8 flex items-center justify-center rounded-full border-[8px] border-[#FAFF00]">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-4xl font-bold text-[#FAFF00]">
-                      {progress}%
+                      {progress.toFixed(0)}%
                     </span>
                   </div>
                 </div>
 
                 <p className="mt-4 text-sm serif-font italic text-[#555]">
-                  Recording starts automatically in {prepTimer}s
+                  Recording starts automatically in {autoStartTimer}s
                 </p>
               </div>
             )}
@@ -672,7 +746,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                       if (recordedVideoUrl) {
                         const a = document.createElement("a");
                         a.href = recordedVideoUrl;
-                        a.download = `question-${currentQuestionIndex + 1}.webm`;
+                        a.download = `question-${currentQuestionIndex + 1}.mp4`;
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
@@ -698,7 +772,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
               </div>
             )}
 
-            {/* Control buttons - Outside of overlays */}
+            {/* Control buttons */}
             <div className="z-20 flex flex-col items-center gap-4 mt-6">
               {!isVideoRecorded && !isRecording && (
                 <button
@@ -727,36 +801,36 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                   Close Camera
                 </button>
               )}
-
-              {/* Navigation buttons */}
-              <div className="flex justify-between w-full max-w-md gap-2 mt-4">
-                <button
-                  onClick={handlePreviousQuestion}
-                  disabled={currentQuestionIndex === 0}
-                  className={`px-6 py-3 rounded-xl transition flex items-center gap-2 ${
-                    currentQuestionIndex === 0
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-gray-700 text-white hover:bg-gray-800"
-                  }`}
-                >
-                  ← Previous
-                </button>
-
-                <button
-                  onClick={handleNextQuestion}
-                  disabled={!isCurrentQuestionAnswered}
-                  className={`px-6 py-3 rounded-xl transition flex items-center gap-2 ${
-                    !isCurrentQuestionAnswered
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 text-white hover:bg-blue-700"
-                  }`}
-                >
-                  {currentQuestionIndex < questions.length - 1
-                    ? "Next Question →"
-                    : "Complete Interview"}
-                </button>
-              </div>
             </div>
+          </div>
+
+          {/* MOVED NAVIGATION BUTTONS HERE - BELOW THE VIDEO AREA */}
+          <div className="flex justify-between gap-2 mt-6">
+            <button
+              onClick={handlePreviousQuestion}
+              disabled={currentQuestionIndex === 0}
+              className={`px-6 py-3 rounded-xl transition flex items-center gap-2 flex-1 justify-center ${
+                currentQuestionIndex === 0
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-700 text-white hover:bg-gray-800"
+              }`}
+            >
+              ← Previous Question
+            </button>
+
+            <button
+              onClick={handleNextQuestion}
+              disabled={!isCurrentQuestionAnswered}
+              className={`px-6 py-3 rounded-xl transition flex items-center gap-2 flex-1 justify-center ${
+                !isCurrentQuestionAnswered
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-primary text-black "
+              }`}
+            >
+              {currentQuestionIndex < questions.length - 1
+                ? "Next Question →"
+                : "Complete Interview"}
+            </button>
           </div>
 
           {/* Footer Status */}
