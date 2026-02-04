@@ -10,12 +10,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useSession } from "next-auth/react"
 import { WrittenAiAssessmentApiResponse } from "../_components/written-assessment-data-type"
-// import { useMutation } from "@tanstack/react-query"
-// import { toast } from "sonner"
-// import { useSession } from "next-auth/react"
 
-// import Navbar from "../_components/navbar"
-// import Footer from "../_components/footer"
 
 const assessmentContent = {
   'case-study': {
@@ -75,7 +70,6 @@ export default function AssessmentPage() {
   const token = session?.data?.accessToken
   const [timeLeft, setTimeLeft] = useState(45 * 60)
   const [yourResponse, setYourResponse] = useState('')
-  const [showRequirements, setShowRequirements] = useState(true)
   const [wordCount, setWordCount] = useState(0)
 
 
@@ -129,6 +123,8 @@ export default function AssessmentPage() {
 
     console.log(data)
 
+    const writtentData = data?.data
+
 
 
     // written case study put api 
@@ -151,6 +147,9 @@ export default function AssessmentPage() {
         return 0;
       }
       toast.success(data?.message || "Written Case Study updated successfully")
+       setTimeout(() => {
+      router.push(`/dashboard/ai-assessment-centre/results/${assessmentId}`)
+    }, 1500)
     }
   })
 
@@ -171,9 +170,7 @@ export default function AssessmentPage() {
     mutate({yourResponse})
 
 
-    setTimeout(() => {
-      router.push(`/dashboard/ai-assessment-centre/results/${assessmentId}`)
-    }, 1500)
+   
   }
 
   const handleCancel = () => {
@@ -197,8 +194,8 @@ export default function AssessmentPage() {
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div className="space-y-2">
-              <p className="text-xs font-bold text-[#0A0A0A]">{content.module}</p>
-              <h1 className="text-2xl md:text-3xl lg:text-[40px] font-bold text-[#0A0A0A]">{content.title}</h1>
+              <p className="text-xs font-bold text-[#0A0A0A]">Assessment Module 01</p>
+              <h1 className="text-2xl md:text-3xl lg:text-[40px] font-bold text-[#0A0A0A]">Written Assessment</h1>
             </div>
             <div className={` rounded-[12px] border-2 border-[#131313] px-4 py-2 flex items-center gap-3 ${isTimeWarning ? ' border-red-500 bg-red-50' : 'border-primary bg-[#FFFF00]'}`}>
               <div className="bg-[#0A0A0A] p-[6px] rounded-[8px] flex-shrink-0 inline-flex items-center justify-center">
@@ -227,14 +224,14 @@ export default function AssessmentPage() {
                 {/* Role Context */}
                 <div className="bg-[#FEF3C7] border-[2px] border-[#FBBF244D]/30 rounded-[12px] p-5">
                   <h4 className="font-bold text-[#0A0A0A] text-xs mb-2">Role Context</h4>
-                  <p className="text-xs text-medium text-[#0F172A]">{content.roleContext}</p>
+                  <p className="text-xs text-medium text-[#0F172A]">{writtentData?.roleContext || "N/A"}</p>
                 </div>
 
                 {/* Case Description */}
                 <div className="space-y-3 pt-6 md:pt-7 lg:pt-8">
                   <h3 className="text-lg md:text-xl font-bold text-[#0A0A0A] border-b-[3px] border-[#FBBF24]">{content.caseName}</h3>
                   <p className="text-xs text-[#64748B] font-normal pb-6 md:pb-7 lg:pb-8">
-                    {content.caseDescription}
+                    {writtentData?.ventaraAutomotive || "N/A"}
                   </p>
 
                   {/* Instructions */}

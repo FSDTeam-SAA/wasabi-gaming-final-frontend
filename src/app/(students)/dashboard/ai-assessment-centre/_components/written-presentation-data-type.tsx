@@ -1,57 +1,54 @@
-export type WrittenAiAssessmentApiResponse = {
+export interface PresentationTaskApiResponse {
   statusCode: number
   success: boolean
   message: string
-  data: AiAssessmentData
+  data: PresentationTaskData
 }
 
 
-export type AiAssessmentData = {
+export interface PresentationTaskData {
   _id: string
   aiassigmentId: AiAssignment
-  roleContext: string
-  ventaraAutomotive: string
-
+  ventaraMobility: string
+  keyObject: string[]
+  proTip: string[]
   successTips: string[]
   recommendations: string[]
-
   applicant: Applicant
-
   createdAt: string
   updatedAt: string
   __v: number
-
   completionRate: number
   feedback: string[]
-  overallGrade: "A" | "B" | "C" | "D" | "E" | "F"
+  overallGrade: string
   totalScore: number
   wordsCompleted: number
   writingSpeed: number
   yourResponse: string
 }
 
-
-export type AiAssignment = {
-    _id: string
+export interface AiAssignment {
+  _id: string
   logo: string
   title: string
   discription: string
   duration: number
-  status: "AVAILABLE" | "UNAVAILABLE" | "DRAFT"
+  status: 'AVAILABLE' | 'UNAVAILABLE'
   applicationUser: string[]
-  type: "WRITTEN_CASE" | "MCQ" | "VIDEO" | "CODING"
   createdAt: string
   updatedAt: string
   __v: number
+  type: 'PRESENTATION' | 'MCQ' | 'CODING'
 }
 
-
-export type Applicant = {
-    _id: string
+export interface Applicant {
+  _id: string
   firstName: string
   lastName: string
   email: string
   profileImage: string
 }
+
+
 
 

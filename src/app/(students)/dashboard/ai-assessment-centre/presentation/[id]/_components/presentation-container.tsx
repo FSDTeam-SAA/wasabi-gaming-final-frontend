@@ -8,20 +8,26 @@ import { Clock } from 'lucide-react';
 import { PresentationPromptSection } from '../../../_components/presentation-prompt-section';
 import { ResponseEditor } from '../../../_components/response-editor';
 import { RequirementsSection } from '../../../_components/requirements-section';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
+import { PresentationTaskApiResponse } from '../../../_components/written-presentation-data-type';
 
 // import Footer from '../_components/footer';
 
 export default function PresentationTaskPage({id}:{id:string}) {
   console.log(id)
+  const assessmentId = id;
   const router = useRouter();
+    const session = useSession();
+  const token = session?.data?.accessToken
   const [timeLeft, setTimeLeft] = useState(3599); // 59:59
   const [requirements, setRequirements] = useState([
     { id: 'words', label: 'Use at least 300 words', completed: false },
     { id: 'tone', label: 'Use a professional tone', completed: false },
     { id: 'structure', label: 'Structure clearly', completed: false },
   ]);
-  const [response, setResponse] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [yourResponse, setYourResponse] = useState('');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -41,11 +47,61 @@ export default function PresentationTaskPage({id}:{id:string}) {
   const seconds = timeLeft % 60;
   const isTimeWarning = timeLeft < 300; // 5 minutes
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    // Simulate submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    router.push('/dashboard/ai-assessment-centre/results/presentation');
+
+
+   // written case study get api
+    const { data, isLoading, isError } =
+    useQuery<PresentationTaskApiResponse>({
+      queryKey: ["written-presentation", assessmentId],
+      queryFn: async () => {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/presentationtask/${assessmentId}`
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch invitations");
+        }
+
+        return res.json();
+      },
+    });
+
+    console.log(data)
+
+    const writtentData = data?.data
+
+
+
+    // written case study put api 
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["written-presentation-put", assessmentId],
+    mutationFn: async (values: { yourResponse: string }) => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/presentationtask/${assessmentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(values)
+      })
+      return res.json()
+    },
+    onSuccess: (data) => {
+      if (!data?.success) {
+        toast.error(data?.message || "Something went wrong");
+        return 0;
+      }
+      toast.success(data?.message || "Written presentation updated successfully")
+       setTimeout(() => {
+      router.push(`/dashboard/ai-assessment-centre/presentation/results/${assessmentId}`)
+    }, 1500)
+    }
+  })
+
+
+
+  const handleSubmit = () => {
+    mutate({yourResponse})
   };
 
   const handleCancel = () => {
@@ -83,7 +139,7 @@ export default function PresentationTaskPage({id}:{id:string}) {
           <div className="space-y-6">
             <PresentationPromptSection
               title="Ventara Automotive"
-              description="Our client, Ventara, is experiencing delays in the launch of their new electric vehicle. The main issues include supply chain disruptions and technical challenges with the battery system. This could affect their position in the market and profitability. You need to draft an internal email to the senior partner outlining the key legal risks and proposing a strategy to mitigate them while maintaining the client relationship."
+              description={writtentData?.ventaraMobility || "N/A"}
               objectives={[
                 'Identify contractual liabilities',
                 'Propose negotiation strategy',
@@ -100,7 +156,7 @@ export default function PresentationTaskPage({id}:{id:string}) {
               label="Your Response"
               subtitle="Internal Email Draft"
               placeholder="Start typing your response here..."
-              onResponseChange={setResponse}
+              onResponseChange={setYourResponse}
             />
 
             {/* Requirements */}
@@ -128,10 +184,10 @@ export default function PresentationTaskPage({id}:{id:string}) {
           <Button
             size="lg"
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isPending}
             className="bg-yellow-400 text-gray-900 hover:bg-yellow-500 font-bold"
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Response'}
+            {isPending ? 'Submitting...' : 'Submit Response'}
           </Button>
         </div>
       </main>
