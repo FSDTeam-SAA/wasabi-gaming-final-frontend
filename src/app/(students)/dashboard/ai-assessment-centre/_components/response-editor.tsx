@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
+import { FileText } from 'lucide-react';
 
 interface ResponseEditorProps {
   maxWords?: number;
@@ -31,13 +32,19 @@ export function ResponseEditor({
   const isBelowLimit = wordCount <= maxWords;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 ">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 bg-yellow-100 px-4 py-3 rounded-lg">
-        <div>
-          <h3 className="font-bold text-gray-900">{label}</h3>
-          <p className="text-sm text-gray-600">{subtitle}</p>
-        </div>
+      <div className="flex items-center justify-between gap-4  px-4 py-3 border-b border-[#FFEBA0] ">
+        <div className="flex items-center gap-2">
+                  <div className="bg-[#FFFF00] p-2 rounded-[8px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+                    <FileText  className="text-[#0A0A0A]" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#0A0A0A] text-base">{label}</h3>
+                    <p className="text-xs text-[#64748B] font-semibold">{subtitle}</p>
+                  </div>
+
+                </div>
         <div className={`text-sm font-semibold px-3 py-1 rounded-full whitespace-nowrap ${
           isBelowLimit ? 'bg-white text-gray-700' : 'bg-red-100 text-red-700'
         }`}>
@@ -50,12 +57,12 @@ export function ResponseEditor({
         value={response}
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
-        className="min-h-64 resize-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+         className="w-full h-96 py-1 rounded-lg focus:outline-none px-4 border-none text-foreground resize-none"
       />
 
       {/* Word count indicator */}
       <div className="flex items-center justify-between text-xs text-gray-500">
-        <span>{wordCount} words used</span>
+        <span className="pl-4">{wordCount} words used</span>
         {wordCount > maxWords && (
           <span className="text-red-600 font-semibold">
             Exceeds limit by {wordCount - maxWords} words

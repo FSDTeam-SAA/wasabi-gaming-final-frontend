@@ -1,5 +1,6 @@
 'use client';
 
+import { Settings } from 'lucide-react';
 import { useState } from 'react';
 
 interface Requirement {
@@ -34,13 +35,11 @@ export function RequirementsSection({
   const completedCount = requirements.filter(r => r.completed).length;
 
   return (
-    <div className="bg-yellow-50 p-4 rounded-lg space-y-4 border border-yellow-200">
+    <div className="bg-[#FFF9E6] p-4 rounded-lg space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-            </svg>
+          <div className="w-5 h-5 rounded-full flex items-center justify-center">
+           <Settings />
           </div>
           <h3 className="font-bold text-gray-900">{title}</h3>
         </div>
@@ -57,9 +56,9 @@ export function RequirementsSection({
               type="radio"
               checked={req.completed}
               onChange={() => handleToggle(req.id)}
-              className="w-4 h-4 accent-yellow-400"
+              className="w-4 h-4 accent-[#FFFF00]"
             />
-            <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
+            <span className="text-sm text-[#4B5563] group-hover:text-gray-900 transition-colors">
               {req.label}
             </span>
           </label>
