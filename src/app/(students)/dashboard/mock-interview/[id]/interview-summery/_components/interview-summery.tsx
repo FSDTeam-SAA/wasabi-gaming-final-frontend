@@ -106,7 +106,7 @@ export default function InterviewSummary() {
               Interview Crushed!
             </p>
             <h2 className="text-xl font-bold">
-              {averageScores.interview_crushed}/100
+              {averageScores?.interview_crushed}/100
             </h2>
           </div>
         </div>
@@ -131,19 +131,19 @@ export default function InterviewSummary() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <RadialProgress
             label="Communication & Clarity"
-            value={averageScores.communication_and_clarity}
+            value={averageScores?.communication_and_clarity}
           />
           <RadialProgress
             label="Commercial Awareness"
-            value={averageScores.commercial_awareness}
+            value={averageScores?.commercial_awareness}
           />
           <RadialProgress
             label="Problem Solving"
-            value={averageScores.problem_solving}
+            value={averageScores?.problem_solving}
           />
           <RadialProgress
             label="Professionalism & Presence"
-            value={averageScores.professionalism_and_presence}
+            value={averageScores?.professionalism_and_presence}
           />
         </div>
       </div>
@@ -157,7 +157,7 @@ export default function InterviewSummary() {
             <h3 className="text-lg font-bold">Strengths</h3>
           </div>
           <ul className="space-y-4">
-            {feedback.strength.map((item: string, idx: number) => (
+            {feedback?.strength?.map((item: string, idx: number) => (
               <li
                 key={idx}
                 className="flex gap-3 text-sm text-[#2D6A4F] leading-relaxed"
@@ -176,7 +176,7 @@ export default function InterviewSummary() {
             <h3 className="text-lg font-bold">Areas for Improvement</h3>
           </div>
           <ul className="space-y-4">
-            {feedback.areas_for_improvement.map((item: string, idx: number) => (
+            {feedback?.areas_for_improvement?.map((item: string, idx: number) => (
               <li
                 key={idx}
                 className="flex gap-3 text-sm text-[#94412D] leading-relaxed"

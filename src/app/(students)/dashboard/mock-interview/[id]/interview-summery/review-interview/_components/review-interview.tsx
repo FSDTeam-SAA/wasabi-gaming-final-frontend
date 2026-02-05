@@ -65,14 +65,14 @@ const ReviewInterview = () => {
   // Handle video time updates
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
+      setCurrentTime(videoRef?.current?.currentTime);
     }
   };
 
   // Get video duration
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
-      setDuration(videoRef.current.duration);
+      setDuration(videoRef?.current?.duration);
     }
   };
 
@@ -87,9 +87,9 @@ const ReviewInterview = () => {
   const handleTogglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
-        videoRef.current.pause();
+        videoRef?.current.pause();
       } else {
-        videoRef.current.play();
+        videoRef?.current.play();
       }
       setIsPlaying(!isPlaying);
     }
@@ -100,14 +100,14 @@ const ReviewInterview = () => {
     setIsPlaying(false);
     setCurrentTime(0);
     if (videoRef.current) {
-      videoRef.current.load();
+      videoRef?.current.load();
     }
   }, [activeIdx]);
 
   if (isLoading) return <ReviewSkeleton />;
   if (!data) return <div className="p-10 text-center">Session not found.</div>;
 
-  const currentAnswer = data.session.answers[activeIdx];
+  const currentAnswer = data?.session?.answers[activeIdx];
   const feedback = currentAnswer?.aiResult?.feedback;
 
   return (
@@ -233,6 +233,12 @@ const ReviewInterview = () => {
           <div className="flex items-center gap-2 text-[#FF6B2C]">
             <MessageSquare size={20} />
             <h2 className="text-lg font-bold">Feedback Timeline</h2>
+          </div>
+
+          <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-2xl">
+            <h1 className="text-lg font-bold text-gray-500">Overall Score</h1>
+
+            <h1><span className="text-4xl text-[#223a8a] font-bold">{data?.sessionAverageScore}</span>/<span className="opacity-75">10</span></h1>
           </div>
 
           <div className="space-y-4">

@@ -63,7 +63,7 @@ const DetailsLayout = () => {
 };
 
 const LoadingScreen = () => (
-  <div className="flex items-center justify-center min-h-screen">
+  <div className="flex items-center justify-center min-h-[calc(100vh-300px)]">
     <div className="text-center">
       <div className="w-16 h-16 mx-auto mb-4 border-t-4 rounded-full border-primary solid border- animate-spin"></div>
       <p className="text-lg font-semibold text-gray-700">
