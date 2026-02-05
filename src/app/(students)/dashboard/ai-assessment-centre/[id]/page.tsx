@@ -11,58 +11,6 @@ import { toast } from "sonner"
 import { useSession } from "next-auth/react"
 import { WrittenAiAssessmentApiResponse } from "../_components/written-assessment-data-type"
 
-
-const assessmentContent = {
-  'case-study': {
-    title: 'Written Assessment',
-    module: 'Assessment Module 01',
-    caseName: 'Ventara Automotive',
-    roleContext: 'You are an analyst at a consulting firm. Your manager has requested a brief email about a recent client case.',
-    caseDescription: `Our client, Ventara, is experiencing delays in the launch of their new electric vehicle. The main issues include supply chain disruptions and technical challenges with the battery system. This could affect their position in the market and profitability.`,
-    instructions: [
-      'Summarize the main issues',
-      'Explain potential impact on client relationship',
-      'Suggest two next steps',
-    ],
-    requirements: [
-      'Use at least 300 words',
-      'Use a professional tone',
-      'Structure clearly',
-    ],
-    duration: 45,
-  },
-  'presentation': {
-    title: 'Written Presentation',
-    module: 'Assessment Module 02',
-    caseName: 'Market Analysis Report',
-    roleContext: 'Prepare a presentation on current market trends.',
-    caseDescription: 'Analyze the competitive landscape and provide strategic recommendations.',
-    instructions: ['Research the topic', 'Create structured outline', 'Present findings'],
-    requirements: ['250+ words', 'Professional structure', 'Evidence-based'],
-    duration: 60,
-  },
-  'email-exercise': {
-    title: 'In-Tray Email Exercise',
-    module: 'Assessment Module 03',
-    caseName: 'Email Management Test',
-    roleContext: 'Handle multiple priority emails in your inbox.',
-    caseDescription: 'Sort and respond to emails based on urgency and importance.',
-    instructions: ['Prioritize emails', 'Draft responses', 'Manage time'],
-    requirements: ['Clear prioritization', 'Professional tone', 'Time management'],
-    duration: 40,
-  },
-  'law-summary': {
-    title: 'Case Law Summary',
-    module: 'Assessment Module 04',
-    caseName: 'Legal Case Analysis',
-    roleContext: 'Summarize the key points from a legal case.',
-    caseDescription: 'Analyze the judgment and extract key legal principles.',
-    instructions: ['Identify key issues', 'Summarize judgment', 'Note implications'],
-    requirements: ['Concise summary', 'Legal accuracy', '300+ words'],
-    duration: 50,
-  },
-}
-
 export default function AssessmentPage() {
   const params = useParams()
   const router = useRouter()
@@ -77,7 +25,18 @@ export default function AssessmentPage() {
   // console.log(content)
 
   const assessmentId = params.id as string
-  const content = assessmentContent[assessmentId as keyof typeof assessmentContent] || assessmentContent['case-study']
+  const content = {
+     instructions: [
+      'Summarize the main issues',
+      'Explain potential impact on client relationship',
+      'Suggest two next steps',
+    ],
+    requirements: [
+      'Use at least 300 words',
+      'Use a professional tone',
+      'Structure clearly',
+    ]
+}
 
 
   console.log(assessmentId)
@@ -160,12 +119,12 @@ export default function AssessmentPage() {
   const handleSubmit = () => {
 
     // 🔥 console data
-    console.log("===== ASSESSMENT SUBMISSION =====");
-    console.log("Assessment ID:", assessmentId);
-    console.log("Response Text:", yourResponse);
-    console.log("Word Count:", wordCount);
-    console.log("Submitted At:", new Date().toISOString());
-    console.log("================================");
+    // console.log("===== ASSESSMENT SUBMISSION =====");
+    // console.log("Assessment ID:", assessmentId);
+    // console.log("Response Text:", yourResponse);
+    // console.log("Word Count:", wordCount);
+    // console.log("Submitted At:", new Date().toISOString());
+    // console.log("================================");
 
     mutate({yourResponse})
 
@@ -187,7 +146,6 @@ export default function AssessmentPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* <Navbar /> */}
 
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -229,7 +187,7 @@ export default function AssessmentPage() {
 
                 {/* Case Description */}
                 <div className="space-y-3 pt-6 md:pt-7 lg:pt-8">
-                  <h3 className="text-lg md:text-xl font-bold text-[#0A0A0A] border-b-[3px] border-[#FBBF24]">{content.caseName}</h3>
+                  <h3 className="text-lg md:text-xl font-bold text-[#0A0A0A] border-b-[3px] border-[#FBBF24]">Ventara Automotive</h3>
                   <p className="text-xs text-[#64748B] font-normal pb-6 md:pb-7 lg:pb-8">
                     {writtentData?.ventaraAutomotive || "N/A"}
                   </p>

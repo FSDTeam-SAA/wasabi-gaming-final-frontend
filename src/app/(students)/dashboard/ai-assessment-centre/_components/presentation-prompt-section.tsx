@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, PenTool } from 'lucide-react';
 
 interface PromptSectionProps {
   title: string;
@@ -18,47 +18,47 @@ export function PresentationPromptSection({
   return (
     <div className="space-y-4">
       {/* AI Prompt Header */}
-      <div className="flex items-center gap-3 bg-black text-white px-6 py-4 rounded-lg">
-        <div className="flex-shrink-0">
-          <svg
-            className="w-6 h-6"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M9 12h6m-6 4h6m2-15H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2z" />
-          </svg>
-        </div>
-        <span className="font-semibold">AI Prompt</span>
-      </div>
+       <div className="mb-6 border border-[#E5E7EB] bg-white rounded-[12px] shadow-[0px_1px_2px_0px_#0000000D]">
+        <div className="bg-[#0A0A0A] rounded-t-[12px] p-5 text-white border-b-[4px] border-[#FFFF00]">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="bg-[#FFFF00] p-2 rounded-[8px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+                    <PenTool  className="text-[#0A0A0A]" />
+                  </div>
+                  <h3 className="font-bold">AI Prompt</h3>
+                </div>
+              </div>
 
-      {/* Case Title */}
+      <div className="p-7">
+        {/* Case Title */}
       <div>
-        <h3 className="text-xl font-bold mb-2">{title}</h3>
-        <div className="w-16 h-1 bg-yellow-400 rounded" />
+        <h3 className="text-lg md:text-xl text-[#111827] font-bold mb-1">{title}</h3>
+        <div className="w-16 h-1 bg-[#FFFF00] rounded" />
       </div>
 
       {/* Description */}
-      <p className="text-gray-700 leading-relaxed">{description}</p>
+      <p className="text-[#4B5563] text-sm font-normal leading-relaxed pt-4 pb-6">{description}</p>
 
       {/* Key Objectives */}
-      <div className="border-l-4 border-yellow-400 bg-white p-4 rounded">
-        <h4 className="font-bold mb-3">Key Objectives</h4>
-        <ul className="space-y-2">
+      <div className="bg-[#F9FAFB] rounded-[8px] border-l-4 border-[#FFFF00] p-4 ">
+        <h4 className="text-[#111827] text-sm font-bold mb-1">Key Objectives</h4>
+        <ul className="space-y-1">
           {objectives.map((objective, index) => (
-            <li key={index} className="flex items-start gap-3">
-              <span className="flex-shrink-0 text-yellow-500 mt-1">▶</span>
-              <span className="text-gray-700">{objective}</span>
+            <li key={index} className="flex items-center gap-3">
+              <span className="flex-shrink-0 text-[#FFFF00] ">▶</span>
+              <span className="text-sm text-[#4B5563] font-normal">{objective}</span>
             </li>
           ))}
         </ul>
       </div>
+      </div>
+       </div>
 
       {/* Pro Tip */}
-      <div className="bg-gray-100 p-4 rounded-lg flex gap-3">
+      <div className="bg-[#F3F4F6] p-5 rounded-[12px] flex gap-3 border border-[#E5E7EB] ">
         <AlertCircle className="w-5 h-5 text-gray-600 flex-shrink-0 mt-1" />
         <div>
-          <h4 className="font-semibold text-gray-900">Pro Tip</h4>
-          <p className="text-gray-700 text-sm mt-1">{proTip}</p>
+          <h4 className="font-bold text-sm text-[#111827]">Pro Tip</h4>
+          <p className="text-[#4B5563] text-sm mt-1">{proTip}</p>
         </div>
       </div>
     </div>

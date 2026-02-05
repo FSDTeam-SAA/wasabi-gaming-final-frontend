@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
-import { Clock } from 'lucide-react';
+
+import { Clock, X, Send } from 'lucide-react';
 import { PresentationPromptSection } from '../../../_components/presentation-prompt-section';
 import { ResponseEditor } from '../../../_components/response-editor';
 import { RequirementsSection } from '../../../_components/requirements-section';
@@ -13,7 +13,6 @@ import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
 import { PresentationTaskApiResponse } from '../../../_components/written-presentation-data-type';
 
-// import Footer from '../_components/footer';
 
 export default function PresentationTaskPage({id}:{id:string}) {
   console.log(id)
@@ -112,26 +111,22 @@ export default function PresentationTaskPage({id}:{id:string}) {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* <Navbar /> */}
-
-      {/* Timer Banner */}
-      <div className={`px-6 py-3 flex items-center justify-between ${isTimeWarning ? 'bg-yellow-400' : 'bg-yellow-300'}`}>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold">Exercise</span>
-          <span className="text-sm font-semibold">IN-TRAY EMAIL EXERCISE</span>
-        </div>
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold ${isTimeWarning ? 'bg-gray-900 text-yellow-300' : 'bg-yellow-500 text-gray-900'}`}>
-          <Clock className="w-5 h-5" />
-          <span>{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}</span>
-        </div>
-      </div>
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <p className="text-sm text-gray-600 mb-2">Assessment Module 01</p>
-          <h1 className="text-4xl font-bold text-gray-900">Written Presentation Task</h1>
-        </div>
+         <div className="flex items-start justify-between mb-8">
+                  <div className="space-y-2">
+                    <p className="text-xs font-bold text-[#0A0A0A]">Assessment Module 01</p>
+                    <h1 className="text-2xl md:text-3xl lg:text-[40px] font-bold text-[#0A0A0A]">Written Presentation Task</h1>
+                  </div>
+                  <div className={` rounded-[12px] border-2 border-[#131313] px-4 py-2 flex items-center gap-3 ${isTimeWarning ? ' border-red-500 bg-red-50' : 'border-primary bg-[#FFFF00]'}`}>
+                    <div className="bg-[#0A0A0A] p-[6px] rounded-[8px] flex-shrink-0 inline-flex items-center justify-center">
+                      <Clock className={`w-5 h-5 ${isTimeWarning ? 'text-red-600' : 'text-[#FBBF24]'}`} />
+                    </div>
+                    <span className={`font-bold text-base ${isTimeWarning ? 'text-red-600' : 'text-[#0A0A0A]'}`}>
+                      {minutes}:{seconds.toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                </div>
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -150,8 +145,9 @@ export default function PresentationTaskPage({id}:{id:string}) {
           </div>
 
           {/* Right Column - Response */}
-          <div className="space-y-6">
-            <ResponseEditor
+          <div className="space-y-6 ">
+            <div className="rounded-t-[12px] bg-[#FFF9E6]">
+              <ResponseEditor
               maxWords={300}
               label="Your Response"
               subtitle="Internal Email Draft"
@@ -168,31 +164,31 @@ export default function PresentationTaskPage({id}:{id:string}) {
                 );
               }}
             />
+            </div>
+
+             {/* Action Buttons */}
+              <div className="bg-white flex flex-col md:flex-row gap-4 justify-end pb-6 pt-6 pr-4">
+                <button
+                  onClick={handleCancel}
+                  className="flex items-center gap-2 px-6 py-3 border-[2px] border-[#0A0A0A] text-[#0A0A0A] rounded-[12px] text-sm font-bold"
+                >
+                 <X /> Cancel Assessment
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isPending}
+                  className="flex items-center gap-2 px-6 py-3 bg-[#FFFF00] rounded-[12px] text-[#0A0A0A] text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
+                >
+                  {isPending ? 'Submitting...' : 'Submit Response'} <Send />
+                </button>
+              </div>
           </div>
+
+           
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-12 flex items-center justify-end gap-4">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={handleCancel}
-            className="border-gray-900 text-gray-900 hover:bg-gray-100 bg-transparent"
-          >
-            Cancel Assessment
-          </Button>
-          <Button
-            size="lg"
-            onClick={handleSubmit}
-            disabled={isPending}
-            className="bg-yellow-400 text-gray-900 hover:bg-yellow-500 font-bold"
-          >
-            {isPending ? 'Submitting...' : 'Submit Response'}
-          </Button>
-        </div>
+      
       </main>
-
-      {/* <Footer /> */}
     </div>
   );
 }

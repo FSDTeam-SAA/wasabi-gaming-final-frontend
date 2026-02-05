@@ -3,14 +3,12 @@
 
 'use client'
 
-// import Link from 'next/link'
-// import { useRouter } from 'next/navigation'
-// import { Navbar } from '@/components/navbar'
 import { ChartColumn, Brain, Lightbulb, Target, CircleCheckBig } from 'lucide-react'
-// import Footer from './_components/footer'
 import { AssessmentCard } from './_components/assessment-card'
 import { AiAssessmentsApiResponse } from './_components/ai-assessment-data-type'
 import { useQuery } from '@tanstack/react-query'
+import { AssessmentGridLoader } from './_components/assessment-card-skeleton'
+import { ErrorContainer } from './_components/ai-assessment-error-container'
 
 
 
@@ -53,16 +51,9 @@ const assessments = [
 
 
 export default function Home() {
-  // const router = useRouter()
-
-
-  // const handleStartAssessment = (id: string) => {
-  //   router.push(`/dashboard/ai-assessment-centre/${id}`)
-  // }
-
 
   // ai assessment api integration 
-  const { data, isLoading, isError } =
+  const { data, isLoading, isError, refetch } =
     useQuery<AiAssessmentsApiResponse>({
       queryKey: ["ai-assessment-all"],
       queryFn: async () => {
@@ -83,7 +74,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* <Navbar /> */}
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -97,29 +87,39 @@ export default function Home() {
             </p>
           </div>
 
+           {/* LOADER */}
+          {isLoading && <AssessmentGridLoader />}
+
+          {/* ERROR */}
+          {isError && (
+            <ErrorContainer
+              message="Unable to load AI assessments. Please try again."
+              onRetry={() => refetch()}
+            />
+          )}
+
+          {/* DATA */}
+          {!isLoading && !isError && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+              {data?.data?.map((assessment) => (
+                <AssessmentCard
+                  key={assessment._id}
+                  data={assessment}
+                />
+              ))}
+            </div>
+          )}
+
           {/* Assessment Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             {data?.data?.map((assessment) => (
               <AssessmentCard
                 key={assessment._id}
                 data={assessment}
               />
             ))}
-            {/* {data?.data?.map((assessment) => (
-              <AssessmentCard
-                data ={assessment}
-                // key={assessment?._id}
-                // title={assessment.title}
-                // description={assessment.discription}
-                // icon={assessment.icon}
-                // duration={assessment.duration}
-                // score={assessment.score}
-                // status={assessment.status}
-                // onAction={() => handleStartAssessment(assessment._id)}
-              />
-            ))} */}
 
-          </div>
+          </div> */}
 
           {/* Benefits Section */}
           <section className="bg-gradient-to-br from-[#FAF5FF] to-[#FFFFFF] border-[2px] border-[#E9D4FF] rounded-[20px] p-8">
@@ -157,8 +157,6 @@ export default function Home() {
           </section>
         </section>
       </main>
-
-      {/* <Footer /> */}
     </div>
   )
 }
