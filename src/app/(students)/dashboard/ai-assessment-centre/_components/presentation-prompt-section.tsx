@@ -36,7 +36,7 @@ export function PresentationPromptSection({
       </div>
 
       {/* Description */}
-      <p className="text-[#4B5563] text-sm font-normal leading-relaxed pb-6">{description}</p>
+      <p className="text-[#4B5563] text-sm font-normal leading-relaxed pt-4 pb-6">{description}</p>
 
       {/* Key Objectives */}
       <div className="bg-[#F9FAFB] rounded-[8px] border-l-4 border-[#FFFF00] p-4 ">

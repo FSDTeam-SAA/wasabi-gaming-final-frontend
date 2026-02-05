@@ -57,7 +57,7 @@ export function ResponseEditor({
         value={response}
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
-         className="w-full h-96 py-1 rounded-lg focus:outline-none px-4 border-none text-foreground resize-none"
+         className="w-full h-96 py-1 rounded-lg focus:outline-none px-4 border-none placeholder:text-[#CCCCCC] text-foreground resize-none"
       />
 
       {/* Word count indicator */}
