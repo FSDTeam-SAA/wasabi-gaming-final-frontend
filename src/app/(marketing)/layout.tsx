@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import Navbar from '@/components/shared/Navbar'
 // import Footer from "@/components/shared/Footer";
 import { IMAGES } from '@/assets'
-import Footer from '@/components/marketing-students-school/Footer'
+import Footer from '@/components/shared/Footer'
 
 export default function MarketingLayout({
   children,

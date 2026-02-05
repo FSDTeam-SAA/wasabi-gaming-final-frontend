@@ -194,7 +194,7 @@ const SchoolProfile = () => {
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-900 tracking-tight neuton">Profile Settings</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 tracking-tight neuton">Profile Settings</h1>
                         <p className="text-gray-500 text-lg mt-1 font-medium italic">Manage your account information and preferences</p>
                     </div>
                     <div className="flex items-center gap-4 flex-wrap">
@@ -213,7 +213,7 @@ const SchoolProfile = () => {
                 </div>
 
                 {/* Main Profile Card */}
-                <div className="border-[3px] border-[#FFFF00] rounded-[40px] p-8 md:p-12 mb-10 relative bg-white shadow-xl shadow-yellow-100/20 group transition-all duration-300">
+                <div className="border-[2px] border-[#FFFF00] rounded-[32px] p-6 md:p-8 mb-10 relative bg-white shadow-lg shadow-yellow-100/20 group transition-all duration-300">
                     <div className="flex flex-col md:flex-row gap-10 items-start md:items-center">
                         {/* Profile Image Column */}
                         <div className="flex flex-col items-center gap-6">
@@ -244,34 +244,34 @@ const SchoolProfile = () => {
                         <div className="flex-1 space-y-6">
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <h2 className="text-4xl font-bold text-gray-900 group-hover:text-black flex items-center gap-3 neuton">
+                                    <h2 className="text-2xl font-bold text-gray-900 group-hover:text-black flex items-center gap-3 neuton">
                                         {user?.firstName || user?.lastName ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : user?.schoolName || "New User"}
                                         {user?.verified && <CheckCircle2 className="text-blue-500" size={24} fill="currentColor" fillOpacity={0.1} />}
                                     </h2>
-                                    <p className="text-xl text-gray-500 font-semibold mt-1 inter">{user?.schoolName}</p>
+                                    <p className="text-base text-gray-500 font-medium mt-1 inter">{user?.schoolName}</p>
                                 </div>
                             </div>
 
-                            <p className="text-gray-600 max-w-3xl text-[1.1rem] leading-relaxed font-medium inter">
+                            <p className="text-gray-600 max-w-3xl text-sm leading-relaxed font-normal inter">
                                 {user?.bio || user?.aboutSchool || "Welcome to your profile. Add a bio to tell students and others about your mission and expertise."}
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-12 pt-6">
                                 <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
-                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Mail size={20} /></div>
-                                    <span className="font-semibold text-gray-500 inter">{user?.email}</span>
+                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Mail size={18} /></div>
+                                    <span className="font-medium text-sm text-gray-500 inter">{user?.email}</span>
                                 </div>
                                 <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
-                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Phone size={20} /></div>
-                                    <span className="font-semibold text-gray-500 inter">{user?.phone || "Phone not set"}</span>
+                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Phone size={18} /></div>
+                                    <span className="font-medium text-sm text-gray-500 inter">{user?.phone || "Phone not set"}</span>
                                 </div>
                                 <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
-                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><MapPin size={20} /></div>
-                                    <span className="font-semibold text-gray-500 inter">{user?.address || "Location not set"}</span>
+                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><MapPin size={18} /></div>
+                                    <span className="font-medium text-sm text-gray-500 inter">{user?.address || "Location not set"}</span>
                                 </div>
                                 <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
-                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Calendar size={20} /></div>
-                                    <span className="font-semibold text-gray-500 inter">Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "N/A"}</span>
+                                    <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Calendar size={18} /></div>
+                                    <span className="font-medium text-sm text-gray-500 inter">Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "N/A"}</span>
                                 </div>
                             </div>
                         </div>
@@ -422,34 +422,34 @@ const SchoolProfile = () => {
                             <Card className="border-none shadow-2xl rounded-[40px] p-10 bg-white grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                                 <div className="space-y-1">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><User size={14} /> Personal Details</h4>
-                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.firstName || "—"} {user?.lastName || "—"}</p>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.firstName || "—"} {user?.lastName || "—"}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Mail size={14} /> Email Identity</h4>
-                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.email}</p>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.email}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Building2 size={14} /> Institution & Type</h4>
-                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.schoolName || "Self-Managed"} <span className="text-gray-400 font-medium ml-2 text-base">({user?.schoolType || "N/A"})</span></p>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.schoolName || "Self-Managed"} <span className="text-gray-400 font-medium ml-2 text-sm">({user?.schoolType || "N/A"})</span></p>
                                 </div>
                                 <div className="space-y-1">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Briefcase size={14} /> Role & Company</h4>
-                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.jobTitle || "Member"} <span className="text-gray-400 font-medium ml-2 text-base">@ {user?.company || "Main Office"}</span></p>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.jobTitle || "Member"} <span className="text-gray-400 font-medium ml-2 text-sm">@ {user?.company || "Main Office"}</span></p>
                                 </div>
                                 <div className="space-y-1">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Phone size={14} /> Member Status</h4>
                                     <div className="flex items-center gap-2">
                                         <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                                        <p className="text-xl font-semibold text-gray-800 capitalize leading-none tracking-tight inter">{user?.status || "Active"}</p>
+                                        <p className="text-lg font-medium text-gray-800 capitalize leading-none tracking-tight inter">{user?.status || "Active"}</p>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Sparkles size={14} /> Category</h4>
-                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.schoolCategory || "General"}</p>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.schoolCategory || "General"}</p>
                                 </div>
                                 <div className="md:col-span-2 space-y-1 border-t border-slate-100 pt-8">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><MapPin size={14} /> Primary Address</h4>
-                                    <p className="text-xl font-semibold text-gray-800 tracking-tight inter">{user?.address || "Remote / Global"}</p>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.address || "Remote / Global"}</p>
                                 </div>
                                 <div className="md:col-span-2 space-y-1">
                                     <Button

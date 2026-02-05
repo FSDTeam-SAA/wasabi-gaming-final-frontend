@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { SquareMenu, Upload } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
@@ -27,12 +28,12 @@ export function CoverLetterBuilder() {
 
   const handleGenerateLetter = async () => {
     if (!jobDescription || !cvFile) {
-      alert('Please enter job description and upload your CV')
+      toast.error('Please enter job description and upload your CV')
       return
     }
 
     if (!token) {
-      alert('You must be logged in to generate a cover letter')
+      toast.error('You must be logged in to generate a cover letter')
       return
     }
 
@@ -60,11 +61,13 @@ export function CoverLetterBuilder() {
         setCoverData(data.data.savedData as CoverData)
         setModalOpen(true)
       } else {
-        alert(data.message || 'Failed to generate cover letter')
+        if (data.message !== 'Subscription plan error') {
+          toast.error(data.message || 'Failed to generate cover letter')
+        }
       }
     } catch (error) {
       console.error('Error generating cover letter:', error)
-      alert('Something went wrong. Please try again.')
+      toast.error('Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
     }
