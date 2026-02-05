@@ -32,7 +32,7 @@
         "**/*.ts",
         "**/*.tsx",
         ".next/types/**/*.ts"
-, "src/components/ui/progress.tsx"    ],
+, "src/components/ui/progress.tsx", "src/app/(students)/dashboard/application-tracker/cv-uplode"    ],
     "exclude": [
         "node_modules"
     ]
