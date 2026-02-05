@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 interface LeadershipDetails {
   leadership: {
@@ -41,9 +42,11 @@ const LeadershipExperience = ({ form }: LeadershipExperienceProps) => {
     number | null
   >(null);
 
+  const { data: session } = useSession();
+
+  const token = session?.accessToken || "";
+
   const formValue = form.watch();
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzczYmZkZGQzYmYwMjNmMGJkZGE4NiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJzaGlzaGlyLmJkY2FsbGluZ0BnbWFpbC5jb20iLCJpYXQiOjE3Njk0MjUxNDIsImV4cCI6MTc3MDAyOTk0Mn0.O44y7SNCwAe_o-rWVVsFiyg2npWxURGXuHv5-NHxFQk";
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
