@@ -2,11 +2,13 @@
 import React, { useState } from "react";
 import MockInterviewDetails from "./mock-interview-details";
 import Interview from "./interview";
+import { useInterviewSessionStore } from "@/zustand/useInterviewSessionId";
 
 const DetailsLayout = () => {
   const [showInterview, setShowInterview] = useState(false);
   const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { setInterviewSessionId } = useInterviewSessionStore();
 
   const handleProceed = async (interviewData: any) => {
     setLoading(true);
@@ -29,6 +31,7 @@ const DetailsLayout = () => {
       const result = await response.json();
       if (result.success) {
         setSessionData(result.data.session);
+        setInterviewSessionId(result?.data?.session?._id);
         setShowInterview(true);
       } else {
         throw new Error(result.message || "Failed to create session");
