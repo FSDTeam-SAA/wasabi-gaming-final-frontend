@@ -13,13 +13,13 @@ const logos = [
 
 const PartnersMarquee = () => {
   return (
-    <section className="py-5 bg-white overflow-y-hidden ">
-      <Marquee gradient={false} speed={50} pauseOnHover loop={0}>
-        <div className="flex items-center gap-8 md:gap-20 lg:gap-48">
+    <section className="py-5 bg-white !overflow-y-hidden">
+      <Marquee gradient={false} speed={50} pauseOnHover loop={0} className="!overflow-y-hidden">
+        <div className="flex items-center gap-8 md:gap-20 lg:gap-48 pr-8 md:pr-20 lg:pr-48">
           {logos.map((logo, index) => (
             <div
               key={index}
-              className="flex items-center justify-center"
+              className="flex items-center gap-20 justify-center"
               style={{ width: logo.width, height: logo.height }}
             >
               <Image

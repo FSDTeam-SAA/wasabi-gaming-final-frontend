@@ -42,7 +42,7 @@ export default function NeedHelpSection() {
 
             {/* Modal for displaying the guide */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent className="max-w-3xl w-full max-h-[85vh] overflow-y-auto font-poppins p-8 rounded-3xl">
+                <DialogContent className="max-w-3xl w-full max-h-[85vh] overflow-y-auto font-poppins p-8 rounded-3xl bg-white">
                     <DialogHeader className="mb-8">
                         <DialogTitle className="text-3xl font-bold text-center">
                             Website Guide (Instruction Manual)
