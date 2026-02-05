@@ -1,5 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState, useRef, useEffect } from "react";
 
 interface Answer {
@@ -30,6 +31,8 @@ interface InterviewProps {
 const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const { data: session } = useSession();
   const token = session?.accessToken || "";
+  const router = useRouter();
+  const { id } = useParams();
 
   // State management
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -61,14 +64,14 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const calculateProgress = (): number => {
     const totalQuestions = questions.length;
     if (totalQuestions === 0) return 0;
-    
-    const submittedAnswers = answers.filter(a => a.submitted).length;
+
+    const submittedAnswers = answers.filter((a) => a.submitted).length;
     const baseProgress = 96; // Starting progress
-    
+
     // Distribute remaining 4% across all questions
     const progressPerQuestion = 4 / totalQuestions;
     const currentQuestionProgress = (submittedAnswers / totalQuestions) * 4;
-    
+
     return Math.min(baseProgress + currentQuestionProgress, 100);
   };
 
@@ -170,7 +173,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       // Use MP4 extension for backend compatibility
       const mimeType = getSupportedMimeType();
       const extension = getFileExtension(mimeType);
-      
+
       formData.append(
         "videoPath",
         blob,
@@ -302,7 +305,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
 
     // Setup media recorder with preferred MP4 format
     const mimeType = getSupportedMimeType();
-    
+
     if (!mimeType) {
       alert("No supported video format found in this browser");
       return;
@@ -330,8 +333,8 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
           }
 
           // Create video blob
-          const blob = new Blob(chunksRef.current, { 
-            type: mimeType 
+          const blob = new Blob(chunksRef.current, {
+            type: mimeType,
           });
 
           console.log("Video recorded:", {
@@ -432,7 +435,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       if (prevAnswer) {
         setRecordedVideoUrl(prevAnswer.videoUrl);
         setIsVideoRecorded(true);
-        
+
         if (videoRef.current) {
           videoRef.current.srcObject = null;
           videoRef.current.src = prevAnswer.videoUrl;
@@ -498,6 +501,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     alert(
       `Interview completed! ${submittedCount} of ${questions.length} responses have been recorded successfully.`,
     );
+    router.push(`/dashboard/mock-interview/${id}/interview-summery`);
   };
 
   // Setup auto timers
@@ -676,7 +680,9 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                   <div className="flex items-center gap-2 px-4 py-2 mb-2 text-white bg-red-600 rounded-full animate-pulse">
                     <div className="w-3 h-3 bg-white rounded-full"></div>
                     <span className="font-bold">REC</span>
-                    <span className="font-mono">{formatTime(recordingTime)}</span>
+                    <span className="font-mono">
+                      {formatTime(recordingTime)}
+                    </span>
                   </div>
                   <div className="px-3 py-1 text-sm text-white rounded-full bg-black/80">
                     Max 2:00
