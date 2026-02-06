@@ -7,12 +7,13 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AiAssessment } from "./ai-assessment-data-type";
 import { useRouter } from "next/navigation";
+import AILoader from "@/components/student/psychometric/AILoader";
 
 /* ----------------------------------
    SERVICE CONFIG (API + ROUTE)
 -----------------------------------*/
 const assessmentServiceConfig = {
-    WRITTEN_CASE: {
+  WRITTEN_CASE: {
     api: (id: string) => `/writtencasestudy/creat/${id}`,
     route: (_id: string) =>
       `/dashboard/ai-assessment-centre/${_id}`,
@@ -102,7 +103,7 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
     onSuccess: (data, variables) => {
       console.log("variables", data)
       console.log(variables)
-      
+
       toast.success(data?.data?.message || "Assessment started successfully");
 
       const service = assessmentServiceConfig[variables.type];
@@ -122,64 +123,68 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
   // };
 
   const handleStartAssessment = () => {
-  if (!data?._id) {
-    toast.error("Invalid assessment");
-    return;
-  }
+    if (!data?._id) {
+      toast.error("Invalid assessment");
+      return;
+    }
 
-  if (!data?.type) {
-    toast.error("Assessment type missing");
-    return;
-  }
+    if (!data?.type) {
+      toast.error("Assessment type missing");
+      return;
+    }
 
-  if (!token) {
-    toast.error("Please login again");
-    return;
-  }
+    if (!token) {
+      toast.error("Please login again");
+      return;
+    }
 
-  startAssessment({
-    assessmentId: data?._id,
-    type: data?.type,
-  });
-};
+    startAssessment({
+      assessmentId: data?._id,
+      type: data?.type,
+    });
+  };
 
 
   return (
-    <div className="bg-white rounded-[20px] border-[2px] border-[#E5E7EB] p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="font-semibold text-base text-[#1E1E1E] mb-1">
-            {data.title}
-          </h3>
-          <p className="text-sm text-[#4A5565]">
-            {data.discription}
-          </p>
+    <>
+      {isPending && <AILoader />}
+
+      <div className="bg-white rounded-[20px] border-[2px] border-[#E5E7EB] p-6 hover:shadow-lg transition-shadow">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <h3 className="font-semibold text-base text-[#1E1E1E] mb-1">
+              {data.title}
+            </h3>
+            <p className="text-sm text-[#4A5565]">
+              {data.discription}
+            </p>
+          </div>
+
+          <span
+            className={`flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-full ${config.badgeClass}`}
+          >
+            {data.status === "COMPLETED" && (
+              <CircleCheckBig className="w-3 h-3" />
+            )}
+            {config.badge}
+          </span>
         </div>
 
-        <span
-          className={`flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-full ${config.badgeClass}`}
+        <div className="flex items-center gap-2 text-sm text-[#4A5565] mb-4">
+          <Clock size={16} />
+          {data.duration} minutes
+        </div>
+
+        <button
+          onClick={handleStartAssessment}
+          disabled={isPending}
+          className="w-full flex items-center justify-center gap-2 rounded-[14px] text-sm font-semibold py-2 bg-[#FFFF00] text-[#1E1E1E] hover:opacity-90 disabled:opacity-50"
         >
-          {data.status === "COMPLETED" && (
-            <CircleCheckBig className="w-3 h-3" />
-          )}
-          {config.badge}
-        </span>
+          <Play size={18} />
+          {isPending ? "Starting..." : "Start Test"}
+        </button>
       </div>
-
-      <div className="flex items-center gap-2 text-sm text-[#4A5565] mb-4">
-        <Clock size={16} />
-        {data.duration} minutes
-      </div>
-
-      <button
-        onClick={handleStartAssessment}
-        disabled={isPending}
-        className="w-full flex items-center justify-center gap-2 rounded-[14px] text-sm font-semibold py-2 bg-[#FFFF00] text-[#1E1E1E] hover:opacity-90 disabled:opacity-50"
-      >
-        <Play size={18} />
-        {isPending ? "Starting..." : "Start Test"}
-      </button>
-    </div>
+    </>
   );
 }
 

@@ -44,7 +44,6 @@ export const authOptions: NextAuthOptions = {
 
         const { user, accessToken } = result.data;
 
-        // ✅ IMPORTANT: explicitly return loginHistory
         return {
           id: user._id,
           email: user.email,
@@ -53,7 +52,6 @@ export const authOptions: NextAuthOptions = {
           image: user.profileImage,
           shareLink: user.shareLink,
           accessToken,
-          loginHistory: user.loginHistory ?? [], // 🔥 FIX
         };
       },
     }),
@@ -65,7 +63,7 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      // 🔑 first login only
+      // Initial login - populate token with user data
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -74,12 +72,9 @@ export const authOptions: NextAuthOptions = {
         token.image = user.image;
         token.shareLink = user.shareLink;
         token.accessToken = user.accessToken;
-
-        // 🔥 VERY IMPORTANT
-        token.loginHistory = user.loginHistory;
       }
 
-      // Handle session update
+      // Handle session update (e.g., profile changes)
       if (trigger === "update" && session) {
         if (session.user) {
           token.name = session.user.name ?? token.name;
@@ -98,13 +93,8 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as string;
         session.user.image = token.image as string;
         session.user.shareLink = token.shareLink as string;
-
-        // 🔥 FIX
-        session.user.loginHistory = token.loginHistory as any[];
         session.accessToken = token.accessToken as string;
       }
-
-
 
       return session;
     },
@@ -115,6 +105,27 @@ export const authOptions: NextAuthOptions = {
   },
 
   secret: process.env.NEXTAUTH_SECRET,
+
+  // JWT Configuration
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+
+  // Cookie Configuration for Production
+  cookies: {
+    sessionToken: {
+      name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
+
+  // Use secure cookies in production
+  useSecureCookies: process.env.NODE_ENV === "production",
 };
 
 const handler = NextAuth(authOptions);

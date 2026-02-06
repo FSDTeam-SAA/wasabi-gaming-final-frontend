@@ -8,6 +8,10 @@ import ScrollToTop from '@/components/shared/ScrollToTop';
 export const metadata: Metadata = {
     title: 'Wasabi Gaming Client',
     description: 'Wasabi Gaming Integration Client',
+    icons: {
+        icon: '/favicon.ico',
+        apple: '/apple-touch-icon.png',
+    },
 };
 
 const sourceSans = Source_Sans_3({

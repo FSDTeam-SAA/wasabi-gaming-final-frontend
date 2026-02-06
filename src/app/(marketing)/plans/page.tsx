@@ -159,7 +159,7 @@ export default function PlansPage() {
             <p className="text-lg">No subscription plans available for this category/period.</p>
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-8 w-full max-w-7xl items-start">
+          <div className="flex flex-wrap justify-center gap-8 w-full max-w-7xl items-end py-12">
             {plansToDisplay.map((plan: any, index) => {
               const isSchool = plan.subscriptionCategory === 'school'
               const isHighlighted = !isSchool && ((plan.name || '').toLowerCase().includes('premium') || (plan.name || '').toLowerCase().includes('pro'))
@@ -173,7 +173,7 @@ export default function PlansPage() {
               return (
                 <div
                   key={index}
-                  className={`relative flex flex-col p-2 lg:p-8 rounded-2xl transition-transform hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[400px] ${isHighlighted
+                  className={`relative flex flex-col p-2 lg:p-8 rounded-2xl transition-transform hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[400px] origin-bottom ${isHighlighted
                     ? 'bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4] shadow-2xl scale-105 z-10 border border-[#FEE64D]'
                     : isSchool
                       ? 'bg-slate-50 border border-slate-200 shadow-xl'
