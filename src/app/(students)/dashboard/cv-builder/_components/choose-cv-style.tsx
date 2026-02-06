@@ -1,9 +1,9 @@
-import { PocketKnife, CheckCircle2 } from "lucide-react";
-import React from "react";
+import { PocketKnife, CheckCircle2 } from 'lucide-react'
+import React from 'react'
 
 interface Props {
-  cvFormat: string;
-  setCvFormat: (value: string) => void;
+  cvFormat: string
+  setCvFormat: (value: string) => void
 }
 
 const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
@@ -18,21 +18,21 @@ const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
         </div>
 
         <button className="flex items-center gap-2 bg-gradient-to-r from-[#9313fa] via-[#7326fb] to-[#424efc] text-white px-5 py-3 rounded-3xl mt-4 lg:mt-0">
-          <PocketKnife className="w-4 h-4" /> AI Enhance Resume
+          <PocketKnife className="w-4 h-4" /> AI Enhance CV
         </button>
       </div>
 
       <div className="grid grid-cols-1 gap-5 mt-5 lg:grid-cols-3">
         {/* Modern Style */}
         <div
-          onClick={() => setCvFormat("Modern")}
+          onClick={() => setCvFormat('Modern')}
           className={`p-4 h-[500px] rounded-xl cursor-pointer transition-all flex flex-col relative ${
-            cvFormat === "Modern"
-              ? "border-2 border-yellow-400 shadow-md scale-[1.01]"
-              : "border border-gray-200 hover:border-gray-300 shadow-sm"
+            cvFormat === 'Modern'
+              ? 'border-2 border-yellow-400 shadow-md scale-[1.01]'
+              : 'border border-gray-200 hover:border-gray-300 shadow-sm'
           }`}
         >
-          {cvFormat === "Modern" && (
+          {cvFormat === 'Modern' && (
             <CheckCircle2 className="absolute z-10 w-5 h-5 text-yellow-500 top-2 right-2 fill-white" />
           )}
           <div className="h-[420px] bg-[#fffdf5] border-b relative overflow-hidden p-4 rounded-t-lg">
@@ -50,14 +50,14 @@ const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
 
         {/* Classic Style */}
         <div
-          onClick={() => setCvFormat("Classic")}
+          onClick={() => setCvFormat('Classic')}
           className={`p-4 h-[500px] rounded-xl cursor-pointer transition-all flex flex-col relative ${
-            cvFormat === "Classic"
-              ? "border-2 border-primary shadow-md scale-[1.01]"
-              : "border border-gray-200 hover:border-gray-300 shadow-sm"
+            cvFormat === 'Classic'
+              ? 'border-2 border-primary shadow-md scale-[1.01]'
+              : 'border border-gray-200 hover:border-gray-300 shadow-sm'
           }`}
         >
-          {cvFormat === "Classic" && (
+          {cvFormat === 'Classic' && (
             <CheckCircle2 className="absolute z-10 w-5 h-5 text-primary top-2 right-2 fill-white" />
           )}
           <div className="h-[420px] bg-white border-b relative p-6 flex flex-col items-center">
@@ -78,14 +78,14 @@ const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
 
         {/* Creative Style */}
         <div
-          onClick={() => setCvFormat("Creative")}
+          onClick={() => setCvFormat('Creative')}
           className={`p-4 h-[500px] rounded-xl cursor-pointer transition-all flex flex-col relative ${
-            cvFormat === "Creative"
-              ? "border-2 border-primary shadow-md scale-[1.01]"
-              : "border border-gray-200 hover:border-gray-300 shadow-sm"
+            cvFormat === 'Creative'
+              ? 'border-2 border-primary shadow-md scale-[1.01]'
+              : 'border border-gray-200 hover:border-gray-300 shadow-sm'
           }`}
         >
-          {cvFormat === "Creative" && (
+          {cvFormat === 'Creative' && (
             <CheckCircle2 className="absolute z-10 w-5 h-5 text-primary top-2 right-2 fill-white" />
           )}
           <div className="h-[420px] bg-white border-b relative flex overflow-hidden rounded-t-lg">
@@ -110,7 +110,7 @@ const ChooseCvStyle = ({ cvFormat, setCvFormat }: Props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ChooseCvStyle;
+export default ChooseCvStyle
