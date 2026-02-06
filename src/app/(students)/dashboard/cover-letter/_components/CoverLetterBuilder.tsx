@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { CoverLetterTips } from './CoverLetterTips'
 import CoverLetterModal, { type CoverData } from './CoverLetterModal'
 import { useSession } from 'next-auth/react'
+import AILoader from '@/components/student/psychometric/AILoader'
 
 export function CoverLetterBuilder() {
   const [jobDescription, setJobDescription] = useState('')
@@ -81,6 +82,8 @@ export function CoverLetterBuilder() {
 
   return (
     <>
+      {isLoading && <AILoader />}
+
       <div className="mb-12">
         <h1 className="text-4xl md:text-5xl font-semibold text-[#1E1E1E] mb-3 text-balance">
           Cover letter Builder
