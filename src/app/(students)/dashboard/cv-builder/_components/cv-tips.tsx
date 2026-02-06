@@ -1,5 +1,5 @@
-import { CircleCheckBig, Sparkles } from "lucide-react";
-import React from "react";
+import { CircleCheckBig, Sparkles } from 'lucide-react'
+import React from 'react'
 
 const CvTips = () => {
   return (
@@ -40,7 +40,7 @@ const CvTips = () => {
         </h1>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CvTips;
+export default CvTips
