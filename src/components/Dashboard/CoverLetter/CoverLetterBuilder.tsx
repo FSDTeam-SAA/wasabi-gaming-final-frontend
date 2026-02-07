@@ -2,7 +2,7 @@
 
 import React, { useState, ChangeEvent } from "react";
 import { FileText } from "lucide-react";
-import TipsPanel from "../cvBuild/TipsPanel";
+// import TipsPanel from "../cvBuild/TipsPanel";
 import CoverLetterPreview from "./CoverLetterPreview";
 import TextEditor from "./TextEditor";
 import { Button } from "@/components/ui/button";
@@ -137,7 +137,7 @@ Olivia Wilson`);
                     </Button>
                 </div>
             </div>
-            <TipsPanel />
+            {/* <TipsPanel /> */}
             <CoverLetterPreview
                 isOpen={showPreview}
                 onClose={() => setShowPreview(false)}
