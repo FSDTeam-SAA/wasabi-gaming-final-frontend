@@ -4,6 +4,8 @@ import { CircleCheckBig, MapPin, Users } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import ShowOpenPosition from "./ShowOpenPosition";
+import Image from "next/image";
+import Link from "next/link";
 
 // TypeScript interface
 interface RecentInfo {
@@ -328,21 +330,19 @@ function ViewDetailsLawFirms() {
             <div className="flex items-center gap-4 border-t border-gray-100 pt-6 flex-wrap">
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`flex-1 min-w-[150px] font-semibold py-3 rounded-lg transition-all ${
-                  activeTab === "overview"
+                className={`flex-1 min-w-[150px] font-semibold py-3 rounded-lg transition-all ${activeTab === "overview"
                     ? "bg-yellow-300 text-black shadow-sm"
                     : "border-2 border-gray-200 text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 Overview
               </button>
               <button
                 onClick={() => setActiveTab("positions")}
-                className={`flex-1 min-w-[150px] font-semibold py-3 rounded-lg transition-all ${
-                  activeTab === "positions"
+                className={`flex-1 min-w-[150px] font-semibold py-3 rounded-lg transition-all ${activeTab === "positions"
                     ? "bg-yellow-300 text-black shadow-sm"
                     : "border-2 border-gray-200 text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 Open Positions (
                 {Array.isArray(firmData.applyNumber)
@@ -352,15 +352,14 @@ function ViewDetailsLawFirms() {
               </button>
               <button
                 onClick={() => setActiveTab("culture")}
-                className={`flex-1 min-w-[150px] font-semibold py-3 rounded-lg transition-all ${
-                  activeTab === "culture"
+                className={`flex-1 min-w-[150px] font-semibold py-3 rounded-lg transition-all ${activeTab === "culture"
                     ? "bg-yellow-300 text-black shadow-sm"
                     : "border-2 border-gray-200 text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 Cultures & Benefits
               </button>
-           
+
             </div>
           </div>
         </div>
@@ -478,61 +477,49 @@ function ViewDetailsLawFirms() {
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-6 ">
                   {/* Your Career Strengths Card */}
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 shadow-sm">
+                  <div className=" max-w-6xl mx-auto  border-2 border-[#BEDBFF] rounded-2xl p-[32px] shadow-sm"
+                    style={{
+                      background: "linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)",
+                    }}
+                  >
                     <div className="flex items-start gap-4">
                       {/* Icon */}
-                      <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <svg
-                          className="w-6 h-6 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                          />
-                        </svg>
+                      <div className="w-[64px] h-[64px] ">
+                       <Image src="/images/icon11.png" width={1000} height={1000} alt="Career Strengths" className="w-full h-full object-cover" />
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      <div className="flex-1 ">
+                        <h3 className="text-xl font-semibold text-[#1E1E1E] mb-2">
                           Your Career Strengths
                         </h3>
-                        <p className="text-sm text-gray-700 leading-relaxed mb-4">
+                        <p className="text-base text-[#4A5565] leading-relaxed mb-4">
                           Based on your psychometric test results, you excel in
                           analytical thinking and problem-solving. We've found 5
                           new job opportunities that match your profile.
                         </p>
-                        <button className="bg-yellow-300 w-[250px] hover:bg-yellow-400 text-black font-semibold py-3 px-4 transition-colors shadow-sm">
+                        <Link href="/plans">
+                        <button className="bg-[#FFFF00] rounded-[24px] w-[215px] hover:bg-[#FFFF00]/90 text-[#1E1E1E] font-normal py-3 px-2 transition-colors shadow-md ">
                           Upgrade Your Plan
                         </button>
+                        </Link>
                       </div>
                     </div>
                   </div>
 
                   {/* Motivational Quote Card */}
-                  <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-200 rounded-2xl p-6 shadow-sm w-[80%] mx-auto">
-                    <div className="flex items-start gap-4">
+                  <div className="bg-[#FFFEF0] border-2 border-[#FFFF00] rounded-2xl p-6 shadow-sm w-[60%] mx-auto">
+                    <div className="flex items-start ">
                       {/* Quote Icon */}
-                      <div className="flex-shrink-0">
-                        <svg
-                          className="w-6 h-6 text-gray-800"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M13 14.725c0-5.141 3.892-10.519 10-11.725l.984 2.126c-2.215.835-4.163 3.742-4.38 5.746 2.491.392 4.396 2.547 4.396 5.149 0 3.182-2.584 4.979-5.199 4.979-3.015 0-5.801-2.305-5.801-6.275zm-13 0c0-5.141 3.892-10.519 10-11.725l.984 2.126c-2.215.835-4.163 3.742-4.38 5.746 2.491.392 4.396 2.547 4.396 5.149 0 3.182-2.584 4.979-5.199 4.979-3.015 0-5.801-2.305-5.801-6.275z" />
-                        </svg>
+                      <div className="flex-shrink-0 ">
+                       <Image src="/images/icon2.png" width={1000} height={1000} alt="Motivational Quote" className="w-7 h-7 object-cover" />
                       </div>
 
                       {/* Quote Text */}
                       <div className="flex-1">
-                        <p className="text-gray-800 text-sm font-medium italic leading-relaxed">
+                        <p className="text-[#1E1E1E] text-lg text-center font-medium italic leading-relaxed">
                           "Success is the sum of small efforts repeated day in
                           and day out."
                         </p>
@@ -564,7 +551,7 @@ function ViewDetailsLawFirms() {
 
                   <div className="px-6">
                     {Array.isArray(firmData?.cultureAndValue) &&
-                    firmData.cultureAndValue.length > 0 ? (
+                      firmData.cultureAndValue.length > 0 ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {firmData.cultureAndValue.map(
                           (item: string, index: number) => (
@@ -593,7 +580,7 @@ function ViewDetailsLawFirms() {
 
                   <div className="px-6">
                     {Array.isArray(firmData?.benefitsAndPerks) &&
-                    firmData.benefitsAndPerks.length > 0 ? (
+                      firmData.benefitsAndPerks.length > 0 ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {firmData.benefitsAndPerks.map(
                           (item: string, index: number) => (
