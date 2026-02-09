@@ -4,7 +4,7 @@ import React from "react";
 const WhyMockInterview = () => {
   const benefits = [
     "Discover your natural cognitive strengths and abilities",
-    "Get personalized career recommendations based on your results",
+    "Get personalised career recommendations based on your results",
     "Stand out to employers with verified test scores on your profile",
   ];
 

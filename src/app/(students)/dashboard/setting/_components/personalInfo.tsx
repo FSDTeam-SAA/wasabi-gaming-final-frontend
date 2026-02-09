@@ -243,7 +243,7 @@ export default function ProfileForm() {
                         ["phone", "Phone Number"],
                         ["jobTitle", "Job Title"],
                         ["address", "Location"],
-                        ["company", "Company"],
+                        // ["company", "Company"],
                     ].map(([id, label]) => (
                         <div key={id} className="space-y-2">
                             <Label htmlFor={id} className="text-[#364153]">
@@ -281,7 +281,7 @@ export default function ProfileForm() {
                                 <SelectItem value="Year 9th">Year 9th</SelectItem>
                                 <SelectItem value="Year 10th">Year 10th</SelectItem>
                                 <SelectItem value="Year 11th">Year 11th</SelectItem>
-                                <SelectItem value="Year 12th">Year 12th</SelectItem>
+                                {/* <SelectItem value="Year 12th">Year 12th</SelectItem> */}
                             </SelectContent>
                         </Select>
                     </div>
