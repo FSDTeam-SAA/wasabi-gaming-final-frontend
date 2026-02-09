@@ -251,11 +251,11 @@ const LawFirmCard = ({
 
         <div className="mt-3 md:mt-4 flex items-center gap-4 text-xs md:text-sm text-gray-600">
           <div className="flex items-center gap-1.5">
-            <MapPin className="w-4 h-4 text-gray-400" />
+            <MapPin className="!w-4 !h-4 text-[#FFFF00]" />
             <span>{firm.location}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Users className="w-4 h-4 text-gray-400" />
+            <Users className="!w-4 !h-4 text-[#FFFF00]" />
             <span>{firm.size}</span>
           </div>
         </div>
@@ -298,7 +298,7 @@ const LawFirmCard = ({
           </button>
 
           <Link href={`/dashboard/law-firm-profiles/${firm._id}`} className="flex-1">
-            <Button className="w-full bg-[#ffff00] hover:bg-[#e6e600] text-black font-medium border-none rounded-xl h-10 md:h-11">
+            <Button className="w-full bg-[#ffff00] hover:bg-[#e6e600] text-black font-medium border-none rounded-xl h-7 md:h-[36px]">
               View Profile <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </Link>

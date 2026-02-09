@@ -11,6 +11,7 @@ import FeaturedFirms from "@/components/student/law-firms/FeaturedFirms";
 import AllFirmsGrid from "@/components/student/law-firms/AllFirmsGrid";
 import SavedFirms from "@/components/student/law-firms/SavedFirms";
 import WhyUseCard from "@/components/student/law-firms/WhyUseCard";
+import Image from "next/image";
 
 export default function LawFirmDirectoryPage() {
   const [showSaved, setShowSaved] = useState(false);
@@ -53,32 +54,16 @@ export default function LawFirmDirectoryPage() {
         ) : (
           <div className="space-y-12">
              <section>
-              <h3 className="mb-4 md:mb-6 flex items-center gap-2 text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-[#FFFF00]"
-                >
-                  <path
-                    d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-yellow-400 fill-yellow-400"
-                  />
-                </svg>
+              <h4 className="mb-4 md:mb-6 flex items-center gap-2 text-lg sm:text-xl md:text-2xl font-normal text-[#1E1E1E]">
+              <Image src="/images/star.png" width={1000} height={1000} alt="star" className="w-7 h-7 object-cover" />
                 Featured Law Firms
-              </h3>
+              </h4>
               <FeaturedFirms />
             </section>
             <section>
-              <h3 className="mb-4 md:mb-6 text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
+              <h4 className="mb-4 md:mb-6 text-lg sm:text-xl md:text-2xl font-normal text-[#1E1E1E]">
                 All Law Firms
-              </h3>
+              </h4>
               <AllFirmsGrid searchTerm={searchTerm} selectedTag={selectedTag} />
             </section>
            
