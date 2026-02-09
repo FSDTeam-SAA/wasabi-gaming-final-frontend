@@ -52,14 +52,7 @@ export default function LawFirmDirectoryPage() {
           <SavedFirms />
         ) : (
           <div className="space-y-12">
-            <section>
-              <h3 className="mb-4 md:mb-6 text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
-                All Law Firms
-              </h3>
-              <AllFirmsGrid searchTerm={searchTerm} selectedTag={selectedTag} />
-            </section>
-
-            <section>
+             <section>
               <h3 className="mb-4 md:mb-6 flex items-center gap-2 text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -82,6 +75,13 @@ export default function LawFirmDirectoryPage() {
               </h3>
               <FeaturedFirms />
             </section>
+            <section>
+              <h3 className="mb-4 md:mb-6 text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
+                All Law Firms
+              </h3>
+              <AllFirmsGrid searchTerm={searchTerm} selectedTag={selectedTag} />
+            </section>
+           
 
             <StatsSection />
             <WhyUseCard />

@@ -22,7 +22,6 @@ import {
 import { cn } from "@/utils/cn";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { Progress } from "@radix-ui/react-progress";
 import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────
