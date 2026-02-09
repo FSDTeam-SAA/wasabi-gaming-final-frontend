@@ -196,7 +196,7 @@ const PsychometricAssessment = () => {
               <div className="grid gap-4">
                 {[
                   'Discover your natural cognitive strengths and abilities',
-                  'Get personalized career recommendations based on your results',
+                  'Get personalised career recommendations based on your results',
                   'Stand out to employers with verified test scores on your profile',
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">

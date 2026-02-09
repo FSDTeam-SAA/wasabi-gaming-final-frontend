@@ -179,7 +179,7 @@ const PersonalInfo = ({ form }: PersonalInfoProps) => {
               <FormControl>
                 <Input
                   className="h-[48px] rounded-3xl p-4 border border-gray-100 placeholder:text-gray-500 bg-[#f3f3f5]"
-                  placeholder="San Francisco, CA"
+                  placeholder="London, UK"
                   {...field}
                 />
               </FormControl>
