@@ -1,5 +1,4 @@
 name: Deploy Website
-
 on:
   push:
     branches: [ monir ]
@@ -22,6 +21,4 @@ jobs:
             git pull origin monir
             npm install
             npm run build
-            rm -rf /var/www/html/*
-            cp -r out/* /var/www/html/
-
+            pm2 restart app || pm2 start npm --name "app" -- run start
