@@ -79,7 +79,7 @@ export const Footer = () => {
         {/* Divider & Copyright */}
         <hr className="border-gray-400 mt-12 md:mt-16 mb-6" />
         <p className="text-left text-[#424242] font-bold text-sm main-font md:text-xl">
-          @copyright aspiringlegalwork.2025 . All right reserves
+          @monir.2025 . All right reserves
         </p>
       </div>
     </footer>
