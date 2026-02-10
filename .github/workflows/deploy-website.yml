@@ -21,4 +21,4 @@ jobs:
             git pull origin monir
             npm install
             npm run build
-            pm2 restart app || pm2 start npm --name "app" -- run start
+            pm2 restart client || pm2 start npm --name "client" -- run start
