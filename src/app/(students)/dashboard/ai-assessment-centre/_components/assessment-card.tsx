@@ -51,15 +51,15 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
 
   const statusConfig = {
     AVAILABLE: {
-      badge: "AVAILABLE",
+      badge: "Available",
       badgeClass: "bg-[#FEF9C2] text-[#894B00] border border-[#FFDF20]",
     },
     COMPLETED: {
-      badge: "COMPLETED",
+      badge: "Completed",
       badgeClass: "bg-[#DCFCE7] text-[#016630] border border-[#7BF1A8]",
     },
     PENDING: {
-      badge: "PENDING",
+      badge: "Pending",
       badgeClass: "bg-blue-100 text-blue-800",
     },
   };
@@ -152,9 +152,9 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
       <div className="bg-white rounded-[20px] border-[2px] border-[#E5E7EB] p-6 hover:shadow-lg transition-shadow">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h3 className="font-semibold text-base text-[#1E1E1E] mb-1">
+            <h4 className="font-semibold text-base text-[#1E1E1E] mb-1">
               {data.title}
-            </h3>
+            </h4>
             <p className="text-sm text-[#4A5565]">
               {data.discription}
             </p>

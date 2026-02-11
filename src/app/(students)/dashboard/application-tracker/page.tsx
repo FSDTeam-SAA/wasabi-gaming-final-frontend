@@ -363,7 +363,7 @@ export default function ApplicationTrackerPage() {
                   : "border-transparent text-gray-500 hover:text-gray-700",
               )}
             >
-              {tab === "all" ? "All Jobs" : tab === "open" ? "Open Jobs" : "Closed Jobs"}
+              {tab === "all" ? "Open Applications" : tab === "open" ? "Application Tracker" : "Closed Jobs"}
             </button>
           ))}
         </div>
