@@ -2,12 +2,14 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  Award,
   CircleCheckBig,
   ExternalLink,
   Globe,
   Mail,
   MapPin,
   Phone,
+  Target,
   Users,
 } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -381,23 +383,41 @@ function ViewDetailsLawFirms() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6 bg-white border border-[#0000001A]  rounded-2xl overflow-hidden">
                       {firmData.practiceAreas && (
                         <div className="space-y-5 p-5">
-                          <h3 className="font-normal text-lg text-[#1E1E1E] mb-4">
-                            Key practiceAreas
+                          <h3 className="font-normal text-lg text-[#1E1E1E] mb-4 flex items-center gap-2">
+                            <span>  <Target className="w-4 h-4 text-[#1E1E1E]" /></span>
+                            Key Practice Areas
                           </h3>
-                          <p className="text-gray-700 leading-relaxed">
-                            {firmData.practiceAreas}
-                          </p>
+
+                          <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                            {firmData.practiceAreas
+                              .split(",")
+                              .map((area, index) => (
+                                <li key={index} className="flex gap-2 items-center">
+                                  <span><CircleCheckBig className="w-4 h-4 text-green-500" /></span>
+                                  {area.trim()}
+                                  </li>
+                              ))}
+                          </ul>
                         </div>
                       )}
 
                       {firmData.keyHighlights && (
                         <div className="space-y-5 p-5">
-                          <h3 className="font-normal text-lg text-[#1E1E1E] mb-4">
+                          <h3 className="font-normal text-lg text-[#1E1E1E] mb-4 flex items-center gap-2">
+                            <span> <Award className="w-4 h-4 text-[#1E1E1E]" /></span>
                             Key Highlights
                           </h3>
-                          <p className="text-gray-700 leading-relaxed">
-                            {firmData.keyHighlights}
-                          </p>
+
+                          <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                            {firmData.keyHighlights
+                              .split(",")
+                              .map((highlight, index) => (
+                                 <li key={index} className="flex gap-2 items-center">
+                                  <span><CircleCheckBig className="w-4 h-4 text-green-500" /></span>
+                                  {highlight.trim()}
+                                  </li>
+                              ))}
+                          </ul>
                         </div>
                       )}
                     </div>
@@ -446,7 +466,7 @@ function ViewDetailsLawFirms() {
                   </div>
                 )}
 
-                <div className="border-t border-gray-100 pt-8">
+                <div className=" shadow-md rounded-[12px] pt-8">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg
@@ -459,7 +479,7 @@ function ViewDetailsLawFirms() {
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="text-base font-bold text-gray-900 mb-3">
+                      <h3 className="text-base font-normal text-[#4A5565] mb-3">
                         {firmData.description || "Recent Awards"}
                       </h3>
 
@@ -639,25 +659,7 @@ function ViewDetailsLawFirms() {
         </div>
       </div>
 
-      {/* Floating Chat Button */}
-      {/* <button
-        className="fixed bottom-24 right-8 w-14 h-14 bg-teal-500 hover:bg-teal-600 rounded-full shadow-lg flex items-center justify-center text-white transition-all hover:scale-110 z-20"
-        aria-label="Chat"
-      >
-        <span className="text-xl font-bold">T</span>
-      </button> */}
-
-      {/* Bottom View Only Banner */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-gray-700 to-gray-800 text-white py-4 px-6 z-10">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-          </svg>
-          <p className="text-sm font-medium">
-            You can only view and comment on this file.
-          </p>
-        </div>
-      </div>
+ 
     </div>
   );
 }
