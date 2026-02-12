@@ -72,7 +72,6 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-
         {/* Divider & Copyright */}
         <hr className="border-gray-300 mb-6" />
         <p className="text-center text-gray-600 text-sm">

@@ -22,7 +22,7 @@ export default function ProfileForm() {
         lastName: "",
         email: "",
         phone: "",
-        jobTitle: "",
+        // jobTitle: "",
         company: "",
         address: "",
         grade: "",
@@ -53,7 +53,7 @@ export default function ProfileForm() {
     useEffect(() => {
         if (data?.data) {
             const user = data.data;
-
+            
             const getSocial = (name: string) =>
                 user.socileLinks?.find((s: any) => s.name === name)?.link || "";
 
@@ -62,7 +62,7 @@ export default function ProfileForm() {
                 lastName: user.lastName || "",
                 email: user.email || "",
                 phone: user.phone || "",
-                jobTitle: user.jobTitle || "",
+                // jobTitle: user.jobTitle || "",
                 company: user.company || "",
                 address: user.address || "",
                 grade: user.grade || "",
@@ -134,7 +134,7 @@ export default function ProfileForm() {
             profileData.lastName,
             profileData.email,
             profileData.phone,
-            profileData.jobTitle,
+            // profileData.jobTitle,
             profileData.company,
             profileData.address,
             profileData.bio,
@@ -241,9 +241,9 @@ export default function ProfileForm() {
                         ["lastName", "Last Name"],
                         ["email", "Email Address"],
                         ["phone", "Phone Number"],
-                        ["jobTitle", "Job Title"],
+                        // ["jobTitle", "Job Title"],
                         ["address", "Location"],
-                        ["company", "Company"],
+                        // ["company", "Company"],
                     ].map(([id, label]) => (
                         <div key={id} className="space-y-2">
                             <Label htmlFor={id} className="text-[#364153]">
@@ -262,7 +262,7 @@ export default function ProfileForm() {
 
                     {/* ✅ Grade Select Field */}
                     <div className="space-y-2">
-                        <Label className="text-[#364153]">Grade</Label>
+                        <Label className="text-[#364153]">Year Group</Label>
 
                         <Select
                             value={profileData.grade || ""}
@@ -278,10 +278,10 @@ export default function ProfileForm() {
                             </SelectTrigger>
 
                             <SelectContent className="bg-white border-none">
-                                <SelectItem value="Year 9th">Year 9th</SelectItem>
-                                <SelectItem value="Year 10th">Year 10th</SelectItem>
-                                <SelectItem value="Year 11th">Year 11th</SelectItem>
-                                <SelectItem value="Year 12th">Year 12th</SelectItem>
+                                <SelectItem value="Year 9">Year 9</SelectItem>
+                                <SelectItem value="Year 10">Year 10</SelectItem>
+                                <SelectItem value="Year 11">Year 11</SelectItem>
+                                {/* <SelectItem value="Year 12th">Year 12th</SelectItem> */}
                             </SelectContent>
                         </Select>
                     </div>
