@@ -31,7 +31,7 @@ const StudentNavbar = () => {
     { name: 'Psychometric Test', path: '/dashboard/psychometric-test' },
     { name: 'Mock Interview', path: '/dashboard/mock-interview' },
     { name: 'Courses', path: '/dashboard/courses' },
-    { name: 'AI Assessment Centre', path: '/dashboard/ai-assessment-centre' },
+    { name: 'Assessment Centre Suite', path: '/dashboard/ai-assessment-centre' },
     { name: 'Law Firm Profiles', path: '/dashboard/law-firm-profiles' },
     { name: 'Application Tracker', path: '/dashboard/application-tracker' },
   ]
