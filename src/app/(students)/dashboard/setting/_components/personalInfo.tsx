@@ -52,7 +52,7 @@ export default function ProfileForm() {
 
     useEffect(() => {
         if (data?.data) {
-            const user = data.data;
+            const user = data?.data?.data;
 
             const getSocial = (name: string) =>
                 user.socileLinks?.find((s: any) => s.name === name)?.link || "";
@@ -134,7 +134,6 @@ export default function ProfileForm() {
             profileData.lastName,
             profileData.email,
             profileData.phone,
-            // profileData.jobTitle,
             profileData.company,
             profileData.address,
             profileData.bio,
