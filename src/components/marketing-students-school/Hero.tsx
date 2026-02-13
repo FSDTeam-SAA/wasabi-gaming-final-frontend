@@ -89,7 +89,7 @@ const Hero = () => {
           </div>
 
           <p className="text-xs xl:text-sm 2xl:text-base font-semibold text-gray-900">
-            Joined by 10K+ Students
+            Joined by Students Nationwide
           </p>
         </CardContent>
       </Card>
