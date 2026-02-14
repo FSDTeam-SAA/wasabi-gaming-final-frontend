@@ -3,7 +3,7 @@
 
 'use client'
 
-import { ChartColumn, Brain, Lightbulb, Target, CircleCheckBig } from 'lucide-react'
+import {  Brain, CircleCheckBig } from 'lucide-react'
 import { AssessmentCard } from './_components/assessment-card'
 import { AiAssessmentsApiResponse } from './_components/ai-assessment-data-type'
 import { useQuery } from '@tanstack/react-query'
@@ -12,41 +12,41 @@ import { ErrorContainer } from './_components/ai-assessment-error-container'
 
 
 
-const assessments = [
-  {
-    id: 'written-case',
-    title: 'Written Case Study',
-    description: 'Test your ability to interpret and analyse written information.',
-    icon: <Brain className="w-6 h-6 text-[#8200DB]" />,
-    duration: '15-20 minutes',
-    status: 'completed' as const,
-  },
-  {
-    id: 'presentation',
-    title: 'Written Presentation Task',
-    description: 'Test your ability to communicate complex information effectively.',
-    icon: <ChartColumn className="w-6 h-6 text-[#8200DB]" />,
-    score: { current: 85, total: 100 },
-    status: 'completed' as const,
-  },
-  {
-    id: 'email-exercise',
-    title: 'In-Tray Email Exercise',
-    description: 'Test your ability to prioritise, analyse, and respond under pressure.',
-    icon: <Lightbulb className="w-6 h-6 text-[#8200DB]" />,
-    score: { current: 92, total: 100 },
-    status: 'completed' as const,
-  },
-  {
-    id: 'case-study',
-    title: 'Duty of Care Analysis',
-    description: 'Test your ability to apply legal principles to fictional scenarios.',
-    icon: <Target className="w-6 h-6 text-[#8200DB]" />,
-    duration: '15-20 minutes',
-    status: 'available' as const,
-  }
+// const assessments = [
+//   {
+//     id: 'written-case',
+//     title: 'Written Case Study',
+//     description: 'Test your ability to interpret and analyse written information.',
+//     icon: <Brain className="w-6 h-6 text-[#8200DB]" />,
+//     duration: '15-20 minutes',
+//     status: 'completed' as const,
+//   },
+//   {
+//     id: 'presentation',
+//     title: 'Written Presentation Task',
+//     description: 'Test your ability to communicate complex information effectively.',
+//     icon: <ChartColumn className="w-6 h-6 text-[#8200DB]" />,
+//     score: { current: 85, total: 100 },
+//     status: 'completed' as const,
+//   },
+//   {
+//     id: 'email-exercise',
+//     title: 'In-Tray Email Exercise',
+//     description: 'Test your ability to prioritise, analyse, and respond under pressure.',
+//     icon: <Lightbulb className="w-6 h-6 text-[#8200DB]" />,
+//     score: { current: 92, total: 100 },
+//     status: 'completed' as const,
+//   },
+//   {
+//     id: 'case-study',
+//     title: 'Duty of Care Analysis',
+//     description: 'Test your ability to apply legal principles to fictional scenarios.',
+//     icon: <Target className="w-6 h-6 text-[#8200DB]" />,
+//     duration: '15-20 minutes',
+//     status: 'available' as const,
+//   }
 
-]
+// ]
 
 
 
