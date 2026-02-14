@@ -117,32 +117,32 @@ export default function CaseAnalysisPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-5 md:px-10">
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 p-8 text-gray-900">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">
+        <div className="bg-[#FFFF00] p-8 text-gray-900">
+          <h1 className="text-3xl md:text-3xl font-extrabold mb-3 text-black">
             {aiassigmentId.title || 'Case Law Analysis'}
           </h1>
           <p className="text-lg opacity-90">{aiassigmentId.discription}</p>
-          <div className="mt-4 text-sm flex flex-wrap gap-4">
+          {/* <div className="mt-4 text-sm flex flex-wrap gap-4">
             <span className="bg-white/30 px-3 py-1 rounded-full">
               Type: {aiassigmentId.type.replace('_', ' ')}
             </span>
             <span className="bg-white/30 px-3 py-1 rounded-full">
               ID: {caseData._id.slice(-8)}
             </span>
-          </div>
+          </div> */}
         </div>
 
         <div className="p-6 md:p-10 space-y-10">
           {/* Precedent */}
           <section>
-            <h2 className="text-2xl font-bold mb-4 border-l-4 border-black pl-4">
+            <h2 className="text-2xl font-bold mb-4 border-l-4 border-[#000000] pl-4">
               Precedent Summary
             </h2>
             <div className="prose max-w-none text-gray-800 leading-relaxed">
               {precedentSummary.split('\n').map((line, i) => (
-                <p key={i} className="mb-4">{line}</p>
+                <p key={i} className="mb-4 text-base text-[#374151] font-normal">{line}</p>
               ))}
             </div>
           </section>
@@ -154,7 +154,7 @@ export default function CaseAnalysisPage() {
             </h2>
             <div className="prose max-w-none text-gray-800 leading-relaxed">
               {pretendCase.split('\n').map((line, i) => (
-                <p key={i} className="mb-4">{line}</p>
+                <p key={i} className="mb-4 text-base text-[#374151] font-normal">{line}</p>
               ))}
             </div>
           </section>
@@ -179,11 +179,11 @@ export default function CaseAnalysisPage() {
 
           {/* Feedback / Quality */}
           {summaryQuality && (
-            <section className="bg-amber-50 p-6 rounded-xl border border-amber-200">
-              <h2 className="text-2xl font-bold mb-4 text-amber-800">
+            <section className="bg-[#FEFCE8] p-6 rounded-xl border border-[#FACC15]">
+              <h2 className="text-2xl font-bold mb-4 text-[#000000]">
                 AI Feedback / Summary Quality
               </h2>
-              <p className="text-amber-800 leading-relaxed">{summaryQuality}</p>
+              <p className="text-[#374151] leading-relaxed">{summaryQuality}</p>
             </section>
           )}
 
@@ -191,22 +191,22 @@ export default function CaseAnalysisPage() {
           {(legalIssue || caseLinking) && (
             <section className="grid md:grid-cols-2 gap-6">
               {legalIssue && (
-                <div className="bg-white p-5 rounded-lg border shadow-sm">
+                <div className="bg-white p-5  border border-gray-200 rounded-[12px] shadow-sm">
                   <h3 className="font-bold text-lg mb-2 text-gray-800">Legal Issue</h3>
-                  <p className="text-gray-700">{legalIssue}</p>
+                  <p className="text-[#374151] text-base font-normal">{legalIssue}</p>
                 </div>
               )}
               {caseLinking && (
-                <div className="bg-white p-5 rounded-lg border shadow-sm">
+                <div className="bg-white p-5 rounded-[12px] border border-gray-200 shadow-sm">
                   <h3 className="font-bold text-lg mb-2 text-gray-800">Case Linking</h3>
-                  <p className="text-gray-700">{caseLinking}</p>
+                  <p className="text-[#374151] text-base font-normal">{caseLinking}</p>
                 </div>
               )}
             </section>
           )}
 
           {/* Applicant Info */}
-          <section className="pt-6 border-t">
+          <section className="pt-6 border-t border-gray-200">
             <h3 className="text-lg font-semibold mb-3 text-gray-700">Submitted by</h3>
             <div className="flex items-center gap-4">
               {applicant.profileImage && (
