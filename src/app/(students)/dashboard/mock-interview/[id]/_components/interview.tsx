@@ -2,6 +2,7 @@
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
 
 interface Answer {
   questionIndex: number;
@@ -110,7 +111,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       return stream;
     } catch (error) {
       console.error("Error accessing camera:", error);
-      alert(
+      toast.error(
         "Camera access failed. Please allow camera and microphone permissions.",
       );
       return null;
@@ -299,7 +300,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
 
     // Check if MediaRecorder is supported
     if (!window.MediaRecorder) {
-      alert("MediaRecorder API is not supported in this browser");
+      toast.error("MediaRecorder API is not supported in this browser");
       return;
     }
 
@@ -307,7 +308,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     const mimeType = getSupportedMimeType();
 
     if (!mimeType) {
-      alert("No supported video format found in this browser");
+      toast.error("No supported video format found in this browser");
       return;
     }
 
@@ -498,7 +499,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   // Handle interview completion
   const handleInterviewComplete = () => {
     const submittedCount = answers.filter((a) => a.submitted).length;
-    alert(
+    toast.error(
       `Interview completed! ${submittedCount} of ${questions.length} responses have been recorded successfully.`,
     );
     router.push(`/dashboard/mock-interview/${id}/interview-summery`);
