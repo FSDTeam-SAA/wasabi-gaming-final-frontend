@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Session } from 'inspector/promises';
 
 interface OpenPosition {
   _id: string;
@@ -36,16 +38,20 @@ interface ApiResponse {
 function ShowOpenPosition({ firmName }: { firmName?: string }) {
   const [selectedPosition, setSelectedPosition] = useState<OpenPosition | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const session = useSession();
+      const token = session?.data?.accessToken
+  
 
   const { data: response, isLoading, error } = useQuery<ApiResponse>({
     queryKey: ['open-positions', firmName],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/lawfirm/law-firm-based-job?firmName=${firmName}`,
+     `${process.env.NEXT_PUBLIC_API_BASE_URL}/lawfirm/law-firm-based-job?firmName=${encodeURIComponent(firmName || '')}`,
         {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
         }
       );
