@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import ClosedJobsContainer from "./_components/closed-jobs-container";
 import ApplicationTrackerContainer from "./_components/application-tracker-container";
 import OpenApplicationContainer from "./_components/open-application-container";
+import ApplicationTrackerCart from "./_components/application-tracker-cart";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -217,6 +218,11 @@ export default function ApplicationTrackerPage() {
               {tab === "op" ? "Open Applications" : tab === "at" ? "Application Tracker" : "Closed Jobs"}
             </button>
           ))}
+        </div>
+
+{/* header cart  */}
+        <div className="pb-8 md:pb-10">
+          <ApplicationTrackerCart/>
         </div>
 
         {/* new page  */}
