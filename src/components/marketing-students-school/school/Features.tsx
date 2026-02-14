@@ -15,6 +15,8 @@ const Features = () => {
   const buttons = [
     { name: 'Student Tracking', image: '/schoolProject1.png' },
     { name: 'Events', image: '/events.jpeg' },
+    { name: 'Students Profiles', image: '/student-profile.png' },
+    { name: 'Student Premium Features', image: '/premium-features.png' },
     { name: 'Learning Courses', image: '/courses1.png' },
   ]
 
@@ -56,7 +58,7 @@ const Features = () => {
                 prepare, and excel in your career.
               </p>
 
-              <Link href="/school/dashboard">
+              <Link href="/school/manage-students">
                 <Button
                   size="lg"
                   className="rounded-full bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
@@ -78,10 +80,11 @@ const Features = () => {
               <Button
                 key={btn.name}
                 variant="secondary"
-                className={`rounded-full px-6 py-3 transition-colors ${activeButton === btn.name
-                  ? 'bg-gray-900 text-white hover:bg-gray-900'
-                  : 'bg-[#E7E7E7] backdrop-blur text-gray-900 hover:bg-[#dcdcdc]'
-                  }`}
+                className={`rounded-full px-6 py-3 transition-colors ${
+                  activeButton === btn.name
+                    ? 'bg-gray-900 text-white hover:bg-gray-900'
+                    : 'bg-[#E7E7E7] backdrop-blur text-gray-900 hover:bg-[#dcdcdc]'
+                }`}
                 onMouseEnter={() => {
                   setActiveImage(btn.image)
                   setActiveButton(btn.name)
