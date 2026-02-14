@@ -100,18 +100,19 @@ export default function LoginPage() {
       } else {
         toast.success('Login successful!')
 
-        router.push('/')
+        // Fetch session to get user role
+        const { getSession } = await import('next-auth/react')
+        const session = await getSession()
 
-        // Use activeTab to decide where to go, similar to original logic
-        // Original: if (currentTab === ActiveSection.Students) navigate("/dashboard");
-        // We use the string values directly or import ActiveSection if available.
-        // Assuming ActiveSection.Students = "Students" based on context.
-
-        // if (activeTab === "Students") {
-        //     router.push("/dashboard");
-        // } else {
-        //     router.push("/manage-students");
-        // }
+        // Redirect based on user role
+        if (session?.user?.role === 'student') {
+          router.push('/dashboard')
+        } else if (session?.user?.role === 'school') {
+          router.push('/school/manage-students')
+        } else {
+          // Fallback to home if role is not recognized
+          router.push('/')
+        }
       }
     } catch (err) {
       toast.error('Login encountered an error.')

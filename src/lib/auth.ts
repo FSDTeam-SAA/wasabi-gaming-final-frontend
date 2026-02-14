@@ -98,6 +98,22 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
+
+    async redirect({ url, baseUrl }) {
+      // Handle logout - redirect to home page
+      if (url.startsWith(baseUrl + "/api/auth/signout") || url === baseUrl) {
+        return baseUrl;
+      }
+
+      // Handle login redirects based on role
+      // The url parameter contains the callback URL
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+
+      // Default to base URL
+      return baseUrl;
+    },
   },
 
   pages: {
