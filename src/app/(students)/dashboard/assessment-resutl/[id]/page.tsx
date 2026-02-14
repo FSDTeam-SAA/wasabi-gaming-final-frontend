@@ -71,7 +71,7 @@ function Field({
   isLoading?: boolean;
 }) {
   return (
-    <div className="rounded-lg border-2 border-[#FACC154D] bg-white p-3">
+    <div className="rounded-[12px] border-2 border-[#0000001A] bg-white p-3">
       <p className="text-xs font-semibold text-yellow-500">{label}</p>
       {isLoading ? (
         <div className="mt-1 h-5 w-3/4 bg-gray-200 rounded animate-pulse" />
@@ -149,7 +149,7 @@ export default function InTrayEmailSingleComponentPage() {
           <p className="text-sm text-gray-700 mt-1">{(error as Error)?.message || "Unknown error"}</p>
           <button
             onClick={() => refetch()}
-            className="mt-3 px-4 py-2 rounded-lg bg-black text-white text-sm hover:bg-gray-800"
+            className="mt-3 px-4 py-2 rounded-[12px] bg-black text-white text-sm hover:bg-gray-800"
           >
             Retry
           </button>
@@ -167,7 +167,7 @@ export default function InTrayEmailSingleComponentPage() {
   return (
     <div className="min-h-screen bg-white p-6">
       {/* Yellow Header Bar */}
-      <div className="mb-6 bg-[#FFFF00] rounded-lg p-4">
+      <div className="mb-6 bg-[#FFFF00] max-w-6xl mx-auto rounded-[12px] p-4">
         {isSkeleton ? (
           <>
             <div className="h-8 w-3/5 bg-yellow-200 rounded animate-pulse" />
@@ -183,7 +183,7 @@ export default function InTrayEmailSingleComponentPage() {
 
       <div className="max-w-6xl mx-auto">
         {/* Main Header Card */}
-        <div className="flex items-start justify-between gap-4 mb-6 rounded-lg border-2 border-[#FACC154D] bg-white p-4">
+        <div className="flex items-start justify-between gap-4 mb-6 rounded-[12px] border-2 border-[#0000001A] bg-white p-4">
           <div className="flex-1">
             {isSkeleton ? (
               <>
@@ -224,12 +224,12 @@ export default function InTrayEmailSingleComponentPage() {
         </div>
 
         {/* Applicant Card */}
-        <div className="rounded-xl border-2 border-[#FACC154D] bg-yellow-50 p-4 mb-6">
+        <div className="rounded-xl border-2 border-[#FFFF00] bg-yellow-50 p-4 mb-6">
           <h2 className="text-lg font-bold text-black mb-3">Applicant</h2>
           <div className="flex items-center gap-4">
             {isSkeleton ? (
               <>
-                <div className="h-14 w-14 rounded-full bg-gray-300 animate-pulse border-2 border-[#FACC154D]" />
+                <div className="h-14 w-14 rounded-full bg-gray-300 animate-pulse border-2 border-[#0000001A]" />
                 <div className="flex-1">
                   <div className="h-5 w-48 bg-gray-200 rounded animate-pulse mb-1" />
                   <div className="h-4 w-64 bg-gray-200 rounded animate-pulse mb-1" />
@@ -242,10 +242,10 @@ export default function InTrayEmailSingleComponentPage() {
                   <img
                     src={applicant.profileImage}
                     alt="Profile"
-                    className="h-14 w-14 rounded-full object-cover border-2 border-[#FACC154D]"
+                    className="h-14 w-14 rounded-full object-cover border-2 border-[#0000001A]"
                   />
                 ) : (
-                  <div className="h-14 w-14 rounded-full bg-gray-300 border-2 border-[#FACC154D]" />
+                  <div className="h-14 w-14 rounded-full bg-gray-300 border-2 border-[#0000001A]" />
                 )}
                 <div className="min-w-0">
                   <p className="font-bold text-black">
@@ -261,7 +261,7 @@ export default function InTrayEmailSingleComponentPage() {
 
         {/* Brief + Email Question */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-          <div className="rounded-xl border-2 border-[#FACC154D] bg-white p-4">
+          <div className="rounded-xl border-2 border-[#0000001A] bg-white p-4">
             {isSkeleton ? (
               <>
                 <div className="h-8 w-24 bg-yellow-200 rounded animate-pulse mb-3" />
@@ -271,7 +271,7 @@ export default function InTrayEmailSingleComponentPage() {
               </>
             ) : (
               <>
-                <div className="bg-yellow-400 text-black font-bold py-2 px-3 rounded mb-3 inline-block">
+                <div className="bg-[#FFFF00] text-black font-bold py-2 px-3 rounded mb-3 inline-block">
                   BRIEF
                 </div>
                 <h2 className="text-lg font-bold text-black mb-2">Exercise Description</h2>
@@ -282,7 +282,7 @@ export default function InTrayEmailSingleComponentPage() {
             )}
           </div>
 
-          <div className="rounded-xl border-2 border-[#FACC154D] bg-white p-4">
+          <div className="rounded-xl border-2 border-[#0000001A] bg-white p-4">
             {isSkeleton ? (
               <>
                 <div className="flex items-center gap-2 mb-3">
@@ -302,7 +302,7 @@ export default function InTrayEmailSingleComponentPage() {
             ) : (
               <>
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-yellow-400 text-black font-bold flex items-center justify-center text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#FFFF00] text-black font-bold flex items-center justify-center text-sm">
                     J
                   </div>
                   <div>
@@ -320,7 +320,7 @@ export default function InTrayEmailSingleComponentPage() {
         </div>
 
         {/* Assessment Scores */}
-        <div className="rounded-xl border-2 border-[#FACC154D] bg-white p-4 mb-6">
+        <div className="rounded-xl border-2 border-[#0000001A] bg-white p-4 mb-6">
           {isSkeleton ? (
             <>
               <div className="h-8 w-36 bg-yellow-200 rounded animate-pulse mb-4" />
@@ -334,7 +334,7 @@ export default function InTrayEmailSingleComponentPage() {
             </>
           ) : (
             <>
-              <h2 className="text-lg font-bold text-black mb-3 bg-yellow-400 inline-block px-3 py-1 rounded">
+              <h2 className="text-lg font-bold text-black mb-3 bg-[#FFFF00] inline-block px-3 py-1 rounded">
                 ASSESSMENT
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
@@ -349,11 +349,11 @@ export default function InTrayEmailSingleComponentPage() {
         </div>
 
         {/* Your Response */}
-        <div className="rounded-xl border-2 border-[#FACC154D] bg-white p-4 mb-6">
+        <div className="rounded-xl border-2 border-[#0000001A] bg-white p-4 mb-6">
           {isSkeleton ? (
             <>
               <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-3" />
-              <div className="border-2 border-[#FACC154D] rounded-lg p-4 min-h-[140px] bg-gray-50 animate-pulse" />
+              <div className="border-2 border-[#0000001A] rounded-[12px] p-4 min-h-[140px] bg-gray-50 animate-pulse" />
               <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <SkeletonField />
                 <SkeletonField />
@@ -363,7 +363,7 @@ export default function InTrayEmailSingleComponentPage() {
           ) : (
             <>
               <h2 className="text-lg font-bold text-black mb-3">Your Response</h2>
-              <div className="border-2 border-[#FACC154D] rounded-lg p-4 min-h-32 bg-white mb-4">
+              <div className="border-2 border-[#0000001A] rounded-[12px] p-4 min-h-32 bg-white mb-4">
                 <p className="text-sm text-black whitespace-pre-wrap font-medium">
                   {payload.yourResponse || "—"}
                 </p>
