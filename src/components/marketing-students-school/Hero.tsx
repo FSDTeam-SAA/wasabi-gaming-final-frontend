@@ -44,7 +44,7 @@ const Hero = () => {
     xl:left-12
     2xl:left-24
     bg-white border-none
-    lg:w-52 
+    lg:w-56 py-2
     shadow-[0px_8px_16px_0px_#0000001F]
   "
       >
@@ -88,7 +88,7 @@ const Hero = () => {
             ))}
           </div>
 
-          <p className="text-xs xl:text-sm 2xl:text-base font-semibold text-gray-900">
+          <p className="text-xs w-full text-left  font-medium text-gray-900">
             Joined by Students Nationwide
           </p>
         </CardContent>
