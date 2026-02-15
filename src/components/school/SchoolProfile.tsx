@@ -73,19 +73,19 @@ const SchoolProfile = () => {
         if (profileResponse?.data) {
             const user = profileResponse.data;
             setFormData({
-                firstName: user.firstName || "",
+                firstName: user?.firstName || "",
                 lastName: user?.lastName || "",
-                schoolName: user.schoolName || "",
-                schoolType: user.schoolType || "",
-                schoolCategory: user.schoolCategory || "",
-                jobTitle: user.jobTitle || "",
-                company: user.company || "",
+                schoolName: user?.schoolName || "",
+                schoolType: user?.schoolType || "",
+                schoolCategory: user?.schoolCategory || "",
+                jobTitle: user?.jobTitle || "",
+                company: user?.company || "",
                 aboutSchool: user.aboutSchool || "",
-                email: user.email || "",
-                phone: user.phone || "",
-                address: user.address || "",
-                bio: user.bio || "",
-                profileImage: user.profileImage || "",
+                email: user?.email || "",
+                phone: user?.phone || "",
+                address: user?.address || "",
+                bio: user?.bio || "",
+                profileImage: user?.profileImage || "",
             });
         }
     }, [profileResponse]);
