@@ -324,6 +324,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import YourCareerInsights from './your-career-insights';
+import ReadyToNextStep from './ready-to-next-step';
 
 const ALL = "__all__";
 
@@ -412,47 +414,34 @@ const OpenApplicationContainer = () => {
       <p className="text-base font-normal text-[#424242] leading-[150%]">15,00 + Results</p>
       </div>
       {/* Filters */}
-      <div className="w-full md:w-2/3 lg:1/2 mb-12">
+      <div className="w-full md:w-1/2 mb-12">
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 flex-wrap">
           {/* Search */}
-          <div className="flex-1 min-w-[280px] relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+          <div className="h-[38px] flex-1 min-w-[280px] relative bg-[#E9EEF2] border border-[#616161] rounded-[8px]">
+            {/* <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 z-10" /> */}
             <Input
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSearch())}
-              className="pl-12 pr-14 py-6 rounded-xl bg-[#E9EEF2] border border-gray-300"
+              className="h-[36px] px-3  rounded-xl bg-[#E9EEF2] placeholder:text-[#929292] border border-gray-300"
             />
             <Button
               type="submit"
               size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#FFFF00] hover:bg-[#FFFF00] text-black rounded-full w-9 h-9 shadow-sm"
+              className="absolute right-2 top-1/2 -translate-y-1/2  bg-transparent text-[#929292]  rounded-full w-9 h-9 shadow-sm"
               disabled={isLoading}
             >
               <Search className="w-5 h-5" />
             </Button>
           </div>
 
-          {/* Location Dropdown */}
-          <Select value={locationFilter} onValueChange={setLocationFilter}>
-            <SelectTrigger className="w-full sm:w-[240px] py-6 rounded-xl border border-gray-300 bg-[#E9EEF2]">
-              <SelectValue placeholder="All Locations" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl max-h-[320px]">
-              <SelectItem value={ALL}>All Locations</SelectItem>
-              {uniqueLocations.map((loc) => (
-                <SelectItem key={loc} value={loc}>
-                  {loc}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          
 
           {/* Job Type Dropdown */}
           <Select value={jobTypeFilter} onValueChange={setJobTypeFilter}>
-            <SelectTrigger className="w-full sm:w-[240px] py-6 rounded-xl border border-gray-300 bg-[#E9EEF2]">
-              <SelectValue placeholder="All Job Types" />
+            <SelectTrigger className="h-[40px] w-full sm:w-[150px] rounded-xl border border-gray-300 bg-[#E9EEF2]">
+              <SelectValue placeholder="Job Type" />
             </SelectTrigger>
             <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl">
               <SelectItem value={ALL}>All Job Types</SelectItem>
@@ -466,6 +455,23 @@ const OpenApplicationContainer = () => {
               <SelectItem value="open_days">Open Days</SelectItem>
             </SelectContent>
           </Select>
+
+
+          {/* Location Dropdown */}
+          <Select value={locationFilter} onValueChange={setLocationFilter}>
+            <SelectTrigger className="h-[40px] w-full sm:w-[150px] rounded-xl border border-gray-300 bg-[#E9EEF2]">
+              <SelectValue placeholder="Location" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border border-gray-200 shadow-lg rounded-xl max-h-[320px]">
+              <SelectItem value={ALL}>All Locations</SelectItem>
+              {uniqueLocations.map((loc) => (
+                <SelectItem key={loc} value={loc}>
+                  {loc}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
         </form>
       </div>
 
@@ -565,6 +571,18 @@ const OpenApplicationContainer = () => {
           </div>
         </>
       )}
+
+
+      {/* YourCareerInsights section  */}
+      <section className='py-8'>
+        <YourCareerInsights/>
+      </section>
+
+      {/* Ready to Take the Next Step? section  */}
+
+      <section >
+        <ReadyToNextStep/>
+      </section>
     </div>
   );
 };
