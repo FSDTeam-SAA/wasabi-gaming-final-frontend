@@ -1,7 +1,9 @@
+
+
+
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
 import {
   Select,
   SelectContent,
@@ -13,10 +15,13 @@ import { Button } from './ui/button'
 import { Card, CardContent } from './ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Star } from 'lucide-react'
+import JoinCommunityModal from './JoinCommunityModal'
 
 const Hero = () => {
   const words = ['DREAMS', 'FUTURE', 'PASSION']
   const [index, setIndex] = useState(0)
+
+  const [openModal, setOpenModal] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -36,19 +41,18 @@ const Hero = () => {
       }}
     >
       {/* FLOATING CARD */}
-      {/* FLOATING CARD */}
       <Card
         className="
-    hidden lg:block rounded-[16px]
-    lg:absolute lg:left-4 lg:top-12
-    xl:left-12
-    2xl:left-24
-    bg-white border-none
-    lg:w-56 py-2
-    shadow-[0px_8px_16px_0px_#0000001F]
-  "
+          hidden lg:block rounded-[16px]
+          lg:absolute lg:left-4 lg:top-12
+          xl:left-12
+          2xl:left-24
+          bg-white border-none
+          lg:w-56 py-2
+          shadow-[0px_8px_16px_0px_#0000001F]
+        "
       >
-        <CardContent className="py-2  flex flex-col px-2 lg:px-4 items-start gap-2">
+        <CardContent className="py-2 flex flex-col px-2 lg:px-4 items-start gap-2">
           {/* Avatars */}
           <div className="flex -space-x-2 sm:-space-x-3">
             {[
@@ -60,12 +64,7 @@ const Hero = () => {
             ].map((src, i) => (
               <Avatar
                 key={i}
-                className="
-              h-8 w-8
-              xl:h-10 xl:w-10
-              
-              border-2 border-white ring-1 ring-gray-100
-            "
+                className="h-8 w-8 xl:h-10 xl:w-10 border-2 border-white ring-1 ring-gray-100"
               >
                 <AvatarImage src={src} alt={`Student ${i + 1}`} />
                 <AvatarFallback>ST</AvatarFallback>
@@ -78,17 +77,12 @@ const Hero = () => {
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                className="
-                  h-3 w-3
-                  xl:h-4 xl:w-4
-                  2xl:h-5 2xl:w-5
-                  fill-current
-                "
+                className="h-3 w-3 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5 fill-current"
               />
             ))}
           </div>
 
-          <p className="text-xs w-full text-left  font-medium text-gray-900">
+          <p className="text-xs w-full text-left font-medium text-gray-900">
             Joined by Students Nationwide
           </p>
         </CardContent>
@@ -154,12 +148,16 @@ const Hero = () => {
 
       {/* CTA */}
       <div className="flex justify-center mt-10 sm:mt-12">
-        <Link href="/dashboard">
-          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg">
-            Join the Community!
-          </Button>
-        </Link>
+        <Button
+          onClick={() => setOpenModal(true)}
+          className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg"
+        >
+          Join the Community!
+        </Button>
       </div>
+
+      {/* MODAL */}
+      <JoinCommunityModal open={openModal} onOpenChange={setOpenModal} />
     </section>
   )
 }

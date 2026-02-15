@@ -13,7 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import ShowOpenPosition from "./ShowOpenPosition";
 import Image from "next/image";
 import Link from "next/link";
@@ -83,6 +83,7 @@ interface LawFirmData {
     description?: string;
     link?: string;
   }
+  jobs?: string[];
 
 }
 
@@ -151,10 +152,10 @@ function ViewDetailsLawFirms() {
   });
 
   const datass = profileData?.data?.subscription?.name
-  // console.log(datass?.data?.subscription?.name)
-  console.log(datass)
+
 
   const firmData = response?.data;
+
 
   if (isLoading) {
     return (
@@ -371,7 +372,7 @@ function ViewDetailsLawFirms() {
                 }`}
             >
               Open Positions (
-              {Array.isArray(firmData.applyNumber) ? firmData.applyNumber.length : 0})
+              {firmData?.jobs?.length})
             </button>
 
             <button
@@ -686,9 +687,11 @@ function ViewDetailsLawFirms() {
                 {activeTab === "positions" && (
                   <div>
                     <h2 className="text-xl font-bold text-gray-900 mb-6">
-                      Open Positions
+                      Open Positions 
                     </h2>
-                    <ShowOpenPosition firmName={firmData?.firmName} />
+                    <ShowOpenPosition
+                      firmName={firmData?.firmName}
+                    />
                   </div>
                 )}
 
