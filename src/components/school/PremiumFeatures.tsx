@@ -18,33 +18,33 @@ export function PremiumFeatures() {
     const features = [
         {
             icon: BarChart3,
-            title: "Advanced Analytics",
-            description: "Deep insights into student performance, trends, and predictive outcomes with customisable dashboards."
+            title: "Student Progress Tracking",
+            description: "Monitor student performance across CV building, mock interviews, psychometric tests, and assessment centres with detailed analytics."
         },
         {
             icon: Bell,
-            title: "Smart Notifications",
-            description: "AI-powered alerts and reminders to keep you informed about critical student milestones."
+            title: "Application Monitoring",
+            description: "Track student applications to law firms and training contracts with real-time updates and milestone notifications."
         },
         {
             icon: Users,
-            title: "Unlimited Students",
-            description: "Remove all limits and manage an unlimited number of students across multiple programs."
+            title: "Unlimited Student Management",
+            description: "Manage unlimited students across your institution with no restrictions on cohort size or program types."
         },
         {
             icon: Headphones,
             title: "Priority Support",
-            description: "Get dedicated support with faster response times and a dedicated account manager."
+            description: "Get dedicated support with faster response times and a dedicated account manager for your institution."
         },
         {
             icon: Zap,
-            title: "AI Career Matching",
-            description: "Leverage advanced AI to match students with ideal career opportunities based on skills."
+            title: "Law Firm Insights",
+            description: "Access comprehensive law firm profiles, application statistics, and career pathway recommendations for your students."
         },
         {
             icon: Cog,
-            title: "Automation Tools",
-            description: "Automate repetitive tasks like follow-ups, reporting, and student communications."
+            title: "Automated Communications",
+            description: "Send bulk invitations, progress reports, and reminders to students with automated email workflows."
         }
     ];
 
@@ -103,9 +103,9 @@ export function PremiumFeatures() {
                 </div>
             </section>
 
-                        <section>
-                            <PremiumFeaturesCareer/>
-                        </section>
+            <section>
+                <PremiumFeaturesCareer />
+            </section>
 
 
             {/* <section className="bg-gray-50/50 py-24 px-6 border-y border-gray-100">
@@ -220,12 +220,12 @@ export function PremiumFeatures() {
                 </div>
             </section> */}
 
-            
+
 
             {/* Advantage Section */}
             <section className="py-10 md:py-14 lg:py-20 bg-white px-4 md:px-0">
                 <div className="max-w-7xl mx-auto">
-                      <h2 className="text-2xl md:text-3xl lg:text-4xl font-normal text-center text-[#1E1E1E] mb-4">
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-normal text-center text-[#1E1E1E] mb-4">
                         The Premium Advantage
                     </h2>
                     <p className="text-[#666666] text-base md:text-lg lg:text-xl text-center font-normal mb-4">
@@ -285,10 +285,14 @@ export function PremiumFeatures() {
                         Ready to Upgrade?
                     </h2>
                     <p className="text-[#1E1E1ECC]/80 text-base md:text-lg lg:text-xl text-center font-normal mb-4">
-                        Schedule a call with us today.
+                        Unlock all premium features and empower your students today.
                     </p>
                     <div className="h-[40px] w-full flex items-center justify-center pt-4">
-                        <button className="text-[#1E1E1E] text-sm font-semibold py-2 px-6 md:px-8 border-[2px] border-[#1E1E1E] bg-white rounded-[16px]">Schedule Demo</button>
+                        <a href="/plans">
+                            <button className="text-[#1E1E1E] text-sm font-semibold py-2 px-6 md:px-8 border-[2px] border-[#1E1E1E] bg-white rounded-[16px] hover:bg-gray-50 transition-colors">
+                                Purchase Premium Plan
+                            </button>
+                        </a>
                     </div>
                 </div>
             </section>

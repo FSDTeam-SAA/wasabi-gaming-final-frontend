@@ -183,27 +183,27 @@ const PsychometricAssessment = () => {
           ))}
         </div>
 
-        <div className="rounded-[20px] border-2 border-[#d1aff7] bg-[#E9D4FF]/20 p-8 shadow-sm relative overflow-hidden">
+        <div className="rounded-[20px] border-2 border-[#d1aff7] bg-[#E9D4FF]/20 p-6 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/30 rounded-full blur-3xl -z-0 translate-x-1/2 -translate-y-1/2 opacity-60"></div>
-          <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+          <div className="relative z-10 flex flex-col md:flex-row gap-4 items-start">
             <div className="w-16 h-16 rounded-2xl bg-[#AD46FF] flex items-center justify-center shadow-sm shrink-0">
-              <Brain className="w-8 h-8 text-white" />
+              <Brain className="w-7 h-7 text-white" />
             </div>
-            <div className="space-y-6 flex-1">
+            <div className="space-y-2 flex-1">
               <h3 className="text-xl font-bold text-gray-900">
                 Why Take Psychometric Tests?
               </h3>
-              <div className="grid gap-4">
+              <div className="grid gap-2">
                 {[
                   'Discover your natural cognitive strengths and abilities',
                   'Get personalised career recommendations based on your results',
                   'Stand out to employers with verified test scores on your profile',
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
+                  <div key={i} className="flex items-start gap-1">
                     <div className="mt-1 w-5 h-5 rounded-full flex items-center justify-center shrink-0">
                       <CheckCircle2 className="w-5 h-5 text-purple-900" />
                     </div>
-                    <p className="text-gray-800 font-medium leading-relaxed">
+                    <p className="text-gray-800 font-normal leading-relaxed">
                       {item}
                     </p>
                   </div>

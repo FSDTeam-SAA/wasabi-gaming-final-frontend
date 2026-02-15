@@ -17,7 +17,7 @@ import { ActiveSection } from '@/constant/navConstant'
 import { IMAGES } from '@/assets'
 import { toast } from 'sonner'
 import { getDeviceInfo } from '@/utils/deviceInfo'
-import { Eye, EyeOff, Mail } from 'lucide-react'
+import { Eye, EyeOff, Mail, ArrowLeft } from 'lucide-react'
 
 // Replicating SocialLoginButton locally as it was in the original file
 const SocialLoginButton = () => (
@@ -125,12 +125,19 @@ export default function LoginPage() {
       {/* LEFT: Login Form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 bg-white">
         <div className="w-full max-w-xl">
+          <Link
+            href="/"
+            className="flex items-center border border-slate-100 px-4 py-2 rounded-full text-gray-500 hover:text-black mb-8 transition-colors w-fit font-medium"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Go Home
+          </Link>
           <div className="flex justify-center mb-8">
             <Logo height={88} mobileHeight={70} name="Aspiring Legal Network" />
           </div>
 
           {/* Tabs */}
-          {/* <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-6">
             {['Students', 'School'].map(tab => (
               <Button
                 key={tab}
@@ -142,7 +149,7 @@ export default function LoginPage() {
                 {tab === 'Students' ? 'Student' : 'School'}
               </Button>
             ))}
-          </div> */}
+          </div>
 
           <h2 className="text-3xl font-bold text-center mb-2">
             Welcome back, Future Legal Professional!
@@ -270,11 +277,11 @@ export default function LoginPage() {
             ? 'Aspiring is a simple, powerful tool that helps you create a professional resume in minutes. With modern templates and smart guidance, it lets you showcase your skills confidently and take the next step in your career.'
             : 'Aspiring is a simple yet powerful system that helps schools manage students, teachers, and activities with ease. With smart tools and a modern interface, it lets you organize efficiently and focus on better learning outcomes.'}
         </p>
-        <div className="flex space-x-2 mb-8">
+        {/* <div className="flex space-x-2 mb-8">
           <div className="w-3 h-3 rounded-full bg-[#ffff00]" />
           <div className="w-3 h-3 rounded-full bg-[#cccccc]" />
           <div className="w-3 h-3 rounded-full bg-[#cccccc]" />
-        </div>
+        </div> */}
         <div className="w-full rounded-lg shadow-lg overflow-hidden">
           <img
             src={
