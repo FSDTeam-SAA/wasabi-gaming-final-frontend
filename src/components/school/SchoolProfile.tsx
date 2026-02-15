@@ -74,7 +74,7 @@ const SchoolProfile = () => {
             const user = profileResponse.data;
             setFormData({
                 firstName: user.firstName || "",
-                lastName: user.lastName || "",
+                lastName: user?.lastName || "",
                 schoolName: user.schoolName || "",
                 schoolType: user.schoolType || "",
                 schoolCategory: user.schoolCategory || "",

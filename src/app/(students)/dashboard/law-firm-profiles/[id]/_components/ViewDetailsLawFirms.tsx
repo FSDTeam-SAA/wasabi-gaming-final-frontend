@@ -170,7 +170,7 @@ function ViewDetailsLawFirms() {
     <div className="min-h-screen bg-white pb-20">
       {/* Header Section */}
       <div className="pb-8">
-        {/* ✅ ONE CONTAINER FOR EVERYTHING */}
+        {/* ONE CONTAINER FOR EVERYTHING */}
         <div className="container mx-auto pt-6">
           {/* Back Button */}
           <button
@@ -200,7 +200,7 @@ function ViewDetailsLawFirms() {
                 <img
                   src={firmData.coverImage}
                   alt={`${firmData.firmName || "Law Firm"} Logo`}
-                  className="w-20 h-20 rounded-2xl object-cover shadow-lg"
+                  className="w-20 h-20 rounded-[24px] object-cover shadow-lg"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";

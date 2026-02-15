@@ -29,7 +29,13 @@ const WhyUseCard = () => {
             }}
         >
             <div className="flex flex-col md:flex-row gap-6 items-start">
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-b from-[#FFFF00] to-[#E6E600] rounded-2xl flex items-center justify-center flex-shrink-0">
+                <div
+                    className="w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                    style={{
+                        background: "linear-gradient(135deg, #FEFCE8 0%, #FFF7ED 100%)"
+                    }}
+                >
+
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -56,7 +62,7 @@ const WhyUseCard = () => {
                 </div>
 
                 <div className="flex-1">
-                    <h4 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold text-gray-900">
+                    <h4 className="mb-4 md:mb-6 text-lg md:text-xl font-normal text-[#1E1E1E]">
                         Why Use Our Law Firm Directory?
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -66,7 +72,7 @@ const WhyUseCard = () => {
                                     <CheckCircle className="w-5 h-5 text-green-600" />
                                 </div>
                                 <div>
-                                    <span className="block text-sm md:text-base font-semibold text-gray-900">
+                                    <span className="block text-sm md:text-base font-normal text-[#1E1E1E]">
                                         {f.title}
                                     </span>
                                     <span className="block text-xs md:text-sm text-gray-600 mt-0.5">
