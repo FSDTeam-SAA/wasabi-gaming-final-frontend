@@ -26,8 +26,8 @@ const SchoolNavbar = () => {
 
   const navItems: NavItem[] = [
     // { name: "Dashboard", path: "/school/dashboard" },
-    { name: 'Invite Students', path: '/school/invite-students' },
     { name: 'Manage Students', path: '/school/manage-students' },
+    { name: 'Invite Students', path: '/school/invite-students' },
     { name: 'Premium Features', path: '/school/premium-features' },
     { name: 'School Profile', path: '/school/profile' },
   ]
@@ -59,7 +59,7 @@ const SchoolNavbar = () => {
               <li key={item.name}>
                 <Link
                   href={item.path}
-                  className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  className={`px-3.5 py-2 rounded-full font-medium transition-all duration-200 ${
                     isActive(item.path)
                       ? 'yellow text-[#1E1E1E]'
                       : 'text-[#505050] hover:text-black'

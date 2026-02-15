@@ -164,7 +164,7 @@ const StudentNavbar = () => {
                   <Link
                     href={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block px-3  rounded-lg font-medium text-sm transition-all duration-200 ${isActive(item.path)
+                    className={`block px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${isActive(item.path)
                       ? 'bg-[#FFFF00] text-black border-2 border-[#E5E500]'
                       : 'text-[#505050] hover:text-black'
                       }`}
