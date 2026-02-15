@@ -406,14 +406,19 @@ const OpenApplicationContainer = () => {
 
   return (
     <div>
+
+      <div className="w-full flex items-center justify-between gap-3 pb-5">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-[40px] font-semibold leading-[120%] text-[#131313]">Filter Jobs</h2>
+      <p className="text-base font-normal text-[#424242] leading-[150%]">15,00 + Results</p>
+      </div>
       {/* Filters */}
-      <div className="mb-12">
+      <div className="w-full md:w-2/3 lg:1/2 mb-12">
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 flex-wrap">
           {/* Search */}
           <div className="flex-1 min-w-[280px] relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
             <Input
-              placeholder="Search by title, company or location..."
+              placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSearch())}
