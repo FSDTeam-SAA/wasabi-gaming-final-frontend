@@ -1,0 +1,241 @@
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
+
+export type CQDDropdownType = {
+  id: number;
+  name: string;
+  value: string | number; // Disallow boolean or undefined
+};
+
+const SplurjjDropDownSelector = ({
+  list,
+  selectedValue,
+  onValueChange,
+  placeholderText,
+}: {
+  list: CQDDropdownType[];
+  selectedValue: string | number | undefined;
+  onValueChange: (value: string | number) => void;
+  placeholderText?: string;
+}) => {
+  return (
+    <Select
+      // Show placeholder when selectedValue is undefined or empty
+      value={
+        selectedValue !== "" && selectedValue !== undefined
+          ? selectedValue.toString()
+          : undefined
+      }
+      onValueChange={(val) => {
+        const numVal = Number(val);
+        onValueChange(isNaN(numVal) ? val : numVal);
+      }}
+    >
+      <SelectTrigger className="h-[40px] w-[70px] md:w-[80px] lg:w-[90px] bg-white border border-[#E6E6E6] rounded-[8px] text-[#0E2A5C] dark:text-black text-base focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0">
+        <SelectValue
+          className="placeholder:text-primary dark:text-black"
+          placeholder={placeholderText ?? "Select"}
+        />
+      </SelectTrigger>
+      <SelectContent className="min-w-[unset] w-auto  h-[120px] bg-white">
+        <SelectGroup>
+          {list
+            .filter((item) => item.value !== "" && item.value !== undefined)
+            .map((item) => (
+              <SelectItem
+                key={item.id}
+                value={item.value.toString()}
+                className="text-[#0E2A5C] font-normal text-[16px] leading-normal"
+              >
+                {item.name}
+              </SelectItem>
+            ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+};
+
+export default SplurjjDropDownSelector;
+
+
+// "use client";
+// import TableSkeletonWrapper from "@/components/shared/TableSkeletonWrapper/TableSkeletonWrapper";
+// // import { Badge } from "@/components/ui/badge";
+// import { ScrollArea } from "@/components/ui/scroll-area";
+// import SplurjjDropDownSelector from "@/components/ui/SplurjjDropDownSelector";
+// import { useQuery } from "@tanstack/react-query";
+// import { useSession } from "next-auth/react";
+// import Image from "next/image";
+// import React, { useState } from "react";
+// import ContentStatusDropDown from "../content/_components/ContentStatusDropDown";
+// import { DashboardOverviewResponse } from "@/components/types/DashboardOverviewDataType";
+// import Link from "next/link";
+
+// const numberList = [
+//   { id: 1, name: "5", value: 5 },
+//   { id: 2, name: "10", value: 10 },
+//   { id: 3, name: "20", value: 20 },
+// ];
+
+// const RecentArticles = () => {
+//   const [selectedNumber, setSelectedNumber] = useState<
+//     string | number | undefined
+//   >(10);
+//   const session = useSession();
+//   const token = (session?.data?.user as { token: string })?.token;
+
+//    // cdn url link start
+
+//   function convertToCDNUrl(image2?: string): string {
+//     const image2BaseUrl = "https://s3.amazonaws.com/splurjjimages/images";
+//     const cdnBaseUrl = "https://dsfua14fu9fn0.cloudfront.net/images";
+
+//     if (typeof image2 === "string" && image2.startsWith(image2BaseUrl)) {
+//       return image2.replace(image2BaseUrl, cdnBaseUrl);
+//     }
+
+//     return image2 || "";
+//   }
+
+//   function getImageUrl(image2?: string) {
+//     if (!image2) return "";
+
+//     try {
+//       const parsed = JSON.parse(image2);
+//       if (parsed?.image2) {
+//         return convertToCDNUrl(parsed.image2);
+//       }
+//     } catch {
+//       return convertToCDNUrl(image2);
+//     }
+
+//     return "";
+//   }
+
+//   // cdn url link end 
+
+//   const { data, isLoading, isError, error } =
+//     useQuery<DashboardOverviewResponse>({
+//       queryKey: ["dashboard-recent-articles", selectedNumber],
+//       queryFn: () =>
+//         fetch(
+//           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/dashboard-overview?per_page=${selectedNumber}`,
+//           {
+//             method: "GET",
+//             headers: {
+//               Authorization: `Bearer ${token}`,
+//             },
+//           }
+//         ).then((res) => res.json()),
+//     });
+
+//   // console.log(data?.data?.recent_content?.data);
+
+//   //   const imageUrl = JSON.parse(data?.data?.recent_content?.data?.image2 || "{}") || "";
+
+//   // const cdnUrl = convertToCDNUrl(imageUrl.image2);
+//   // console.log({cdnUrl})
+//   if (isLoading) {
+//     return (
+//       <div>
+//         <TableSkeletonWrapper
+//           count={6}
+//           width="100%"
+//           height="70px"
+//           className="bg-white border rounded-[8px]"
+//         />
+//       </div>
+//     );
+//   }
+
+//   if (isError) {
+//     return <div>{error?.message || "Somethings went wrong"}</div>;
+//   }
+//   return (
+//     <div className="bg-white dark:bg-[#1C1C1C] rounded-lg p-3 md:p-4 lg:p-6 shadow-lg">
+//       <div className="w-full h-auto flex items-center justify-between gap-2 mb-4 md:mb-6">
+//         <div>
+//           <h2 className="text-lg font-semibold  text-gray-900 dark:text-white">
+//           Recent Articles
+//         </h2>
+//         </div>
+//         <div>
+//           <SplurjjDropDownSelector
+//             list={numberList}
+//             selectedValue={selectedNumber}
+//             onValueChange={setSelectedNumber}
+//             placeholderText="Select a number"
+//           />
+//         </div>
+//       </div>
+//       <div>
+//         <ScrollArea className="h-[420px] w-full">
+//           <table className="w-full">
+//             <tbody className="">
+//               {data?.data?.recent_content?.data?.map((content) => {
+//                 const cdnUrl = getImageUrl(content?.image2?.[0]);
+
+//                 return (
+//                   <tr
+//                     key={content?.id}
+//                     className="w-full flex items-center justify-between gap-2 pb-4 "
+//                   >
+//                     <td className="flex items-center gap-4">
+//                       <div className="w-[120px] h-full">
+//                         <Image
+//                           src={cdnUrl ? cdnUrl : "/assets/images/no-images.jpg"}
+//                           // src={
+//                           //   content?.image2
+//                           //     ? content.image2[0]
+//                           //     : "/assets/images/no-images.jpg"
+//                           // }
+//                           alt={content?.heading}
+//                           width={420}
+//                           height={160}
+//                           className="w-[60px] md:w-[120px] h-[60px] rounded-[8px] object-cover"
+//                         />
+//                       </div>
+//                       <Link className="" href={`/dashboard/${content?.id}`}>
+//                         <p
+//                           className="text-black dark:text-white"
+//                           dangerouslySetInnerHTML={{
+//                             __html: content?.heading.slice(0, 50),
+//                           }}
+//                         />
+//                       </Link>
+//                     </td>
+
+//                     <td>
+//                       <ContentStatusDropDown
+//                         contentId={content?.id}
+//                         initialStatus={
+//                           content?.status as
+//                             | "Draft"
+//                             | "Review"
+//                             | "Approved"
+//                             | "Published"
+//                             | "Archived"
+//                             | "Needs Revision"
+//                             | "Rejected"
+//                         }
+//                       />
+//                     </td>
+//                   </tr>
+//                 );
+//               })}
+//             </tbody>
+//           </table>
+//         </ScrollArea>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default RecentArticles;
