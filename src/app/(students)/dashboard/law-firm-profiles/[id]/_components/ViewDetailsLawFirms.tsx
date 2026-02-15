@@ -13,10 +13,11 @@ import {
   Users,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import ShowOpenPosition from "./ShowOpenPosition";
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 // TypeScript interface
 interface RecentInfo {
@@ -94,6 +95,8 @@ interface ApiResponse {
 
 function ViewDetailsLawFirms() {
   const params = useParams();
+  const session = useSession();
+  const token = session.data?.accessToken
   const id =
     typeof params?.id === "string"
       ? params.id
@@ -105,7 +108,7 @@ function ViewDetailsLawFirms() {
   const [activeTab, setActiveTab] = useState<"overview" | "positions" | "culture">(
     "overview",
   );
-  const [tags, setTags] = useState<string[]>([]);
+
 
   // Fetch law firm data from API
   const {
@@ -126,6 +129,30 @@ function ViewDetailsLawFirms() {
     },
     enabled: !!id,
   });
+
+  const { data: profileData } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/profile`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch profile data");
+      }
+      return res.json();
+    },
+  });
+
+  const datass = profileData?.data?.subscription?.name
+  // console.log(datass?.data?.subscription?.name)
+  console.log(datass)
 
   const firmData = response?.data;
 
@@ -195,7 +222,7 @@ function ViewDetailsLawFirms() {
             )}
 
             {/* Logo */}
-            <div className="flex justify-center mb-6 bg-gradient-to-br from-[#F0FDF4] to-[#ECFDF5] py-10 rounded-2xl">
+            <div className="flex justify-center mb-6 bg-gradient-to-br from-[#F0FDF4] to-[#ECFDF5] py-10 rounded-t-2xl">
               {firmData.coverImage ? (
                 <img
                   src={firmData.coverImage}
@@ -329,8 +356,8 @@ function ViewDetailsLawFirms() {
             <button
               onClick={() => setActiveTab("overview")}
               className={`flex-1 min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${activeTab === "overview"
-                  ? "bg-[#FFFF00] text-black shadow-sm"
-                  : "text-[#1E1E1E]"
+                ? "bg-[#FFFF00] text-black shadow-sm"
+                : "text-[#1E1E1E]"
                 }`}
             >
               Overview
@@ -339,8 +366,8 @@ function ViewDetailsLawFirms() {
             <button
               onClick={() => setActiveTab("positions")}
               className={`flex-1 min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${activeTab === "positions"
-                  ? "bg-[#FFFF00] text-black shadow-sm"
-                  : "text-[#1E1E1E]"
+                ? "bg-[#FFFF00] text-black shadow-sm"
+                : "text-[#1E1E1E]"
                 }`}
             >
               Open Positions (
@@ -350,8 +377,8 @@ function ViewDetailsLawFirms() {
             <button
               onClick={() => setActiveTab("culture")}
               className={`flex-1 min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${activeTab === "culture"
-                  ? "bg-[#FFFF00] text-black shadow-sm"
-                  : "text-[#1E1E1E]"
+                ? "bg-[#FFFF00] text-black shadow-sm"
+                : "text-[#1E1E1E]"
                 }`}
             >
               Cultures & Benefits
@@ -616,11 +643,14 @@ function ViewDetailsLawFirms() {
                               analytical thinking and problem-solving. We've found 5
                               new job opportunities that match your profile.
                             </p>
-                            <Link href="/plans">
-                              <button className="bg-[#FFFF00] rounded-[24px] w-[215px] hover:bg-[#FFFF00]/90 text-[#1E1E1E] font-normal py-3 px-2 transition-colors shadow-md ">
-                                Upgrade Your Plan
-                              </button>
-                            </Link>
+                            {(datass === 'Free Plan' || datass === '') && (
+                              <Link href="/plans">
+                                <button className="bg-[#FFFF00] rounded-[24px] w-[215px] hover:bg-[#FFFF00]/90 text-[#1E1E1E] font-normal py-3 px-2 transition-colors shadow-md">
+                                  Upgrade Your Plan
+                                </button>
+                              </Link>
+                            )}
+
                           </div>
                         </div>
                       </div>
