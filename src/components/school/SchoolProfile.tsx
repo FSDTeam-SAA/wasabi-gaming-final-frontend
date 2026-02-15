@@ -70,8 +70,8 @@ const SchoolProfile = () => {
     });
 
     useEffect(() => {
-        if (profileResponse?.data) {
-            const user = profileResponse.data;
+        if (profileResponse?.data?.data) {
+            const user = profileResponse.data.data;
             setFormData({
                 firstName: user.firstName || "",
                 lastName: user.lastName || "",
@@ -98,13 +98,13 @@ const SchoolProfile = () => {
             setIsEditing(false);
 
             // Update session with new data if available
-            if (data?.data) {
+            if (data?.data?.data) {
                 updateSession({
                     ...session,
                     user: {
                         ...session?.user,
-                        name: data.data.schoolName,
-                        image: data.data.profileImage,
+                        name: data.data.data.schoolName,
+                        image: data.data.data.profileImage,
                     }
                 });
             }
@@ -187,7 +187,7 @@ const SchoolProfile = () => {
         );
     }
 
-    const user = profileResponse?.data;
+    const user = profileResponse?.data?.data;
 
     return (
         <div className="min-h-screen bg-transparent pt-8 pb-20 px-4 md:px-6 font-poppins">
