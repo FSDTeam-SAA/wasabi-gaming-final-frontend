@@ -221,7 +221,7 @@ const LawFirmCard = ({
             <img
               src={firm.coverImage}
               alt={`${firm.firmName} logo`}
-              className="max-w-full max-h-full object-contain"
+              className="w-full h-full object-cover rounded-[8px]"
             />
           ) : (
             <div className="text-white font-bold text-xl">

@@ -20,7 +20,8 @@ export default function LawFirmDirectoryPage() {
   const [selectedTag, setSelectedTag] = useState("All");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FEFCE8] via-white to-[#EFF6FF] p-4 sm:p-6 md:p-8 lg:p-12">
+  <div className="min-h-screen bg-[linear-gradient(135deg,#FEFCE8_0%,#FFFFFF_50%,#EFF6FF_100%)] p-4 sm:p-6 md:p-8 lg:p-12">
+
       <div className="space-y-8 md:space-y-12 container mx-auto">
         {/* Back button when in Saved view */}
         {showSaved && (
