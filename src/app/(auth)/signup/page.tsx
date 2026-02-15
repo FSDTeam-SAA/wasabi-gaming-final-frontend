@@ -381,11 +381,11 @@ export default function SignUpPage() {
                         : "Aspiring is a simple yet powerful system that helps schools manage students, teachers, and activities with ease."}
                 </p>
 
-                <div className="flex space-x-2 mb-8">
+                {/* <div className="flex space-x-2 mb-8">
                     <div className="w-3 h-3 rounded-full bg-[#ffff00]" />
                     <div className="w-3 h-3 rounded-full bg-[#cccccc]" />
                     <div className="w-3 h-3 rounded-full bg-[#cccccc]" />
-                </div>
+                </div> */}
 
                 <div className="w-full rounded-lg shadow-lg overflow-hidden">
                     <img
