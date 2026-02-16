@@ -1,3 +1,6 @@
+
+
+
 'use client'
 
 import React, { useState } from 'react'
@@ -17,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react' // optional: for loading spinner
+import { Loader2 } from 'lucide-react'
 
 interface Props {
   open: boolean
@@ -43,17 +46,13 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
     yearGroup: '',
   })
 
-  const [submitStatus, setSubmitStatus] = useState<
-    'idle' | 'success' | 'error'
-  >('idle')
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
   const mutation = useMutation({
     mutationFn: async (data: FormData & { status: 'active' }) => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/community`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
 
@@ -64,10 +63,8 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
 
       return response.json()
     },
-
     onSuccess: () => {
       setSubmitStatus('success')
-      // Auto-close modal and redirect after 2.5 seconds
       setTimeout(() => {
         onOpenChange(false)
         window.open(
@@ -77,10 +74,7 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
         )
       }, 2500)
     },
-
-    onError: () => {
-      setSubmitStatus('error')
-    },
+    onError: () => setSubmitStatus('error'),
   })
 
   const handleChange = (
@@ -89,16 +83,12 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
     const name = 'target' in e ? e.target.name : e.name
     const value = 'target' in e ? e.target.value : e.value
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Basic validation
     if (
       !formData.fullName.trim() ||
       !formData.email.trim() ||
@@ -113,7 +103,6 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
 
     mutation.mutate({
       ...formData,
-      age: formData.age, // API expects number, but we send string → backend should handle
       status: 'active' as const,
     })
   }
@@ -121,13 +110,16 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
   const isLoading = mutation.isPending
   const whatsappLink = 'https://chat.whatsapp.com/KBRYa3agEg70ixLXiWu42z'
 
+  // ✅ shared classes
+  const labelClass = 'text-sm font-semibold text-[#0A0A23]'
+  const inputClass = 'border border-[#0000001A] rounded-[8px] h-[44px]'
+  const helperEnter = (text: string) => `Enter ${text}`
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl !rounded-[12px] bg-white p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            Join the Community
-          </DialogTitle>
+          <DialogTitle className="text-xl font-bold">Join the Community</DialogTitle>
         </DialogHeader>
 
         {submitStatus === 'success' ? (
@@ -135,9 +127,8 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
             <h3 className="text-xl font-bold text-green-600 mb-4">
               Thank you for joining!
             </h3>
-            <p className="mb-6">
-              Redirecting you to our WhatsApp community...
-            </p>
+            <p className="mb-6">Redirecting you to our WhatsApp community...</p>
+
             <a
               href={whatsappLink}
               target="_blank"
@@ -146,77 +137,116 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
             >
               Join WhatsApp Group Now
             </a>
-            <p className="text-sm text-gray-500 mt-4">
-              (Closing in a few seconds...)
-            </p>
+
+            <p className="text-sm text-gray-500 mt-4">(Closing in a few seconds...)</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              <Input
-                name="fullName"
-                placeholder="Full Name"
-                value={formData.fullName}
-                onChange={handleChange}
-                className="border border-[#0000001A] rounded-[8px] h-[44px]"
-                required
-              />
+              {/* Full Name */}
+              <div className="space-y-1">
+                <label className={labelClass} htmlFor="fullName">
+                  Full Name
+                </label>
+                <Input
+                  id="fullName"
+                  name="fullName"
+                  placeholder={helperEnter('your full name')}
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className={inputClass}
+                  required
+                />
+              </div>
 
-              <Input
-                name="email"
-                type="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                className="border border-[#0000001A] rounded-[8px] h-[44px]"
-                required
-              />
+              {/* Email */}
+              <div className="space-y-1">
+                <label className={labelClass} htmlFor="email">
+                  Email Address
+                </label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder={helperEnter('your email address')}
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={inputClass}
+                  required
+                />
+              </div>
 
-              <Input
-                name="age"
-                type="number"
-                placeholder="Age"
-                value={formData.age}
-                onChange={handleChange}
-                className="border border-[#0000001A] rounded-[8px] h-[44px]"
-                required
-              />
+              {/* Age */}
+              <div className="space-y-1">
+                <label className={labelClass} htmlFor="age">
+                  Age
+                </label>
+                <Input
+                  id="age"
+                  name="age"
+                  type="number"
+                  placeholder={helperEnter('your age')}
+                  value={formData.age}
+                  onChange={handleChange}
+                  className={inputClass}
+                  required
+                />
+              </div>
 
-              <Input
-                name="cityOrTown"
-                placeholder="City or Town"
-                value={formData.cityOrTown}
-                onChange={handleChange}
-                className="border border-[#0000001A] rounded-[8px] h-[44px]"
-                required
-              />
+              {/* City/Town */}
+              <div className="space-y-1">
+                <label className={labelClass} htmlFor="cityOrTown">
+                  City or Town
+                </label>
+                <Input
+                  id="cityOrTown"
+                  name="cityOrTown"
+                  placeholder={helperEnter('your city or town')}
+                  value={formData.cityOrTown}
+                  onChange={handleChange}
+                  className={inputClass}
+                  required
+                />
+              </div>
 
-              <Input
-                name="phoneNumber"
-                placeholder="Phone Number"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                className="border border-[#0000001A] rounded-[8px] h-[44px]"
-                required
-              />
+              {/* Phone */}
+              <div className="space-y-1">
+                <label className={labelClass} htmlFor="phoneNumber">
+                  Phone Number
+                </label>
+                <Input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  placeholder={helperEnter('your phone number')}
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className={inputClass}
+                  required
+                />
+              </div>
 
-              <Select
-                value={formData.yearGroup}
-                onValueChange={(value) =>
-                  handleChange({ name: 'yearGroup', value })
-                }
-              >
-                <SelectTrigger className="border h-[44px] border-[#0000001A] rounded-[8px]">
-                  <SelectValue placeholder="Select Year Group" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border-none">
-                  <SelectItem value="year10">Year 10</SelectItem>
-                  <SelectItem value="year11">Year 11</SelectItem>
-                  <SelectItem value="year12">Year 12</SelectItem>
-                  <SelectItem value="year13">Year 13</SelectItem>
-                  <SelectItem value="graduate">Graduate</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Year Group */}
+              <div className="space-y-1">
+                <label className={labelClass}>
+                  Year Group
+                </label>
+
+                <Select
+                  value={formData.yearGroup}
+                  onValueChange={(value) => handleChange({ name: 'yearGroup', value })}
+                >
+                  <SelectTrigger className="border h-[44px] border-[#0000001A] rounded-[8px]">
+                    <SelectValue placeholder="Select year group" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-none">
+                    <SelectItem value="year10">Year 10</SelectItem>
+                    <SelectItem value="year11">Year 11</SelectItem>
+                    <SelectItem value="year12">Year 12</SelectItem>
+                    <SelectItem value="year13">Year 13</SelectItem>
+                    <SelectItem value="graduate">Graduate</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {submitStatus === 'error' && (
