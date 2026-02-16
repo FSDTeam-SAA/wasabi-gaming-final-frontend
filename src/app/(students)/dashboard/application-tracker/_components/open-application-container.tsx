@@ -62,10 +62,10 @@ const OpenApplicationContainer = () => {
 
   const { data, isLoading, isError, error } =
     useQuery<OpenApplicationApiResponse>({
-      queryKey: ["open-application", currentPage, status, debouncedSearch],
+      queryKey: ["open-application", currentPage, status, debouncedSearch, jobType, location],
       queryFn: async () => {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=${status}&page=${currentPage}&limit=10`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=${status}&page=${currentPage}&limit=10&searchTerm=${jobType}`,
           {
             method: "GET",
             headers: {
@@ -177,7 +177,7 @@ const OpenApplicationContainer = () => {
         </div>
       </div>
 
-      <h4 className="text-xl md:text-[22px] lg:text-2xl font-semibold text-[#1E1E1E] leading-[32px]pt-6 md:pt-7 lg:pt-8">
+      <h4 className="text-xl md:text-[22px] lg:text-2xl font-semibold text-[#1E1E1E] leading-[32px] pt-6 md:pt-7 lg:pt-8 pb-6">
         Your Applications
       </h4>
 
