@@ -56,21 +56,21 @@ const Navbar = () => {
   const navItemsData =
     activeSection === ActiveSection.Students
       ? [
-        ...(isLoggedIn ? [{ name: 'Dashboard', to: '/dashboard' }] : []),
-        { name: 'Application Tracker', to: '/dashboard/application-tracker' },
-        { name: 'Law Firm Profiles', to: '/dashboard/law-firm-profiles' },
-        { name: 'Portfolio', to: '/dashboard/portfolio' },
-        { name: 'Courses', to: '/dashboard/courses' },
-        { name: 'Mock Interviews', to: '/dashboard/mock-interview' },
-      ]
+          ...(isLoggedIn ? [{ name: 'Dashboard', to: '/dashboard' }] : []),
+          { name: 'Application Tracker', to: '/dashboard/application-tracker' },
+          { name: 'Law Firm Profiles', to: '/dashboard/law-firm-profiles' },
+          { name: 'Portfolio', to: '/dashboard/portfolio' },
+          { name: 'Courses', to: '/dashboard/courses' },
+          { name: 'Mock Interviews', to: '/dashboard/mock-interview' },
+        ]
       : [
-        // ...(isLoggedIn
-        //   ? [{ name: 'Dashboard', to: '/school/dashboard' }]
-        //   : []),
-        { name: 'Manage Students', to: '/school/manage-students' },
-        { name: 'Invite Students', to: '/school/invite-students' },
-        { name: 'Premium Features', to: '/school/premium-features' },
-      ]
+          // ...(isLoggedIn
+          //   ? [{ name: 'Dashboard', to: '/school/dashboard' }]
+          //   : []),
+          { name: 'Manage Students', to: '/school/manage-students' },
+          { name: 'Invite Students', to: '/school/invite-students' },
+          { name: 'Premium Features', to: '/school/premium-features' },
+        ]
 
   const moreItems = [
     {
@@ -146,10 +146,11 @@ const Navbar = () => {
             className={`flex items-center justify-start bg-[#FFFFB0] p-0.5 sm:p-1 md:p-1 lg:p-1.5 xl:p-2 text-xs sm:text-sm md:text-base lg:text-lg xl:text-2xl neuton`}
           >
             <button
-              className={`py-0.5 md:py-1 lg:py-1 px-3 md:px-4 lg:px-4 xl:px-4 ${activeSection === ActiveSection.Students
+              className={`py-0.5 md:py-1 lg:py-1 px-3 md:px-4 lg:px-4 xl:px-4 ${
+                activeSection === ActiveSection.Students
                   ? 'border-b-2 border-[#FDC700] font-semibold'
                   : 'text-gray-700'
-                }`}
+              }`}
               onClick={() => handleSectionChange(ActiveSection.Students)}
             >
               Students
@@ -158,10 +159,11 @@ const Navbar = () => {
               |
             </span>
             <button
-              className={`px-2 py-0.5 sm:px-3 sm:py-0.5 md:px-4 md:py-1 lg:px-4 lg:py-1 ${activeSection === ActiveSection.School
+              className={`px-2 py-0.5 sm:px-3 sm:py-0.5 md:px-4 md:py-1 lg:px-4 lg:py-1 ${
+                activeSection === ActiveSection.School
                   ? 'border-b-2 border-[#FDC700] font-semibold'
                   : 'text-gray-700'
-                }`}
+              }`}
               onClick={() => handleSectionChange(ActiveSection.School)}
             >
               School
@@ -171,12 +173,13 @@ const Navbar = () => {
 
         {/* Main Navbar - Responsive for all breakpoints */}
         <div
-          className={`flex items-center justify-between py-2 md:py-2 lg:py-2 px-4 md:px-8 lg:px-2 xl:px-16 ${isContactPage
+          className={`flex items-center justify-between py-2 md:py-2 lg:py-2 px-4 md:px-8 lg:px-2 xl:px-16 ${
+            isContactPage
               ? ''
               : activeSection === ActiveSection.Students
                 ? 'bg-slate-50'
                 : ''
-            }`}
+          }`}
           style={
             !isContactPage && activeSection === ActiveSection.School
               ? { backgroundColor: 'rgb(248, 250, 252)' }
@@ -193,27 +196,30 @@ const Navbar = () => {
           {/* Desktop Navbar Items - Optimized for LG and XL */}
           <div className="hidden lg:flex flex-1 items-center justify-center">
             <div
-              className={`flex items-center space-x-2 lg:space-x-3 xl:space-x-4 ${isContactPage
+              className={`flex items-center space-x-2 lg:space-x-3 xl:space-x-4 ${
+                isContactPage
                   ? 'bg-white/80 backdrop-blur-md shadow-sm border border-white/20 rounded-full px-6 py-2'
                   : ''
-                }`}
+              }`}
             >
               <div
-                className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-4 py-2 ${isContactPage
+                className={`flex items-center border border-[#E6E6E6] rounded-full px-3 lg:px-4 xl:px-4 py-2 ${
+                  isContactPage
                     ? 'bg-transparent border-none'
                     : 'lg:bg-[#FEFACA]'
-                  }`}
+                }`}
               >
                 {navItemsData.map(item => (
                   <Link
                     key={item.name}
                     href={item.to}
-                    className={`px-2 lg:px-3 xl:px-3 text-center py-1 font-medium transition-colors duration-200 text-xs sm:text-base md:text-lg lg:text-sm xl:text-base ${pathname === item.to
+                    className={`px-2 lg:px-3 xl:px-3 text-center py-1 font-medium transition-colors duration-200 text-xs sm:text-base md:text-lg lg:text-sm xl:text-base ${
+                      pathname === item.to
                         ? 'yellow text-black rounded-3xl px-3 lg:px-4 xl:px-4 py-2'
                         : isContactPage
                           ? 'text-[#1E1E1E] hover:text-black'
                           : 'text-[#505050] hover:text-black'
-                      }`}
+                    }`}
                   >
                     {item.name}
                   </Link>
@@ -222,23 +228,22 @@ const Navbar = () => {
                 {/* More Dropdown - Improved for LG */}
                 <div
                   className="relative"
-                  
                   onMouseLeave={() => setIsMoreOpen(false)}
                 >
                   <button
                     onClick={() => setIsMoreOpen(!isMoreOpen)}
-                    className={`flex items-center px-2 lg:px-3 xl:px-4 py-1 ${isContactPage
-                        ? `text-[#1E1E1E]`
-                        : `text-[#505050]`
-                      } font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-lg`}
+                    className={`flex items-center px-2 lg:px-3 xl:px-4 py-1 ${
+                      isContactPage ? `text-[#1E1E1E]` : `text-[#505050]`
+                    } font-normal transition-colors duration-200 text-xs lg:text-sm xl:text-lg`}
                   >
                     More
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="12"
                       height="12"
-                      className={`ml-1 lg:ml-2 transform transition-transform duration-200 ${isMoreOpen ? 'rotate-180' : ''
-                        }`}
+                      className={`ml-1 lg:ml-2 transform transition-transform duration-200 ${
+                        isMoreOpen ? 'rotate-180' : ''
+                      }`}
                       viewBox="0 0 24 24"
                       fill="none"
                     >
@@ -249,24 +254,27 @@ const Navbar = () => {
                     </svg>
                   </button>
                   {isMoreOpen && (
-                    <div className="absolute top-full right-0 mt-2 lg:mt-2 z-40 xl:mt-2 w-40 lg:w-44 xl:w-48  flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
-                      {moreItems.map((item, idx) => (
-                        <React.Fragment key={item.name}>
-                          <Link
-                            href={item.to}
-                            onClick={() => setIsMoreOpen(false)}
-                            className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${pathname === item.to
-                                ? 'bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]'
-                                : 'hover:bg-gray-100'
+                    <div className="absolute top-full right-0 pt-2 lg:pt-4 xl:pt-2 w-40 lg:w-44 xl:w-48 z-10">
+                      <div className="flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
+                        {moreItems.map((item, idx) => (
+                          <React.Fragment key={item.name}>
+                            <Link
+                              href={item.to}
+                              onClick={() => setIsMoreOpen(false)}
+                              className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${
+                                pathname === item.to
+                                  ? 'bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]'
+                                  : 'hover:bg-gray-100'
                               }`}
-                          >
-                            {item.name}
-                          </Link>
-                          {idx < moreItems.length - 1 && (
-                            <div className="w-full border-b border-gray-200" />
-                          )}
-                        </React.Fragment>
-                      ))}
+                            >
+                              {item.name}
+                            </Link>
+                            {idx < moreItems.length - 1 && (
+                              <div className="w-full border-b border-gray-200" />
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -306,10 +314,11 @@ const Navbar = () => {
                       (option, idx) => (
                         <React.Fragment key={option}>
                           <button
-                            className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${cvBuilderSelection === option
+                            className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${
+                              cvBuilderSelection === option
                                 ? 'bg-[#FFFF85]'
                                 : 'hover:bg-gray-100'
-                              }`}
+                            }`}
                             onClick={() => handleCvSelection(option)}
                           >
                             {option}
@@ -437,8 +446,9 @@ const Navbar = () => {
               >
                 More{' '}
                 <span
-                  className={`${isMoreOpen ? 'rotate-180' : ''
-                    } inline-block text-lg`}
+                  className={`${
+                    isMoreOpen ? 'rotate-180' : ''
+                  } inline-block text-lg`}
                 >
                   ▼
                 </span>
@@ -453,10 +463,11 @@ const Navbar = () => {
                           setIsMoreOpen(false)
                           setIsMobileMenuOpen(false)
                         }}
-                        className={`px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 text-sm ${pathname === item.to
+                        className={`px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 text-sm ${
+                          pathname === item.to
                             ? 'bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]'
                             : ''
-                          }`}
+                        }`}
                       >
                         {item.name}
                       </Link>
@@ -478,8 +489,9 @@ const Navbar = () => {
                 >
                   {cvBuilderSelection}{' '}
                   <span
-                    className={`${isCvBuilderOpen ? 'rotate-180' : ''
-                      } inline-block`}
+                    className={`${
+                      isCvBuilderOpen ? 'rotate-180' : ''
+                    } inline-block`}
                   >
                     ▼
                   </span>
@@ -491,10 +503,11 @@ const Navbar = () => {
                         <React.Fragment key={option}>
                           <button
                             onClick={() => handleMobileCvSelection(option)}
-                            className={`text-start px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 w-full text-sm ${cvBuilderSelection === option
+                            className={`text-start px-3 py-2 text-[#505050] font-medium hover:bg-gray-100 rounded transition-colors duration-200 w-full text-sm ${
+                              cvBuilderSelection === option
                                 ? 'bg-[#FFFF85]'
                                 : ''
-                              }`}
+                            }`}
                           >
                             {option}
                           </button>
