@@ -56,7 +56,7 @@ const ToolsSection = () => {
 
             {/* Right Side */}
             <div className="md:text-start space-y-8 max-w-md">
-              <p className="text-lg text-gray-800">
+              <p className="text-lg text-gray-800 pb-4">
                 The Aspiring Legal Network equips you with smart tools to build,
                 prepare, and excel in your career.
               </p>

@@ -117,7 +117,7 @@ export default function CareerDashboard() {
   ]
 
   const quickActions = [
-    {
+    { 
       id: 1,
       title: 'Build Your CV',
       subtitle: `${cvCompletion}% Complete`,

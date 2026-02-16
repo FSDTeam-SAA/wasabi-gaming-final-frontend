@@ -200,11 +200,11 @@ const StudentHero = () => {
         <img className="absolute top-0 right-0 z-0" src={image4.src} alt="" />
         <div className="flex flex-col justify-center items-center space-y-3">
           <h1 className="font-bold text-4xl neuton main-color">
-            Everything You Need to Launch Your Career
+            Everything You Need to Launch Your Career 
           </h1>
           <p className="base-color source text-center px-4 lg:text-2xlg text-xl">
             The Aspiring Legal Network equips you with smart tools to build,
-            prepare, and excel in your career.
+            prepare, and excel in your career. 
           </p>
 
           <BannerCard></BannerCard>
