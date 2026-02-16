@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ClosedJobsApiResponse, ClosedJob } from "./closed-jobs-data-type";
 import moment from "moment";
 import JobDetailsModal from "./JobViewDetailsModal";
+import ReadyToNextStep from './ready-to-next-step';
 
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
@@ -211,6 +212,12 @@ const ClosedJobsContainer = () => {
           </div>
         </>
       )}
+
+            {/* Ready to Take the Next Step? section  */}
+      
+            <section className="pt-8">
+              <ReadyToNextStep />
+            </section>
     </div>
   );
 };
