@@ -29,6 +29,15 @@ const session = useSession();
   console.log(data?.data?.data?.applicationJob)
 
   const resData = data?.data?.data?.applicationJob || []
+
+  const interviewData = resData.filter((item) => item.status === "Interview")
+  const offerData = resData.filter((item) => item.status === "Applied")
+  const pendingData = resData.filter((item) => item.status === "pending")
+
+  console.log("interviewData", interviewData)
+  console.log("offerData", offerData)
+  console.log("pendingData", pendingData)
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className='border-[2px] border-[#FFFFB2] flex items-start gap-4 rounded-[20px] bg-white shadow-[0px_2px_4px_-2px_#0000001A,0px_4px_6px_-1px_#0000001A] p-6'>
@@ -47,7 +56,7 @@ const session = useSession();
   </div>
             <div>
                 <h4 className='text-sm font-normal text-[#4A5565] leading-[20px]'>Interviews Scheduled</h4>
-                <h2 className='text-[#1E1E1E] font-semibold leading-[36px] text-2xl md:text-3xl py-1'>3</h2>
+                <h2 className='text-[#1E1E1E] font-semibold leading-[36px] text-2xl md:text-3xl py-1'>{interviewData?.length || 0}</h2>
                 <p className='text-xs font-normal italic leading-[16px] text-[#6A7282]'>Great start!</p>
             </div>
         </div>
@@ -57,7 +66,7 @@ const session = useSession();
   </div>
             <div>
                 <h4 className='text-sm font-normal text-[#4A5565] leading-[20px]'>Offers Received</h4>
-                <h2 className='text-[#1E1E1E] font-semibold leading-[36px] text-2xl md:text-3xl py-1'>1</h2>
+                <h2 className='text-[#1E1E1E] font-semibold leading-[36px] text-2xl md:text-3xl py-1'>{offerData?.length || 0}</h2>
                 <p className='text-xs font-normal italic leading-[16px] text-[#6A7282]'>Great start!</p>
             </div>
         </div>
@@ -67,7 +76,7 @@ const session = useSession();
   </div>
             <div>
                 <h4 className='text-sm font-normal text-[#4A5565] leading-[20px]'>Pending Responses</h4>
-                <h2 className='text-[#1E1E1E] font-semibold leading-[36px] text-2xl md:text-3xl py-1'>5</h2>
+                <h2 className='text-[#1E1E1E] font-semibold leading-[36px] text-2xl md:text-3xl py-1'>{pendingData?.length || 0}</h2>
                 <p className='text-xs font-normal italic leading-[16px] text-[#6A7282]'>Great start!</p>
             </div>
         </div>

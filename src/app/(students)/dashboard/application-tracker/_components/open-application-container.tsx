@@ -54,18 +54,54 @@ const OpenApplicationContainer = () => {
   const debouncedSearch = useDebounce(search, 500);
   const [jobType, setJobType] = useState<string | undefined>("");
   const [location, setLocation] = useState<string | undefined>("");
+  const [activeFilter, setActiveFilter] = useState<
+    "search" | "jobType" | "location" | null
+  >(null);
+
   const session = useSession();
   const token = session?.data?.accessToken;
   console.log(token);
   const status = "Open";
   console.log(search);
 
+  //   const buildSearchTerm = () => {
+  //   const terms = [];
+
+  //   if (debouncedSearch) terms.push(debouncedSearch);
+  //   if (jobType) terms.push(jobType);
+  //   if (location) terms.push(location);
+
+  //   return terms.join(" ");
+  // };
+
+  const buildSearchTerm = () => {
+    if (activeFilter === "search") return debouncedSearch;
+    if (activeFilter === "jobType") return jobType;
+    if (activeFilter === "location") return location;
+    return "";
+  };
+
+
+
+
   const { data, isLoading, isError, error } =
     useQuery<OpenApplicationApiResponse>({
       queryKey: ["open-application", currentPage, status, debouncedSearch, jobType, location],
       queryFn: async () => {
+        const searchTerm = buildSearchTerm();
+
+        const params = new URLSearchParams({
+          jobStatus: status,
+          page: String(currentPage),
+          limit: "10",
+        });
+
+        if (searchTerm) {
+          params.append("searchTerm", searchTerm);
+        }
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=${status}&page=${currentPage}&limit=10&searchTerm=${jobType}`,
+          // `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=${status}&searchTerm=${location}&page=${currentPage}&limit=10`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?${params.toString()}`,
           {
             method: "GET",
             headers: {
@@ -93,39 +129,39 @@ const OpenApplicationContainer = () => {
   };
 
   const applideMutation = useMutation({
-  mutationFn: async (jobId: string) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/applied-job/${jobId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    mutationFn: async (jobId: string) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/applied-job/${jobId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    );
+      );
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (!res.ok) {
-      throw new Error(result.message || "Failed to apply");
-    }
+      if (!res.ok) {
+        throw new Error(result.message || "Failed to apply");
+      }
 
-    return result;
-  },
+      return result;
+    },
 
-  onSuccess: (response) => {
-    const redirectUrl = response?.data?.job?.url;
+    onSuccess: (response) => {
+      const redirectUrl = response?.data?.job?.url;
 
-    if (redirectUrl) {
-      window.location.href = redirectUrl;
-    }
-  },
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      }
+    },
 
-  onError: (error: any) => {
-    console.error("Apply failed:", error.message);
-  },
-});
+    onError: (error: any) => {
+      console.error("Apply failed:", error.message);
+    },
+  });
 
 
   const handleApply = (jobId: string) => {
@@ -152,7 +188,12 @@ const OpenApplicationContainer = () => {
             className="w-full  md:w-[300px] h-[36px] px-3  rounded-xl bg-[#E9EEF2] placeholder:text-[#929292] border border-[#616161]"
             //             />
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            // onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setActiveFilter("search");
+            }}
+
             placeholder="Search"
           />
         </div>
@@ -162,7 +203,12 @@ const OpenApplicationContainer = () => {
           <WasabiDropDown
             list={jobTypeList}
             selectedValue={jobType}
-            onValueChange={setJobType}
+            // onValueChange={setJobType}
+            onValueChange={(value) => {
+              setJobType(value);
+              setActiveFilter("jobType");
+            }}
+
             placeholderText="Job Type"
           />
         </div>
@@ -171,7 +217,12 @@ const OpenApplicationContainer = () => {
           <WasabiDropDown
             list={locationList}
             selectedValue={location}
-            onValueChange={setLocation}
+            // onValueChange={setLocation}
+            onValueChange={(value) => {
+              setLocation(value);
+              setActiveFilter("location");
+            }}
+
             placeholderText="Location"
           />
         </div>
@@ -196,10 +247,10 @@ const OpenApplicationContainer = () => {
               <div
                 key={app._id}
                 className="border-[2px] border-[#E5E7EB] rounded-[20px] p-6 hover:shadow-xl transition-all bg-white flex flex-col h-full"
-                // onClick={() => {
-                //   setSelectedJob(app);
-                //   setIsJobModalOpen(true);
-                // }}
+              // onClick={() => {
+              //   setSelectedJob(app);
+              //   setIsJobModalOpen(true);
+              // }}
               >
                 <div className="flex justify-between items-start mb-5">
                   <div className="w-14 h-14 bg-gradient-to-br from-[#F3F4F6] to-[#E5E7EB] rounded-[20px] flex items-center justify-center">
