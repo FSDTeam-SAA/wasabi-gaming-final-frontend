@@ -27,7 +27,7 @@ const jobTypeList = [
 ];
 
 const locationList = [
-  { id: 1, name: " London", value: " London" },
+  { id: 1, name: "London", value: "London" },
   { id: 2, name: "Manchester", value: "Manchester" },
   { id: 3, name: "Birmingham", value: "Birmingham" },
   { id: 4, name: "Leeds", value: "Leeds" },
