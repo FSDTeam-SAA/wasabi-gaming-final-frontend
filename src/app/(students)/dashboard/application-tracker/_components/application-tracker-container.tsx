@@ -20,6 +20,7 @@ import {
   AppliedJob,
 } from "./application-tracker-data-type";
 import JobDetailsModal from "./JobViewDetailsModal";
+import EditApplyjob from "./EditApplyjob";
 
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
@@ -78,8 +79,6 @@ const ApplicationTrackerContainer = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
-
-  
 
   return (
     <div>
@@ -164,15 +163,16 @@ const ApplicationTrackerContainer = () => {
                     <Eye className="w-4 h-4" />
                     View Details
                   </Button> */}
-                  <JobDetailsModal id = {app?.jobId}/>
+                  <JobDetailsModal id={app?.jobId} />
 
                   {/* Edit Button */}
-                  <button className="h-[36px] w-[36px] flex items-center justify-center rounded-[12px] border border-gray-300 hover:bg-gray-100 transition">
+                  {/* <button className="h-[36px] w-[36px] flex items-center justify-center rounded-[12px] border border-gray-300 hover:bg-gray-100 transition">
                     <SquarePen className="w-4 h-4 text-gray-600" />
-                  </button>
+                  </button> */}
+                  <EditApplyjob  id = {app?.jobId}/>
 
                   {/* Refresh Button */}
-                  <button className="h-[36px] w-[36px] flex items-center justify-center rounded-[12px] border border-gray-300 hover:bg-gray-100 transition">
+                  <button onClick={() => window.location.reload()} className="h-[36px] w-[36px] flex items-center justify-center rounded-[12px] border border-gray-300 hover:bg-gray-100 transition">
                     <RefreshCw className="w-4 h-4 text-gray-600" />
                   </button>
                 </div>
