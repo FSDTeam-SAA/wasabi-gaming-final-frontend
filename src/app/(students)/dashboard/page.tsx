@@ -35,21 +35,17 @@ const recentActivity = [
   { icon: Calendar, text: 'Updated Resume', time: '3 days ago' },
 ]
 
-
-
-
-
 export default function CareerDashboard() {
   const router = useRouter()
 
   const { data: session } = useSession()
   // @ts-ignore
-  const token = session?.accessToken || session?.user?.accessToken || '';
+  const token = session?.accessToken || session?.user?.accessToken || ''
 
   const { data: profileResponse, isLoading } = useQuery({
     queryKey: ['profile', token],
     queryFn: () => getProfile(token),
-    enabled: !!token
+    enabled: !!token,
   })
 
   // @ts-ignore
@@ -58,33 +54,37 @@ export default function CareerDashboard() {
 
   // Calculate CV Completion
   const calculateCVCompletion = () => {
-    let completed = 0;
-    let total = 4; // Basic Info, Education, Experience, Skills
+    let completed = 0
+    let total = 4 // Basic Info, Education, Experience, Skills
 
-    if (userData.firstName && userData.email && userData.phone) completed++;
-    if (userData.education && userData.education.length > 0) completed++;
-    if (userData.experience && userData.experience.length > 0) completed++;
-    if (userData.skills && userData.skills.length > 0) completed++;
+    if (userData.firstName && userData.email && userData.phone) completed++
+    if (userData.education && userData.education.length > 0) completed++
+    if (userData.experience && userData.experience.length > 0) completed++
+    if (userData.skills && userData.skills.length > 0) completed++
 
-    return Math.round((completed / total) * 100);
+    return Math.round((completed / total) * 100)
   }
 
-  const cvCompletion = calculateCVCompletion();
-  const applicationsSent = jobs.length;
+  const cvCompletion = calculateCVCompletion()
+  const applicationsSent = jobs.length
   // Calculate Interview Rate based on "Interview" status count vs total applications
-  const interviewsScheduled = jobs.filter(job => job.status === 'Interview').length;
-  const interviewRate = applicationsSent > 0 ? Math.round((interviewsScheduled / applicationsSent) * 100) : 0;
+  const interviewsScheduled = jobs.filter(
+    job => job.status === 'Interview',
+  ).length
+  const interviewRate =
+    applicationsSent > 0
+      ? Math.round((interviewsScheduled / applicationsSent) * 100)
+      : 0
 
   // Determine Profile Strength based on CV completion
   const getProfileStrength = (completion: number) => {
-    if (completion >= 75) return 'Excellent';
-    if (completion >= 50) return 'Good';
-    if (completion >= 25) return 'Fair';
-    return 'Needs Work';
+    if (completion >= 75) return 'Excellent'
+    if (completion >= 50) return 'Good'
+    if (completion >= 25) return 'Fair'
+    return 'Needs Work'
   }
 
-  const profileStrength = getProfileStrength(cvCompletion);
-
+  const profileStrength = getProfileStrength(cvCompletion)
 
   const stats = [
     {
@@ -145,7 +145,7 @@ export default function CareerDashboard() {
       bg: 'bg-blue-200 border border-[#0000001A]',
       hoverBg: 'hover:bg-blue-100',
       iconHoverBg: 'group-hover:bg-blue-300',
-      link: '/dashboard/student/application-tracker',
+      link: '/dashboard/application-tracker',
     },
   ]
 

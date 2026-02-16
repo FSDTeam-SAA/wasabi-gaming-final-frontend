@@ -47,7 +47,7 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
     onSuccess: (data) => {
       setIsOpen(false);
       // optionally show toast or refetch data
-    //   console.log("Application updated successfully");
+      //   console.log("Application updated successfully");
       toast.success("Application updated successfully");
     },
     onError: (err: any) => {
@@ -80,15 +80,19 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
             >
               Status
             </label>
-            <input
+            <select
               id="status"
-              type="text"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              placeholder="Enter status"
               className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#E5E500]"
               required
-            />
+            >
+              <option value="">Select status</option>
+              <option value="Applied">Applied</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Offer">Offer</option>
+              <option value="Interview">Interview</option>
+            </select>
           </div>
 
           {/* Date */}

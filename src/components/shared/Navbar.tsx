@@ -222,15 +222,12 @@ const Navbar = () => {
                 {/* More Dropdown - Improved for LG */}
                 <div
                   className="relative"
-                  
                   onMouseLeave={() => setIsMoreOpen(false)}
                 >
                   <button
                     onClick={() => setIsMoreOpen(!isMoreOpen)}
-                    className={`flex items-center px-2 lg:px-3 xl:px-4 py-1 ${isContactPage
-                        ? `text-[#1E1E1E]`
-                        : `text-[#505050]`
-                      } font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-lg`}
+                    className={`flex items-center px-2 lg:px-3 xl:px-4 py-1 font-medium transition-colors duration-200 text-xs sm:text-base md:text-lg lg:text-sm xl:text-base ${isContactPage ? 'text-[#1E1E1E]' : 'text-[#505050]'
+                      }`}
                   >
                     More
                     <svg
@@ -249,24 +246,26 @@ const Navbar = () => {
                     </svg>
                   </button>
                   {isMoreOpen && (
-                    <div className="absolute top-full right-0 mt-2 lg:mt-2 z-40 xl:mt-2 w-40 lg:w-44 xl:w-48  flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
-                      {moreItems.map((item, idx) => (
-                        <React.Fragment key={item.name}>
-                          <Link
-                            href={item.to}
-                            onClick={() => setIsMoreOpen(false)}
-                            className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${pathname === item.to
-                                ? 'bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]'
-                                : 'hover:bg-gray-100'
-                              }`}
-                          >
-                            {item.name}
-                          </Link>
-                          {idx < moreItems.length - 1 && (
-                            <div className="w-full border-b border-gray-200" />
-                          )}
-                        </React.Fragment>
-                      ))}
+                    <div className="absolute top-full right-0 pt-2 lg:pt-4 xl:pt-2 w-40 lg:w-44 xl:w-48 z-10">
+                      <div className="flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
+                        {moreItems.map((item, idx) => (
+                          <React.Fragment key={item.name}>
+                            <Link
+                              href={item.to}
+                              onClick={() => setIsMoreOpen(false)}
+                              className={`w-full text-left px-3 lg:px-4 xl:px-4 py-2 text-[#505050] font-medium transition-colors duration-200 text-xs lg:text-sm xl:text-base ${pathname === item.to
+                                  ? 'bg-[#FFFF85] border-b-[1px] border-b-[#E6E6E6]'
+                                  : 'hover:bg-gray-100'
+                                }`}
+                            >
+                              {item.name}
+                            </Link>
+                            {idx < moreItems.length - 1 && (
+                              <div className="w-full border-b border-gray-200" />
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -433,7 +432,7 @@ const Navbar = () => {
             <div className="relative">
               <button
                 onClick={() => setIsMoreOpen(!isMoreOpen)}
-                className="flex justify-between items-center w-full px-3 py-2 text-[#505050] font-normal rounded transition-colors duration-200 text-sm"
+                className="flex justify-between items-center w-full px-3 py-2 text-[#505050] font-medium rounded transition-colors duration-200 text-sm"
               >
                 More{' '}
                 <span

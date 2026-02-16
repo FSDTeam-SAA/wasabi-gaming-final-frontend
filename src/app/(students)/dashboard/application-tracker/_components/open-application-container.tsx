@@ -18,6 +18,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import WasabiDropDown from "@/components/ui/WasabiDropdown";
 import YourCareerInsights from "./your-career-insights";
 import ReadyToNextStep from "./ready-to-next-step";
+import CloseJobViewDetailsModal from "./CloseJobViewDetailsModal";
 
 const jobTypeList = [
   { id: 1, name: "Apprenticeship", value: "Apprenticeship" },
@@ -347,12 +348,13 @@ const OpenApplicationContainer = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mt-auto pt-4">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     className="w-full h-[32px] flex items-center gap-2 bg-transparent border border-[#E5E500]  py-2 font-medium text-[#1E1E1E] leading-[20px] hover:bg-[#FFFF00]/90 rounded-[14px]"
                   >
                     <Eye className="w-4 h-4 text-[#1E1E1E]" /> View Details
-                  </Button>
+                  </Button> */}
+                  <CloseJobViewDetailsModal id = {app?._id}/>
 
                   <Button
                     onClick={() => handleApply(app._id)}
