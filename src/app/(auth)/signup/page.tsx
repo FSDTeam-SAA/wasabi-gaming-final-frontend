@@ -15,43 +15,10 @@ import { useRegister } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useMutation } from '@tanstack/react-query';
 import { Eye, EyeOff, Mail, PhoneCall, ArrowLeft } from 'lucide-react';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 // Social Login Component
-const SocialLogin = ({ onManualContinue }: { onManualContinue: () => void }) => (
-    <div className="w-full space-y-4">
-        <Button
-            variant="outline"
-            size="lg"
-            className="w-full h-12 bg-[#ffff00] border-[#ffff00] text-black font-bold text-base hover:bg-[#ffff00]/90"
-            onClick={() => { }} // Handle Google Login later
-        >
-            {/* Icon placeholder since we don't have ant-design icons installed yet in this file, reusing SVG from login or generic */}
-            <span className="mr-2">G</span> Continue with Google
-        </Button>
-
-        <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#f0f2f5] px-2 text-muted-foreground hidden">Or</span>
-                {/* Divider logic simulation */}
-            </div>
-        </div>
-
-        {/* Manual separator */}
-        <div className="flex items-center justify-center text-sm text-gray-500 font-medium">or</div>
-
-        <Button
-            variant="outline"
-            size="lg"
-            className="w-full h-12 border-[#D9D9D9] text-black font-bold text-base hover:bg-gray-50"
-            onClick={onManualContinue}
-        >
-            Continue manually
-        </Button>
-    </div>
-);
+// Social Login Component Replaced
 
 export default function SignUpPage() {
     const [showManualForm, setShowManualForm] = useState(false);
@@ -184,7 +151,20 @@ export default function SignUpPage() {
                         </Link>
                     </p>
 
-                    <SocialLogin onManualContinue={() => setShowManualForm(true)} />
+                    <div className="w-full space-y-4">
+                        <GoogleLoginButton />
+
+                        <div className="flex items-center justify-center text-sm text-gray-500 font-medium">or</div>
+
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className="w-full h-12 border-[#D9D9D9] text-black font-bold text-base hover:bg-gray-50"
+                            onClick={() => setShowManualForm(true)}
+                        >
+                            Continue manually
+                        </Button>
+                    </div>
 
                     <p className="text-center text-xs text-gray-500 mt-6">
                         By creating an account, you agree to the{" "}
