@@ -222,6 +222,7 @@ const Navbar = () => {
                 {/* More Dropdown - Improved for LG */}
                 <div
                   className="relative"
+                  
                   onMouseLeave={() => setIsMoreOpen(false)}
                 >
                   <button
@@ -248,7 +249,7 @@ const Navbar = () => {
                     </svg>
                   </button>
                   {isMoreOpen && (
-                    <div className="absolute top-full right-0 mt-2 lg:mt-4 xl:mt-2 w-40 lg:w-44 xl:w-48 z-10 flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
+                    <div className="absolute top-full right-0 mt-2 lg:mt-2 z-40 xl:mt-2 w-40 lg:w-44 xl:w-48  flex flex-col items-start bg-white border border-gray-200 rounded-lg shadow-lg">
                       {moreItems.map((item, idx) => (
                         <React.Fragment key={item.name}>
                           <Link
