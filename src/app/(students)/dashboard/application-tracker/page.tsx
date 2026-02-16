@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -14,14 +13,12 @@ import {
 import { cn } from "@/utils/cn";
 import { toast } from "sonner";
 
-
 import ClosedJobsContainer from "./_components/closed-jobs-container";
 import ApplicationTrackerContainer from "./_components/application-tracker-container";
 import OpenApplicationContainer from "./_components/open-application-container";
 import ApplicationTrackerCart from "./_components/application-tracker-cart";
 
 // ─── Types ────────────────────────────────────────────────────────────────
-
 
 interface Application {
   id: string;
@@ -42,8 +39,10 @@ interface Application {
 
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
-  if (lower === "active" || lower === "open") return "bg-green-100 text-[#1E1E1E]";
-  if (lower === "inactive" || lower === "closed") return "bg-[#FFFF00] text-[#1E1E1E]";
+  if (lower === "active" || lower === "open")
+    return "bg-green-100 text-[#1E1E1E]";
+  if (lower === "inactive" || lower === "closed")
+    return "bg-[#FFFF00] text-[#1E1E1E]";
   return "bg-gray-100 text-gray-600";
 };
 
@@ -133,7 +132,9 @@ function JobDetailsModal({
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-gray-500 font-medium">Application Deadline</p>
+              <p className="text-sm text-gray-500 font-medium">
+                Application Deadline
+              </p>
               <p className="font-medium text-gray-900">
                 {new Date(job.deadline).toLocaleDateString("en-GB", {
                   day: "numeric",
@@ -148,7 +149,8 @@ function JobDetailsModal({
             <h3 className="text-xl font-bold text-gray-900">Job Description</h3>
             <div className="prose prose-gray max-w-none text-gray-700 leading-relaxed">
               <p className="whitespace-pre-line">
-                {job.description || "No detailed description available at this time."}
+                {job.description ||
+                  "No detailed description available at this time."}
               </p>
             </div>
           </div>
@@ -187,7 +189,7 @@ export default function ApplicationTrackerPage() {
   const [selectedJob, setSelectedJob] = useState<Application | null>(null);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
 
-  console.log(activeTab)
+  console.log(activeTab);
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -198,7 +200,8 @@ export default function ApplicationTrackerPage() {
             Explore Legal Opportunities
           </h4>
           <p className="text-sm md:text-base text-[#4A5565] leading-[24px]">
-            Discover apprenticeships, training contracts, newly qualified roles and more.
+            Discover apprenticeships, training contracts, newly qualified roles
+            and more.
           </p>
         </div>
 
@@ -215,43 +218,39 @@ export default function ApplicationTrackerPage() {
                   : "border-transparent text-[#1E1E1E]",
               )}
             >
-              {tab === "op" ? "Open Applications" : tab === "at" ? "Application Tracker" : "Closed Jobs"}
+              {tab === "op"
+                ? "Open Applications"
+                : tab === "at"
+                  ? "Application Tracker"
+                  : "Closed Jobs"}
             </button>
           ))}
         </div>
 
-{/* header cart  */}
+        {/* header cart  */}
         <div className="pb-8 md:pb-10">
-          <ApplicationTrackerCart/>
+          <ApplicationTrackerCart />
         </div>
 
         {/* new page  */}
 
         <div>
-          {
-            activeTab === "op" && (
-              <div>
-                <OpenApplicationContainer/>
-              </div>
-            )
-          }
-           {
-            activeTab === "at" && (
-              <div>
-              <ApplicationTrackerContainer/>
-              </div>
-            )
-          }
-           {
-            activeTab === "cj" && (
-              <div>
-              <ClosedJobsContainer/>
-              </div>
-            )
-          }
+          {activeTab === "op" && (
+            <div>
+              <OpenApplicationContainer />
+            </div>
+          )}
+          {activeTab === "at" && (
+            <div>
+              <ApplicationTrackerContainer />
+            </div>
+          )}
+          {activeTab === "cj" && (
+            <div>
+              <ClosedJobsContainer />
+            </div>
+          )}
         </div>
-
-        
 
         <JobDetailsModal
           isOpen={isJobModalOpen}
