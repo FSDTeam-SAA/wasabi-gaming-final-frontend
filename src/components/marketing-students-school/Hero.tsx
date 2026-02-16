@@ -197,7 +197,7 @@ const handleSearch = () => {
                     />
                   </div>
 
-          <Button onClick={handleSearch} className="w-full h-[56px] sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#131313] text-base border border-[#CACA00] font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <Button onClick={handleSearch} className="w-full h-[50px] sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#131313] text-base border border-[#CACA00] font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
             Search
           </Button>
         </div>

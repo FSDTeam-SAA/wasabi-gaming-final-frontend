@@ -35,7 +35,7 @@ const HeroDropDown = ({
         onValueChange(val); // ✅ no number conversion
       }}
     >
-      <SelectTrigger className="h-[56px] w-[200px] md:w-[350px] lg:w-[360px] bg-[#FFFFFF] border border-[#E7E7E7] rounded-[8px] text-[#0E2A5C] dark:text-black text-base focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0">
+      <SelectTrigger className="h-[50px] w-[200px] md:w-[350px] lg:w-[360px] bg-[#FFFFFF] border border-[#E7E7E7] rounded-[8px] text-[#0E2A5C] dark:text-black text-base focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0">
         <SelectValue
           className="placeholder:text-[#424242] placeholder:text-base placeholder:font-bold dark:text-black"
           placeholder={placeholderText ?? "Select"}
