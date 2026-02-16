@@ -29,8 +29,8 @@ export default function PsychometricTestPage() {
 
     // Fetch Test Details
     const { data: testResponse, isLoading: isLoadingTest } = useQuery({
-        queryKey: ['psychometricTest', testId],
-        queryFn: () => getPsychometricTestById(testId),
+        queryKey: ['psychometricTest', testId, token],
+        queryFn: () => getPsychometricTestById(testId, token),
         enabled: !!testId,
     });
 
