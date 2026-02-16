@@ -6,9 +6,11 @@ import image2 from '../../../assets/images/staro 1.png'
 import image3 from '../../../assets/images/blacko 1.png'
 import image4 from '../../../assets/images/Starblack 1.png'
 import BannerCard from './bannerCard.jsx'
+import JoinCommunityModal from '@/components/marketing-students-school/JoinCommunityModal'
 const StudentHero = () => {
   const [selectedType, setSelectedType] = useState('')
   const [selectedLocation, setSelectedLocation] = useState('')
+   const [openModal, setOpenModal] = useState(false)
   const [isTypeOpen, setIsTypeOpen] = useState(false)
   const [isLocationOpen, setIsLocationOpen] = useState(false)
 
@@ -143,7 +145,7 @@ const StudentHero = () => {
             <button className="yellow main-color font-bold border-2 border-[#D9D937] py-2 px-8 lg:px-16 rounded-full neuton">
               Start Now
             </button>
-            <button className="hover:yellow main-color font-bold border-2 border-[#D9D937] py-2 px-8 lg:px-16 rounded-full neuton">
+            <button onClick={() => setOpenModal(true)} className="hover:yellow main-color font-bold border-2 border-[#D9D937] py-2 px-8 lg:px-16 rounded-full neuton">
               Join community
             </button>
           </div>
@@ -220,6 +222,8 @@ const StudentHero = () => {
           alt=""
         />
       </div>
+        {/* MODAL */}
+      <JoinCommunityModal open={openModal} onOpenChange={setOpenModal} />
     </div>
   )
 }

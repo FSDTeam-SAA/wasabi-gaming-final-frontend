@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   OpenJob,
   OpenApplicationApiResponse,
@@ -28,7 +28,7 @@ const jobTypeList = [
 ];
 
 const locationList = [
-  { id: 1, name: " London", value: " London" },
+  { id: 1, name: "London", value: "London" },
   { id: 2, name: "Manchester", value: "Manchester" },
   { id: 3, name: "Birmingham", value: "Birmingham" },
   { id: 4, name: "Leeds", value: "Leeds" },
@@ -58,6 +58,7 @@ const OpenApplicationContainer = () => {
   const [activeFilter, setActiveFilter] = useState<
     "search" | "jobType" | "location" | null
   >(null);
+  const [filterSource, setFilterSource] = useState<"hero" | "container" | null>(null);
 
   const session = useSession();
   const token = session?.data?.accessToken;
@@ -65,20 +66,29 @@ const OpenApplicationContainer = () => {
   const status = "Open";
   console.log(search);
 
-  //   const buildSearchTerm = () => {
-  //   const terms = [];
+  useEffect(() => {
+    const storedFilters = localStorage.getItem("jobFilters");
 
-  //   if (debouncedSearch) terms.push(debouncedSearch);
-  //   if (jobType) terms.push(jobType);
-  //   if (location) terms.push(location);
+    if (storedFilters) {
+      const parsed = JSON.parse(storedFilters);
 
-  //   return terms.join(" ");
-  // };
+      if (parsed.jobType) setJobType(parsed.jobType);
+      if (parsed.location) setLocation(parsed.location);
+
+      setFilterSource(parsed.source);
+
+      localStorage.removeItem("jobFilters");
+    }
+  }, []);
+
+
 
   const buildSearchTerm = () => {
+
     if (activeFilter === "search") return debouncedSearch;
     if (activeFilter === "jobType") return jobType;
     if (activeFilter === "location") return location;
+
     return "";
   };
 
@@ -87,21 +97,39 @@ const OpenApplicationContainer = () => {
 
   const { data, isLoading, isError, error } =
     useQuery<OpenApplicationApiResponse>({
-      queryKey: ["open-application", currentPage, status, debouncedSearch, jobType, location],
-      queryFn: async () => {
-        const searchTerm = buildSearchTerm();
+      queryKey: [
+        "open-application",
+        currentPage,
+        status,
+        activeFilter,
+        debouncedSearch,
+        jobType,
+        location,
+      ],
 
+
+      queryFn: async () => {
         const params = new URLSearchParams({
           jobStatus: status,
           page: String(currentPage),
           limit: "10",
         });
 
-        if (searchTerm) {
-          params.append("searchTerm", searchTerm);
+        // ✅ CASE 1: Hero থেকে আসলে
+        if (filterSource === "hero") {
+          if (jobType) params.append("title", jobType);
+          if (location) params.append("location", location);
         }
+
+        // ✅ CASE 2: Container থেকে filter হলে
+        else {
+          const searchTerm = buildSearchTerm();
+          if (searchTerm) {
+            params.append("searchTerm", searchTerm);
+          }
+        }
+
         const res = await fetch(
-          // `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=${status}&searchTerm=${location}&page=${currentPage}&limit=10`,
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?${params.toString()}`,
           {
             method: "GET",
@@ -109,11 +137,42 @@ const OpenApplicationContainer = () => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-          },
+          }
         );
 
         return res.json();
-      },
+      }
+
+
+      // queryFn: async () => {
+      //   const searchTerm = buildSearchTerm();
+
+      //   const params = new URLSearchParams({
+      //     jobStatus: status,
+      //     page: String(currentPage),
+      //     limit: "10",
+      //   });
+
+      //   if (searchTerm) {
+      //     params.append("searchTerm", searchTerm);
+      //   }
+      //   const res = await fetch(
+      //     // `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=${status}&searchTerm=${location}&page=${currentPage}&limit=10`,
+      //     `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?${params.toString()}&location=${location}&title=${jobType}`,
+      //     {
+      //       method: "GET",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         Authorization: `Bearer ${token}`,
+      //       },
+      //     },
+      //   );
+
+      //   return res.json();
+      // },
+
+
+
     });
 
   console.log(data);
@@ -379,6 +438,8 @@ const OpenApplicationContainer = () => {
 };
 
 export default OpenApplicationContainer;
+
+
 
 // "use client"
 

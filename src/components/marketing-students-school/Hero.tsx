@@ -2,24 +2,46 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select'
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from './ui/select'
 import { Button } from './ui/button'
 import { Card, CardContent } from './ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Star } from 'lucide-react'
 import JoinCommunityModal from './JoinCommunityModal'
+import WasabiDropDown from '../ui/WasabiDropdown'
+import { useRouter } from 'next/navigation'
+import HeroDropDown from '../ui/HeroDropDown'
+
+const jobTypeList = [
+  { id: 1, name: "Apprenticeship", value: "Apprenticeship" },
+  { id: 2, name: "Work Experience", value: "Work Experience" },
+  { id: 3, name: "Training Contracts", value: "Training Contracts" },
+  { id: 4, name: "Paralegal", value: "Paralegal" },
+];
+
+const locationList = [
+  { id: 1, name: "London", value: "London" },
+  { id: 2, name: "Manchester", value: "Manchester" },
+  { id: 3, name: "Birmingham", value: "Birmingham" },
+  { id: 4, name: "Leeds", value: "Leeds" },
+  { id: 5, name: "Liverpool", value: "Liverpool" },
+  { id: 6, name: "Cardiff", value: "Cardiff" },
+];
 
 const Hero = () => {
   const words = ['DREAMS', 'FUTURE', 'PASSION']
   const [index, setIndex] = useState(0)
+  const router = useRouter();
 
   const [openModal, setOpenModal] = useState(false)
+    const [jobType, setJobType] = useState<string | undefined>("");
+    const [location, setLocation] = useState<string | undefined>("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,6 +50,20 @@ const Hero = () => {
 
     return () => clearInterval(interval)
   }, [])
+
+const handleSearch = () => {
+  const filterData = {
+    jobType,
+    location,
+    source: "hero",
+  };
+
+  localStorage.setItem("jobFilters", JSON.stringify(filterData));
+
+  router.push("/dashboard/application-tracker");
+};
+
+
 
   return (
     <section
@@ -97,7 +133,7 @@ const Hero = () => {
             "
           >
             PURSUE YOUR LEGAL <br />
-            <span className="text-[#E4E403]">{words[index]}</span> WITH
+            <span className="text-[#E4E403]">{words[index]}</span> WITH 
             CONFIDENCE
           </h1>
 
@@ -107,16 +143,7 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-4xl mx-auto">
-        <div
-          className="
-            flex flex-col sm:flex-row items-center gap-4 w-full
-            sm:bg-white rounded-full py-4 px-4 sm:px-6
-            sm:shadow-[0px_8px_16px_0px_#00000014,8px_0px_16px_0px_#00000014]
-          "
-        >
-          <Select>
+          {/* <Select>
             <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
               <SelectValue placeholder="Select Type" />
             </SelectTrigger>
@@ -136,9 +163,41 @@ const Hero = () => {
               <SelectItem value="location2">Location 2</SelectItem>
               <SelectItem value="location3">Location 3</SelectItem>
             </SelectContent>
-          </Select>
+          </Select> */}
 
-          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-gray-900 border border-[#CACA00] font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+      {/* SEARCH BAR */}
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-4xl mx-auto">
+        <div
+          className="
+            flex flex-col sm:flex-row items-center gap-4 w-full
+            sm:bg-white rounded-full py-4 px-4 sm:px-6
+            sm:shadow-[0px_8px_16px_0px_#00000014,8px_0px_16px_0px_#00000014]
+          "
+        >
+      
+
+           {/* job type  */}
+                  <div>
+                    <HeroDropDown
+                      list={jobTypeList}
+                      selectedValue={jobType}
+                      onValueChange={setJobType}
+          
+                      placeholderText="Select Type"
+                    />
+                  </div>
+                  {/* job type  */}
+                  <div>
+                    <HeroDropDown
+                      list={locationList}
+                      selectedValue={location}
+                      onValueChange={setLocation}
+          
+                      placeholderText="Select Location"
+                    />
+                  </div>
+
+          <Button onClick={handleSearch} className="w-full h-[50px] sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#131313] text-base border border-[#CACA00] font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
             Search
           </Button>
         </div>

@@ -21,6 +21,8 @@ import {
 } from "./application-tracker-data-type";
 import JobDetailsModal from "./JobViewDetailsModal";
 import EditApplyjob from "./EditApplyjob";
+import YourCareerInsights from "./your-career-insights";
+import ReadyToNextStep from "./ready-to-next-step";
 
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
@@ -227,6 +229,17 @@ const ApplicationTrackerContainer = () => {
           </div>
         </>
       )}
+
+       {/* YourCareerInsights section  */}
+            <section className="py-8">
+              <YourCareerInsights />
+            </section>
+      
+            {/* Ready to Take the Next Step? section  */}
+      
+            <section className="">
+              <ReadyToNextStep />
+            </section>
     </div>
   );
 };
