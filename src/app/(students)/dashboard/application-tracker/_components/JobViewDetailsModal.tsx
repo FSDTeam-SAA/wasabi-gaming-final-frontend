@@ -161,7 +161,7 @@ export default function JobDetailsModal({ id }: JobDetailsModalProps) {
         </div>
 
         {/* Action Buttons - NO spacing above or below */}
-        <div className="px-5 mt-5 flex gap-3">
+        {/* <div className="px-5 mt-5 flex gap-3">
           <Button className="flex-1 h-12 bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] text-base font-semibold rounded-full border-2 border-[#FFFF00]">
             Apply
           </Button>
@@ -172,7 +172,7 @@ export default function JobDetailsModal({ id }: JobDetailsModalProps) {
           >
             Save
           </Button>
-        </div>
+        </div> */}
 
         {/* Description Sections */}
         <div className="px-5 pt-8 pb-10 space-y-6">

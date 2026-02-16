@@ -9,7 +9,7 @@ import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { ClosedJobsApiResponse, ClosedJob } from "./closed-jobs-data-type";
 import moment from "moment";
-import CloseJobViewDetailsModal from "./CloseJobViewDetailsModal";
+import JobDetailsModal from "./JobViewDetailsModal";
 
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
@@ -147,7 +147,7 @@ const ClosedJobsContainer = () => {
                   >
                     <Eye className="w-4 h-4 text-[#1E1E1E]" /> View Details
                   </Button> */}
-                  <CloseJobViewDetailsModal id = {app?._id}/>
+                  <JobDetailsModal id = {app?._id}/>
 
 
 
