@@ -19,11 +19,12 @@ import WasabiDropDown from "@/components/ui/WasabiDropdown";
 import YourCareerInsights from "./your-career-insights";
 import ReadyToNextStep from "./ready-to-next-step";
 import CloseJobViewDetailsModal from "./CloseJobViewDetailsModal";
+import { LocationsApiResponse } from "@/types/location-data-type";
 
 const jobTypeList = [
   { id: 1, name: "None", value: "__none__" },
-  { id: 2, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeships" },
-  { id: 3, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeships" },
+  { id: 2, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeship" },
+  { id: 3, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeship" },
   { id: 4, name: "Year 12 Work Experience", value: "Year 12 Work Experience" },
   { id: 5, name: "Year 13 Work Experience", value: "Year 13 Work Experience" },
   { id: 6, name: "Training Contracts", value: "Training Contracts" },
@@ -32,15 +33,15 @@ const jobTypeList = [
   { id: 9, name: "Open Days", value: "Open Days" },
 ];
 
-const locationList = [
-  { id: 1, name: "None", value: "__none__" },
-  { id: 2, name: "London", value: "London" },
-  { id: 3, name: "Manchester", value: "Manchester" },
-  { id: 4, name: "Birmingham", value: "Birmingham" },
-  { id: 5, name: "Leeds", value: "Leeds" },
-  { id: 6, name: "Liverpool", value: "Liverpool" },
-  { id: 7, name: "Cardiff", value: "Cardiff" },
-];
+// const locationList = [
+//   { id: 1, name: "None", value: "__none__" },
+//   { id: 2, name: "London", value: "London" },
+//   { id: 3, name: "Manchester", value: "Manchester" },
+//   { id: 4, name: "Birmingham", value: "Birmingham" },
+//   { id: 5, name: "Leeds", value: "Leeds" },
+//   { id: 6, name: "Liverpool", value: "Liverpool" },
+//   { id: 7, name: "Cardiff", value: "Cardiff" },
+// ];
 
 const isJobClosed = (deadline: string) => {
   if (!deadline) return true;
@@ -98,9 +99,26 @@ const OpenApplicationContainer = () => {
     return "";
   };
 
+  // location api start
+
+  const { data:locations } = useQuery<LocationsApiResponse>({
+      queryKey: ["location-data"],
+      queryFn: async () => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/job/locations`)
+  
+        return res.json();
+      }
+    })
+  
+    console.log(locations?.data)
+  
+    const locationData = locations?.data || []
 
 
+// location api end 
 
+
+// open application api start 
   const { data, isLoading, isError, error } =
     useQuery<OpenApplicationApiResponse>({
       queryKey: [
@@ -181,7 +199,9 @@ const OpenApplicationContainer = () => {
 
     });
 
-  console.log(data);
+  // console.log(data);
+
+  // open application api end 
 
   const totalPages = data?.meta
     ? Math.ceil(data.meta.total / data.meta.limit)
@@ -288,7 +308,7 @@ const OpenApplicationContainer = () => {
         {/* job type  */}
         <div>
           <WasabiDropDown
-            list={locationList}
+            list={locationData}
             selectedValue={location}
             // onValueChange={(value) => {
             //   setLocation(value);
