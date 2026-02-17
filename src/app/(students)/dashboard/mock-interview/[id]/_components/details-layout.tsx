@@ -24,7 +24,7 @@ const DetailsLayout = () => {
           },
           body: JSON.stringify({
             category: "Technical Interview",
-            questionNumber: "5",
+            questionNumber: "3",
           }),
         },
       );

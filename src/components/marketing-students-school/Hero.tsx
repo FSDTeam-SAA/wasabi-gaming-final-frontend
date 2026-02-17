@@ -14,7 +14,6 @@ import { Card, CardContent } from './ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Star } from 'lucide-react'
 import JoinCommunityModal from './JoinCommunityModal'
-import WasabiDropDown from '../ui/WasabiDropdown'
 import { useRouter } from 'next/navigation'
 import HeroDropDown from '../ui/HeroDropDown'
 
