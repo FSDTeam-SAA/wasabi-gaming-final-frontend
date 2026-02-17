@@ -685,9 +685,9 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                       {formatTime(recordingTime)}
                     </span>
                   </div>
-                  <div className="px-3 py-1 text-sm text-white rounded-full bg-black/80">
+                  {/* <div className="px-3 py-1 text-sm text-white rounded-full bg-black/80">
                     Max 2:00
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}
