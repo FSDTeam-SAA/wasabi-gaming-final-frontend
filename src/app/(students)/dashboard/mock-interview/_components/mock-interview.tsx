@@ -101,9 +101,9 @@ const MockInterview = () => {
       {interviews.map((interview: Interview) => (
         <div
           key={interview._id}
-          className="p-4 border-2 border-gray-300/50 rounded-xl"
+          className="p-6 border-2 border-gray-300/50 rounded-xl flex flex-col justify-between"
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-4">
             <Image
               src={getInterviewImage(interview.title)}
               alt={interview.title}
@@ -121,22 +121,22 @@ const MockInterview = () => {
                   {interview.status}
                 </button>
               </div>
-              <p className="mt-2 text-sm text-gray-700">
+              <p className="mt-4 text-sm text-gray-700 leading-relaxed">
                 {interview.description}
               </p>
             </div>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-8">
             <div>
-              <h4 className="flex items-center gap-2 text-sm text-gray-500">
+              <h4 className="flex items-center gap-2 text-sm text-gray-500 font-medium">
                 <Clock4 className="w-4 h-4" /> {interview.duration}
               </h4>
             </div>
 
-            <div className="mt-2">
+            <div className="mt-6">
               <Link href={`/dashboard/mock-interview/${interview._id}`}>
-                <Button className="flex items-center w-full gap-3 text-lg font-semibold rounded-xl">
+                <Button className="flex items-center justify-center w-full gap-3 py-6 text-lg font-semibold rounded-xl">
                   <span>
                     <Play className="w-4 h-4" />
                   </span>{" "}
