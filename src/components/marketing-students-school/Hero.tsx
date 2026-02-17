@@ -20,7 +20,7 @@ import { useQuery } from '@tanstack/react-query'
 import { LocationsApiResponse } from '@/types/location-data-type'
 
 const jobTypeList = [
-  { id: 1, name: "All Types", value: "" },
+  { id: 1, name: "None", value: "__none__" },
   { id: 2, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeship" },
   { id: 3, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeship" },
   { id: 4, name: "Year 12 Work Experience", value: "Year 12 Work Experience" },
@@ -82,6 +82,17 @@ const Hero = () => {
   console.log(data?.data)
 
   const locationData = data?.data || []
+
+
+  const locationDataWithNone = [
+    { id: 0, name: "None", value: "__none__" },
+    ...locationData.map((loc, index) => ({
+      id: loc.id || index + 1,
+      name: loc.name.trim(),
+      value: loc.value.trim(),
+    })),
+  ];
+
 
 
 
@@ -163,28 +174,6 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* <Select>
-            <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
-              <SelectValue placeholder="Select Type" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border-none">
-              <SelectItem value="type1">Type 1</SelectItem>
-              <SelectItem value="type2">Type 2</SelectItem>
-              <SelectItem value="type3">Type 3</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select>
-            <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
-              <SelectValue placeholder="Select Location" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border-none">
-              <SelectItem value="location1">Location 1</SelectItem>
-              <SelectItem value="location2">Location 2</SelectItem>
-              <SelectItem value="location3">Location 3</SelectItem>
-            </SelectContent>
-          </Select> */}
-
       {/* SEARCH BAR */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-4xl mx-auto ">
         <div
@@ -199,7 +188,15 @@ const Hero = () => {
               <HeroDropDown
                 list={jobTypeList}
                 selectedValue={jobType}
-                onValueChange={setJobType}
+                // onValueChange={setJobType}
+
+                onValueChange={(value) => {
+                  if (value === "__none__") {
+                    setJobType("");
+                  } else {
+                    setJobType(value);
+                  }
+                }}
 
                 placeholderText="Select Type"
               />
@@ -207,12 +204,25 @@ const Hero = () => {
             {/* location */}
             <div className="w-full xs:border xs:border-[#E7E7E7] xs:rounded-full  md:border-l md:border-[#E7E7E7] ">
               <HeroDropDown
+                list={locationDataWithNone}
+                selectedValue={location}
+                onValueChange={(value) => {
+                  if (value === "__none__") {
+                    setLocation("");
+                  } else {
+                    setLocation(value);
+                  }
+                }}
+                placeholderText="Select Location"
+              />
+
+              {/* <HeroDropDown
                 list={locationData}
                 selectedValue={location}
                 onValueChange={setLocation}
 
                 placeholderText="Select Location"
-              />
+              /> */}
             </div>
           </div>
 
