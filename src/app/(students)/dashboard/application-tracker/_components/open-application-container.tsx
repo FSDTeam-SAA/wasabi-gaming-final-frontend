@@ -22,10 +22,14 @@ import CloseJobViewDetailsModal from "./CloseJobViewDetailsModal";
 
 const jobTypeList = [
   { id: 1, name: "None", value: "__none__" },
-  { id: 2, name: "Apprenticeship", value: "Apprenticeship" },
-  { id: 3, name: "Work Experience", value: "Work Experience" },
-  { id: 4, name: "Training Contracts", value: "Training Contracts" },
-  { id: 5, name: "Paralegal", value: "Paralegal" },
+  { id: 2, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeships" },
+  { id: 3, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeships" },
+  { id: 4, name: "Year 12 Work Experience", value: "Year 12 Work Experience" },
+  { id: 5, name: "Year 13 Work Experience", value: "Year 13 Work Experience" },
+  { id: 6, name: "Training Contracts", value: "Training Contracts" },
+  { id: 7, name: "Vacation Schemes", value: "Vacation Schemes" },
+  { id: 8, name: "Insight Days", value: "Insight Days" },
+  { id: 9, name: "Open Days", value: "Open Days" },
 ];
 
 const locationList = [

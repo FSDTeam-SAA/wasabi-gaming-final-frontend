@@ -179,7 +179,7 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
           </div>
 
           <span
-            className={`flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-full ${config.badgeClass}`}
+            className={`flex items-center gap-2 text-xs font-medium px-2 py-[2px] rounded-full ${config.badgeClass}`}
           >
             {data.status === "COMPLETED" && (
               <CircleCheckBig className="w-3 h-3" />
