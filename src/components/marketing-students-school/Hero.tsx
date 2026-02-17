@@ -20,14 +20,15 @@ import { useQuery } from '@tanstack/react-query'
 import { LocationsApiResponse } from '@/types/location-data-type'
 
 const jobTypeList = [
-  { id: 1, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeship" },
-  { id: 2, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeship" },
-  { id: 3, name: "Year 12 Work Experience", value: "Year 12 Work Experience" },
-  { id: 4, name: "Year 13 Work Experience", value: "Year 13 Work Experience" },
-  { id: 5, name: "Training Contracts", value: "Training Contracts" },
-  { id: 6, name: "Vacation Schemes", value: "Vacation Schemes" },
-  { id: 7, name: "Insight Days", value: "Insight Days" },
-  { id: 8, name: "Open Days", value: "Open Days" },
+  { id: 1, name: "All Types", value: "" },
+  { id: 2, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeship" },
+  { id: 3, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeship" },
+  { id: 4, name: "Year 12 Work Experience", value: "Year 12 Work Experience" },
+  { id: 5, name: "Year 13 Work Experience", value: "Year 13 Work Experience" },
+  { id: 6, name: "Training Contracts", value: "Training Contracts" },
+  { id: 7, name: "Vacation Schemes", value: "Vacation Schemes" },
+  { id: 8, name: "Insight Days", value: "Insight Days" },
+  { id: 9, name: "Open Days", value: "Open Days" },
 ];
 
 // const locationList = [
