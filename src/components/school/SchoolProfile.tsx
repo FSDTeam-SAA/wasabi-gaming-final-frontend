@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { signOut, useSession } from "next-auth/react";
 import { cn } from "@/utils/cn";
 import LogoutModal from "@/components/shared/LogoutModal";
+import Image from "next/image";
 
 const SchoolProfile = () => {
     const queryClient = useQueryClient();
@@ -69,8 +70,8 @@ const SchoolProfile = () => {
     });
 
     useEffect(() => {
-        if (profileResponse?.data) {
-            const user = profileResponse.data;
+        if (profileResponse?.data?.data) {
+            const user = profileResponse.data.data;
             setFormData({
                 firstName: user.firstName || "",
                 lastName: user.lastName || "",
@@ -97,13 +98,13 @@ const SchoolProfile = () => {
             setIsEditing(false);
 
             // Update session with new data if available
-            if (data?.data) {
+            if (data?.data?.data) {
                 updateSession({
                     ...session,
                     user: {
                         ...session?.user,
-                        name: data.data.schoolName,
-                        image: data.data.profileImage,
+                        name: data.data.data.schoolName,
+                        image: data.data.data.profileImage,
                     }
                 });
             }
@@ -186,15 +187,15 @@ const SchoolProfile = () => {
         );
     }
 
-    const user = profileResponse?.data;
+    const user = profileResponse?.data?.data;
 
     return (
-        <div className="min-h-screen bg-transparent pt-8 pb-20 px-4 md:px-6 poppins">
+        <div className="min-h-screen bg-transparent pt-8 pb-20 px-4 md:px-6 font-poppins">
             <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 tracking-tight neuton">Profile Settings</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Profile Settings</h1>
                         <p className="text-gray-500 text-lg mt-1 font-medium italic">Manage your account information and preferences</p>
                     </div>
                     <div className="flex items-center gap-4 flex-wrap">
@@ -205,7 +206,7 @@ const SchoolProfile = () => {
                         )}
                         <Button
                             onClick={() => setIsLogoutModalOpen(true)}
-                            className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black h-12 px-8 rounded-2xl flex items-center gap-3 shadow-md border-none transition-all active:scale-95 neuton"
+                            className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black h-12 px-8 rounded-2xl flex items-center gap-3 shadow-md border-none transition-all active:scale-95"
                         >
                             <LogOut size={20} strokeWidth={2.5} /> Logout
                         </Button>
@@ -218,10 +219,13 @@ const SchoolProfile = () => {
                         {/* Profile Image Column */}
                         <div className="flex flex-col items-center gap-6">
                             <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-2xl ring-4 ring-yellow-50">
-                                <img
+                                <Image
                                     src={user?.profileImage || "https://avatar.iran.liara.run/public/26.png"}
                                     alt="Profile"
+                                    width={160}
+                                    height={160}
                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    unoptimized
                                 />
                             </div>
                             <input
@@ -234,7 +238,7 @@ const SchoolProfile = () => {
                             <Button
                                 onClick={() => fileInputRef.current?.click()}
                                 variant="outline"
-                                className="border-2 border-slate-200 text-gray-700 hover:border-[#FFFF00] hover:bg-[#FFFF00] hover:text-black rounded-2xl text-sm font-bold h-11 px-6 flex items-center gap-3 transition-all neuton"
+                                className="border-2 border-slate-200 text-gray-700 hover:border-[#FFFF00] hover:bg-[#FFFF00] hover:text-black rounded-2xl text-sm font-bold h-11 px-6 flex items-center gap-3 transition-all"
                             >
                                 <Upload size={18} /> Upload Photo
                             </Button>
@@ -244,34 +248,34 @@ const SchoolProfile = () => {
                         <div className="flex-1 space-y-6">
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-gray-900 group-hover:text-black flex items-center gap-3 neuton">
+                                    <h2 className="text-2xl font-bold text-gray-900 group-hover:text-black flex items-center gap-3">
                                         {user?.firstName || user?.lastName ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : user?.schoolName || "New User"}
                                         {user?.verified && <CheckCircle2 className="text-blue-500" size={24} fill="currentColor" fillOpacity={0.1} />}
                                     </h2>
-                                    <p className="text-base text-gray-500 font-medium mt-1 inter">{user?.schoolName}</p>
+                                    <p className="text-base text-gray-500 font-medium mt-1">{user?.schoolName}</p>
                                 </div>
                             </div>
 
-                            <p className="text-gray-600 max-w-3xl text-sm leading-relaxed font-normal inter">
+                            <p className="text-gray-600 max-w-3xl text-sm leading-relaxed font-normal">
                                 {user?.bio || user?.aboutSchool || "Welcome to your profile. Add a bio to tell students and others about your mission and expertise."}
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-12 pt-6">
                                 <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
                                     <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Mail size={18} /></div>
-                                    <span className="font-medium text-sm text-gray-500 inter">{user?.email}</span>
+                                    <span className="font-medium text-sm text-gray-500">{user?.email}</span>
                                 </div>
                                 <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
                                     <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Phone size={18} /></div>
-                                    <span className="font-medium text-sm text-gray-500 inter">{user?.phone || "Phone not set"}</span>
+                                    <span className="font-medium text-sm text-gray-500">{user?.phone || "Phone not set"}</span>
                                 </div>
                                 <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
                                     <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><MapPin size={18} /></div>
-                                    <span className="font-medium text-sm text-gray-500 inter">{user?.address || "Location not set"}</span>
+                                    <span className="font-medium text-sm text-gray-500">{user?.address || "Location not set"}</span>
                                 </div>
                                 <div className="flex items-center gap-4 text-gray-600 bg-gray-50/50 p-3 rounded-2xl border border-gray-100/50">
                                     <div className="bg-white p-2 rounded-xl shadow-sm text-gray-400"><Calendar size={18} /></div>
-                                    <span className="font-medium text-sm text-gray-500 inter">Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "N/A"}</span>
+                                    <span className="font-medium text-sm text-gray-500">Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "N/A"}</span>
                                 </div>
                             </div>
                         </div>
@@ -279,7 +283,7 @@ const SchoolProfile = () => {
                         {!isEditing && (
                             <Button
                                 onClick={() => setIsEditing(true)}
-                                className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black rounded-2xl h-12 px-10 absolute top-8 right-8 shadow-lg border-none hidden lg:flex items-center gap-3 transition-all active:scale-95 neuton"
+                                className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black rounded-2xl h-12 px-10 absolute top-8 right-8 shadow-lg border-none hidden lg:flex items-center gap-3 transition-all active:scale-95"
                             >
                                 <Edit2 size={18} /> Edit Profile
                             </Button>
@@ -292,13 +296,13 @@ const SchoolProfile = () => {
                     <TabsList className="bg-slate-100/80 p-1.5 h-16 rounded-[24px] mb-10 flex justify-start w-fit border border-slate-200/50">
                         <TabsTrigger
                             value="personal"
-                            className="data-[state=active]:bg-[#FFFF00] data-[state=active]:text-black data-[state=active]:shadow-lg rounded-[18px] px-10 h-full font-black text-slate-500 transition-all border-none neuton"
+                            className="data-[state=active]:bg-[#FFFF00] data-[state=active]:text-black data-[state=active]:shadow-lg rounded-[18px] px-10 h-full font-black text-slate-500 transition-all border-none"
                         >
                             <User size={20} className="mr-3" /> Personal Info
                         </TabsTrigger>
                         <TabsTrigger
                             value="security"
-                            className="data-[state=active]:bg-[#FFFF00] data-[state=active]:text-black data-[state=active]:shadow-lg rounded-[18px] px-10 h-full font-black text-slate-500 transition-all border-none neuton"
+                            className="data-[state=active]:bg-[#FFFF00] data-[state=active]:text-black data-[state=active]:shadow-lg rounded-[18px] px-10 h-full font-black text-slate-500 transition-all border-none"
                         >
                             <Lock size={20} className="mr-3" /> Security
                         </TabsTrigger>
@@ -310,108 +314,108 @@ const SchoolProfile = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                     {/* Row 1 */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">First Name</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">First Name</label>
                                         <Input
                                             value={formData.firstName}
                                             onChange={(e) => handleInputChange("firstName", e.target.value)}
                                             placeholder="Enter first name"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Last Name</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">Last Name</label>
                                         <Input
                                             value={formData.lastName}
                                             onChange={(e) => handleInputChange("lastName", e.target.value)}
                                             placeholder="Enter last name"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
 
                                     {/* Row 2 */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">School Name</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">School Name</label>
                                         <Input
                                             value={formData.schoolName}
                                             onChange={(e) => handleInputChange("schoolName", e.target.value)}
                                             placeholder="Institution Name"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">School Type</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">School Type</label>
                                         <Input
                                             value={formData.schoolType}
                                             onChange={(e) => handleInputChange("schoolType", e.target.value)}
                                             placeholder="e.g. University, High School"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
 
                                     {/* Row 3 */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">School Category</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">School Category</label>
                                         <Input
                                             value={formData.schoolCategory}
                                             onChange={(e) => handleInputChange("schoolCategory", e.target.value)}
                                             placeholder="e.g. Law, Medicine, Tech"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Phone</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">Phone</label>
                                         <Input
                                             value={formData.phone}
                                             onChange={(e) => handleInputChange("phone", e.target.value)}
                                             placeholder="Contact number"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
 
                                     {/* Row 4 */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Job Title</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">Job Title</label>
                                         <Input
                                             value={formData.jobTitle}
                                             onChange={(e) => handleInputChange("jobTitle", e.target.value)}
                                             placeholder="Your role (e.g. Dean, Professor)"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Company / Branch</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">Company / Branch</label>
                                         <Input
                                             value={formData.company}
                                             onChange={(e) => handleInputChange("company", e.target.value)}
                                             placeholder="Specific branch or company"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
 
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Address</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">Address</label>
                                         <Input
                                             value={formData.address}
                                             onChange={(e) => handleInputChange("address", e.target.value)}
                                             placeholder="Full address"
-                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 inter"
+                                            className="h-14 rounded-2xl border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30"
                                         />
                                     </div>
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1 inter">Bio / About School</label>
+                                        <label className="text-sm font-black text-gray-700 uppercase tracking-widest ml-1">Bio / About School</label>
                                         <Textarea
                                             value={formData.bio}
                                             onChange={(e) => handleInputChange("bio", e.target.value)}
                                             placeholder="Write a brief bio about yourself or your school..."
-                                            className="rounded-[24px] min-h-[160px] border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 p-5 leading-relaxed inter"
+                                            className="rounded-[24px] min-h-[160px] border-slate-200 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] text-lg font-medium bg-slate-50/30 p-5 leading-relaxed"
                                         />
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-5 mt-12">
-                                    <Button variant="outline" onClick={() => setIsEditing(false)} className="rounded-2xl h-14 px-10 font-bold border-2 hover:bg-slate-50 transition-all neuton">Cancel</Button>
+                                    <Button variant="outline" onClick={() => setIsEditing(false)} className="rounded-2xl h-14 px-10 font-bold border-2 hover:bg-slate-50 transition-all">Cancel</Button>
                                     <Button
                                         onClick={handleSave}
-                                        className="bg-black text-white hover:bg-zinc-800 rounded-2xl h-14 px-12 font-black text-lg shadow-xl transition-all active:scale-95 disabled:opacity-70 neuton"
+                                        className="bg-black text-white hover:bg-zinc-800 rounded-2xl h-14 px-12 font-black text-lg shadow-xl transition-all active:scale-95 disabled:opacity-70"
                                         disabled={updateProfileMutation.isPending}
                                     >
                                         {updateProfileMutation.isPending ? "Validating & Saving..." : "Save Profile Changes"}
@@ -421,40 +425,40 @@ const SchoolProfile = () => {
                         ) : (
                             <Card className="border-none shadow-2xl rounded-[40px] p-10 bg-white grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                                 <div className="space-y-1">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><User size={14} /> Personal Details</h4>
-                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.firstName || "—"} {user?.lastName || "—"}</p>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><User size={14} /> Personal Details</h4>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight">{user?.firstName || "—"} {user?.lastName || "—"}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Mail size={14} /> Email Identity</h4>
-                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.email}</p>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><Mail size={14} /> Email Identity</h4>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight">{user?.email}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Building2 size={14} /> Institution & Type</h4>
-                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.schoolName || "Self-Managed"} <span className="text-gray-400 font-medium ml-2 text-sm">({user?.schoolType || "N/A"})</span></p>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><Building2 size={14} /> Institution & Type</h4>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight">{user?.schoolName || "Self-Managed"} <span className="text-gray-400 font-medium ml-2 text-sm">({user?.schoolType || "N/A"})</span></p>
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Briefcase size={14} /> Role & Company</h4>
-                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.jobTitle || "Member"} <span className="text-gray-400 font-medium ml-2 text-sm">@ {user?.company || "Main Office"}</span></p>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><Briefcase size={14} /> Role & Company</h4>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight">{user?.jobTitle || "Member"} <span className="text-gray-400 font-medium ml-2 text-sm">@ {user?.company || "Main Office"}</span></p>
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Phone size={14} /> Member Status</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><Phone size={14} /> Member Status</h4>
                                     <div className="flex items-center gap-2">
                                         <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                                        <p className="text-lg font-medium text-gray-800 capitalize leading-none tracking-tight inter">{user?.status || "Active"}</p>
+                                        <p className="text-lg font-medium text-gray-800 capitalize leading-none tracking-tight">{user?.status || "Active"}</p>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><Sparkles size={14} /> Category</h4>
-                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.schoolCategory || "General"}</p>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><Sparkles size={14} /> Category</h4>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight">{user?.schoolCategory || "General"}</p>
                                 </div>
                                 <div className="md:col-span-2 space-y-1 border-t border-slate-100 pt-8">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 inter"><MapPin size={14} /> Primary Address</h4>
-                                    <p className="text-lg font-medium text-gray-800 tracking-tight inter">{user?.address || "Remote / Global"}</p>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><MapPin size={14} /> Primary Address</h4>
+                                    <p className="text-lg font-medium text-gray-800 tracking-tight">{user?.address || "Remote / Global"}</p>
                                 </div>
                                 <div className="md:col-span-2 space-y-1">
                                     <Button
                                         onClick={() => setIsEditing(true)}
-                                        className="w-full md:w-fit bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black rounded-2xl h-14 px-12 shadow-lg border-none mt-4 transition-all active:scale-95 neuton"
+                                        className="w-full md:w-fit bg-[#FFFF00] hover:bg-[#ecec00] text-black font-black rounded-2xl h-14 px-12 shadow-lg border-none mt-4 transition-all active:scale-95"
                                     >
                                         Modify Current Details
                                     </Button>
@@ -465,15 +469,15 @@ const SchoolProfile = () => {
 
                     <TabsContent value="security" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <Card className="border-none shadow-2xl rounded-[40px] p-10 bg-white">
-                            <h3 className="text-xl font-bold mb-8 text-gray-900 border-l-[6px] border-[#FFFF00] pl-5 uppercase tracking-tight neuton">Security & Privacy</h3>
+                            <h3 className="text-xl font-bold mb-8 text-gray-900 border-l-[6px] border-[#FFFF00] pl-5 uppercase tracking-tight">Security & Privacy</h3>
                             <div className="max-w-xl space-y-6">
                                 <div className="space-y-3">
-                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1 inter">Current Password</label>
+                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1">Current Password</label>
                                     <div className="relative">
                                         <Input
                                             type={showCurrentPassword ? "text" : "password"}
                                             placeholder="••••••••"
-                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] inter"
+                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00]"
                                         />
                                         <button
                                             type="button"
@@ -485,12 +489,12 @@ const SchoolProfile = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1 inter">New Secure Password</label>
+                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1">New Secure Password</label>
                                     <div className="relative">
                                         <Input
                                             type={showNewPassword ? "text" : "password"}
                                             placeholder="••••••••"
-                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] inter"
+                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00]"
                                         />
                                         <button
                                             type="button"
@@ -502,12 +506,12 @@ const SchoolProfile = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1 inter">Verify New Password</label>
+                                    <label className="text-[13px] font-bold text-gray-700 uppercase tracking-widest ml-1">Verify New Password</label>
                                     <div className="relative">
                                         <Input
                                             type={showConfirmPassword ? "text" : "password"}
                                             placeholder="••••••••"
-                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00] inter"
+                                            className="h-12 rounded-2xl border-slate-200 text-base font-medium bg-slate-50/30 pr-12 focus:outline-none focus:border-[#FFFF00] focus:ring-1 focus:ring-[#FFFF00]"
                                         />
                                         <button
                                             type="button"
@@ -518,7 +522,7 @@ const SchoolProfile = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <Button className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-bold h-12 px-12 rounded-2xl mt-6 shadow-xl border-none transition-all active:scale-95 neuton">Update Security Protocol</Button>
+                                <Button className="bg-[#FFFF00] hover:bg-[#ecec00] text-black font-bold h-12 px-12 rounded-2xl mt-6 shadow-xl border-none transition-all active:scale-95">Update Security Protocol</Button>
                             </div>
                         </Card>
                     </TabsContent>

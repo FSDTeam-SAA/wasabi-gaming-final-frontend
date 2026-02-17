@@ -1,4 +1,7 @@
 
+
+
+
 "use client";
 
 import { useState } from "react";
@@ -15,29 +18,27 @@ import Image from "next/image";
 
 export default function LawFirmDirectoryPage() {
   const [showSaved, setShowSaved] = useState(false);
-  const [savedCount] = useState(4); 
+  const [savedCount] = useState(4);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState("All");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FEFCE8] via-white to-[#EFF6FF] p-4 sm:p-6 md:p-8 lg:p-12">
-      <div className="space-y-8 md:space-y-12 container mx-auto">
-        {/* Back button when in Saved view */}
+    <div className="min-h-screen bg-[linear-gradient(135deg,#FEFCE8_0%,#FFFFFF_50%,#EFF6FF_100%)] px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:p-12">
+      {/* ✅ Only apply container sizing on lg so mobile/tablet doesn’t feel cramped */}
+      <div className="space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-12 w-full lg:container lg:mx-auto">
         {showSaved && (
           <Button
             variant="outline"
             onClick={() => setShowSaved(false)}
-            className="mb-4 h-10 px-4 rounded-xl gap-2 hover:bg-white"
+            className="h-10 px-4 rounded-xl gap-2 hover:bg-white w-fit"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Law Firms Directory
           </Button>
         )}
 
-        {/* Banner only in normal view */}
         {!showSaved && <HeaderBanner />}
 
-        {/* Search + Filter Bar */}
         <SearchFilterBar
           onSavedClick={() => setShowSaved(!showSaved)}
           savedCount={savedCount}
@@ -48,25 +49,30 @@ export default function LawFirmDirectoryPage() {
           setSelectedTag={setSelectedTag}
         />
 
-        {/* Main content */}
         {showSaved ? (
           <SavedFirms />
         ) : (
-          <div className="space-y-12">
-             <section>
-              <h4 className="mb-4 md:mb-6 flex items-center gap-2 text-lg sm:text-xl md:text-2xl font-normal text-[#1E1E1E]">
-              <Image src="/images/star.png" width={1000} height={1000} alt="star" className="w-7 h-7 object-cover" />
+          <div className="space-y-8 sm:space-y-10 lg:space-y-12">
+            <section>
+              <h4 className="mb-3 sm:mb-4 md:mb-6 flex items-center gap-2 text-base sm:text-lg md:text-2xl font-normal text-[#1E1E1E]">
+                <Image
+                  src="/images/star.png"
+                  width={1000}
+                  height={1000}
+                  alt="star"
+                  className="w-6 h-6 sm:w-7 sm:h-7 object-cover"
+                />
                 Featured Law Firms
               </h4>
               <FeaturedFirms />
             </section>
+
             <section>
-              <h4 className="mb-4 md:mb-6 text-lg sm:text-xl md:text-2xl font-normal text-[#1E1E1E]">
+              <h4 className="mb-3 sm:mb-4 md:mb-6 text-base sm:text-lg md:text-2xl font-normal text-[#1E1E1E]">
                 All Law Firms
               </h4>
               <AllFirmsGrid searchTerm={searchTerm} selectedTag={selectedTag} />
             </section>
-           
 
             <StatsSection />
             <WhyUseCard />

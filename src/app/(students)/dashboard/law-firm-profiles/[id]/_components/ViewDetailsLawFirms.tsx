@@ -1,4 +1,6 @@
+
 "use client";
+
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -17,6 +19,7 @@ import React, { useState } from "react";
 import ShowOpenPosition from "./ShowOpenPosition";
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 // TypeScript interface
 interface RecentInfo {
@@ -53,11 +56,36 @@ interface LawFirmData {
   foundedNGO?: string;
   practiceAreas?: string;
   keyHighlights?: string;
-  recentAwards?: RecentInfo;
   recentWork?: RecentInfo;
   tags?: string[];
   email?: string;
   phoneNumber?: string;
+  technologyInitiatives: {
+    title?: string;
+    description?: string;
+    link?: string;
+  };
+  recentWorks: {
+    title?: string;
+    description?: string;
+    link?: string;
+  };
+  diversityEquityAndInclusion: {
+    title?: string;
+    description?: string;
+    link?: string;
+  };
+  recentAnnualRevenue?: {
+    title?: string;
+    description?: string;
+    link?: string;
+  };
+  CSRAndProBono: {
+    title?: string;
+    description?: string;
+    link?: string;
+  };
+  jobs?: string[];
 }
 
 interface ApiResponse {
@@ -69,6 +97,9 @@ interface ApiResponse {
 
 function ViewDetailsLawFirms() {
   const params = useParams();
+  const session = useSession();
+  const token = session.data?.accessToken;
+
   const id =
     typeof params?.id === "string"
       ? params.id
@@ -77,10 +108,9 @@ function ViewDetailsLawFirms() {
         : undefined;
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "positions" | "culture"
-  >("overview");
-  const [tags, setTags] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<"overview" | "positions" | "culture">(
+    "overview",
+  );
 
   // Fetch law firm data from API
   const {
@@ -91,24 +121,37 @@ function ViewDetailsLawFirms() {
     queryKey: ["law-firm-profile", id],
     queryFn: async () => {
       if (!id) throw new Error("No ID provided");
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/lawfirm/${id}`,
-      );
-      if (!res.ok) {
-        throw new Error("Failed to fetch law firm data");
-      }
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lawfirm/${id}`);
+      if (!res.ok) throw new Error("Failed to fetch law firm data");
       return res.json();
     },
     enabled: !!id,
   });
 
+  const { data: profileData } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user/profile`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch profile data");
+      return res.json();
+    },
+    enabled: !!token,
+  });
+
+  const datass = profileData?.data?.subscription?.name ?? "";
   const firmData = response?.data;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading law firm details...</p>
         </div>
       </div>
@@ -117,7 +160,7 @@ function ViewDetailsLawFirms() {
 
   if (error || !firmData) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center">
           <svg
             className="w-16 h-16 text-red-500 mx-auto mb-4"
@@ -144,27 +187,24 @@ function ViewDetailsLawFirms() {
   return (
     <div className="min-h-screen bg-white pb-20">
       {/* Header Section */}
-      <div className=" pb-8">
-        <div className="container mx-auto px-6 pt-6">
+      <div className="pb-8">
+        {/* ✅ Mobile/Tablet responsive container, LG unchanged */}
+        <div className="w-full lg:container lg:mx-auto pt-4 sm:pt-6 px-4 sm:px-6 lg:px-0">
           {/* Back Button */}
           <button
             onClick={() => window.history.back()}
-            className="flex items-center gap-4 text-[#1E1E1E] mb-6 font-normal text-sm border border-[#0000001A] rounded-full py-2 px-4 hover:bg-gray-100 transition-colors "
+            className="flex items-center gap-3 sm:gap-4 text-[#1E1E1E] mb-6 font-normal text-sm border border-[#0000001A] rounded-full py-2 px-4 hover:bg-gray-100 transition-colors w-fit"
           >
             <ArrowLeft className="text-[#1E1E1E] w-4 h-4" />
             Back to Law Firms
           </button>
 
           {/* Main Card */}
-          <div className="bg-white rounded-2xl shadow-sm  relative border-2 border-[#0000001A]">
+          <div className="bg-white rounded-2xl shadow-sm relative border-2 border-[#0000001A]">
             {firmData.status === "approved" && (
-              <div className="absolute top-6 right-6">
-                <span className="bg-yellow-300 text-black text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+                <span className="bg-yellow-300 text-black text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                   </svg>
                   Featured Position
@@ -173,55 +213,47 @@ function ViewDetailsLawFirms() {
             )}
 
             {/* Logo */}
-            <div className="flex justify-center mb-6 bg-gradient-to-br from-[#F0FDF4] to-[#ECFDF5] py-10 rounded-2xl">
+            <div className="flex justify-center mb-6 bg-gradient-to-br from-[#F0FDF4] to-[#ECFDF5] py-8 sm:py-10 rounded-t-2xl">
               {firmData.coverImage ? (
                 <img
                   src={firmData.coverImage}
                   alt={`${firmData.firmName || "Law Firm"} Logo`}
-                  className="w-20 h-20 rounded-2xl object-cover shadow-lg"
+                  className="w-20 h-20 rounded-[24px] object-cover shadow-lg"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
                     if (target.nextElementSibling) {
-                      (target.nextElementSibling as HTMLElement).style.display =
-                        "flex";
+                      (target.nextElementSibling as HTMLElement).style.display = "flex";
                     }
                   }}
                 />
               ) : null}
+
               <div
                 className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl p-5 w-20 h-20 flex items-center justify-center shadow-lg"
                 style={{ display: firmData.coverImage ? "none" : "flex" }}
               >
-                <svg
-                  className="w-10 h-10 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
                 </svg>
               </div>
             </div>
 
             {/* Title and Info */}
-            <div className="mb-6 px-[32px]">
+            <div className="mb-6 px-4 sm:px-6 lg:px-[32px]">
               <h1 className="text-2xl md:text-[36px] font-normal text-[#1E1E1E] mb-1">
                 {firmData.firmName || "Law Firm"}
               </h1>
-              <p className="text-xl text-[#4A5565] mb-6">
-                {firmData.firmType ||
-                  firmData.firmType ||
-                  "Professional Legal Services"}
+              <p className="text-base sm:text-xl text-[#4A5565] mb-6">
+                {firmData.firmType || "Professional Legal Services"}
               </p>
 
               {/* Stats Row */}
-              <div className="flex items-center justify-start gap-6 text-sm text-gray-600 mb-6 flex-wrap">
+              <div className="flex items-center justify-start gap-4 sm:gap-6 text-sm text-gray-600 mb-6 flex-wrap">
                 {firmData.location && (
                   <span className="flex items-center gap-1.5">
                     <MapPin className="text-[#DF0000] w-5 h-5" />
-                    <span className="text-base text-[#364153]">
-                      {firmData.location}
-                    </span>
+                    <span className="text-base text-[#364153]">{firmData.location}</span>
                   </span>
                 )}
 
@@ -233,25 +265,21 @@ function ViewDetailsLawFirms() {
                 </span>
 
                 <span className="flex items-center gap-1.5">
-                  <svg
-                    className="w-5 h-5 text-[#BEAE00]"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-5 h-5 text-[#BEAE00]" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
                   </svg>
                   <span className="text-base text-[#364153]">
-                    {" "}
                     Founded {firmData.foundationYear}
                   </span>
                 </span>
               </div>
 
-              <div className="flex gap-2">
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2">
                 {firmData?.tags?.map((tag, index) => (
                   <div
                     key={index}
-                    className="text-base font-medium text-[#1E1E1E] border border-[#0000001A] rounded-full px-3 py-1 inline-block "
+                    className="text-sm sm:text-base font-medium text-[#1E1E1E] border border-[#0000001A] rounded-full px-3 py-1 inline-block"
                   >
                     {tag}
                   </div>
@@ -260,406 +288,461 @@ function ViewDetailsLawFirms() {
             </div>
 
             {/* Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-[32px] pt-6 mb-6 bg-[#F9FAFB] rounded-2xl">
-              <div className="flex  justify-between items-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 px-4 sm:px-6 lg:px-[32px] pt-6 pb-6 bg-[#F9FAFB] rounded-2xl">
+              <div className="flex justify-between items-center gap-4">
                 <div className="flex gap-3 items-center">
+                  <Globe className="w-5 h-5 text-[#1905CD]" />
                   <div>
-                    {" "}
-                    <Globe className="w-5 h-5 text-[#1905CD]" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#6A7282] font-normal">
-                      Website
-                    </p>
-                    <span className="text-sm font-normal text-[#364153]">
+                    <p className="text-sm text-[#6A7282] font-normal">Website</p>
+                    <span className="text-sm font-normal text-[#364153] break-all">
                       {firmData?.website}
                     </span>
                   </div>
                 </div>
-                <div>
-                  {firmData.website && (
-                    <a
-                      href={
-                        firmData.website.startsWith("http")
-                          ? firmData.website
-                          : `https://${firmData.website}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="text-[#364153] w-4 h-4" />
-                    </a>
-                  )}
-                </div>
+
+                {firmData.website && (
+                  <a
+                    href={firmData.website.startsWith("http") ? firmData.website : `https://${firmData.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0"
+                  >
+                    <ExternalLink className="text-[#364153] w-4 h-4" />
+                  </a>
+                )}
               </div>
+
               <div className="flex gap-3 items-center">
-                <div>
-                  {" "}
-                  <Mail className="w-5 h-5 text-[#AECC29]" />
-                </div>
+                <Mail className="w-5 h-5 text-[#AECC29]" />
                 <div>
                   <p className="text-sm text-[#6A7282] font-normal">Email</p>
-                  <span className="text-sm font-normal text-[#364153]">
+                  <span className="text-sm font-normal text-[#364153] break-all">
                     {firmData?.email}
                   </span>
                 </div>
               </div>
+
               <div className="flex gap-3 items-center">
+                <Phone className="w-5 h-5 text-[#00AE26]" />
                 <div>
-                  {" "}
-                  <Phone className="w-5 h-5 text-[#00AE26]" />
-                </div>
-                <div>
-                  <p className="text-sm text-[#6A7282] font-normal">
-                    Phone Number
-                  </p>
-                  <span className="text-sm font-normal text-[#364153]">
+                  <p className="text-sm text-[#6A7282] font-normal">Phone Number</p>
+                  <span className="text-sm font-normal text-[#364153] break-all">
                     {firmData?.phoneNumber}
                   </span>
                 </div>
               </div>
             </div>
           </div>
-          {/* Tab Buttons - NOW WORKING! */}
-          <div className="flex items-center gap-4 mt-6 bg-[#ECECF0] rounded-[20px] p-2 ">
-            <button
-              onClick={() => setActiveTab("overview")}
-              className={`flex-1 min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${
-                activeTab === "overview"
-                  ? "bg-[#FFFF00] text-black shadow-sm"
-                  : "text-[#1E1E1E]"
-              }`}
-            >
-              Overview
-            </button>
 
-            <button
-              onClick={() => setActiveTab("positions")}
-              className={`flex-1 min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${
-                activeTab === "positions"
-                  ? "bg-[#FFFF00] text-black shadow-sm"
-                  : "text-[#1E1E1E]"
-              }`}
-            >
-              Open Positions (
-              {Array.isArray(firmData.applyNumber)
-                ? firmData.applyNumber.length
-                : 0}
-              )
-            </button>
+          {/* Tabs */}
+          <div className="mt-6 bg-[#ECECF0] rounded-[20px] p-2">
+            <div className="flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
+              <button
+                onClick={() => setActiveTab("overview")}
+                className={`flex-1 min-w-[130px] sm:min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${
+                  activeTab === "overview"
+                    ? "bg-[#FFFF00] text-black shadow-sm"
+                    : "text-[#1E1E1E]"
+                }`}
+              >
+                Overview
+              </button>
 
-            <button
-              onClick={() => setActiveTab("culture")}
-              className={`flex-1 min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${
-                activeTab === "culture"
-                  ? "bg-[#FFFF00] text-black shadow-sm"
-                  : "text-[#1E1E1E]"
-              }`}
-            >
-              Cultures & Benefits
-            </button>
+              <button
+                onClick={() => setActiveTab("positions")}
+                className={`flex-1 min-w-[160px] sm:min-w-[180px] text-sm font-medium py-3 rounded-full transition-all ${
+                  activeTab === "positions"
+                    ? "bg-[#FFFF00] text-black shadow-sm"
+                    : "text-[#1E1E1E]"
+                }`}
+              >
+                Open Positions ({firmData?.jobs?.length ?? 0})
+              </button>
+
+              <button
+                onClick={() => setActiveTab("culture")}
+                className={`flex-1 min-w-[170px] sm:min-w-[190px] text-sm font-medium py-3 rounded-full transition-all ${
+                  activeTab === "culture"
+                    ? "bg-[#FFFF00] text-black shadow-sm"
+                    : "text-[#1E1E1E]"
+                }`}
+              >
+                Cultures & Benefits
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Main Content - TAB CONTENT */}
-      <div className="container mx-auto py-12 border border-[#0000001A] rounded-2xl ">
-        <div className="">
-          {/* Left Column - Tab Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* OVERVIEW TAB */}
-            {activeTab === "overview" && (
-              <>
-                {firmData.aboutFirm && (
-                  <div>
-                    <h2 className="text-2xl font-normal text-[#1E1E1E] mb-6 ">
-                      {/* About {firmData.firmName || "Law Firm"} */}
-                      About Broadfields Law
-                    </h2>
-                    <p className="text-base text-[#364153] leading-relaxed mb-8">
-                      {firmData.aboutFirm}
-                    </p>
+          {/* Tab Content */}
+          <div className="py-8 sm:py-10 lg:py-12 px-4 sm:px-6 lg:px-5 border border-[#0000001A] rounded-2xl mt-6 sm:mt-8">
+            <div className="lg:col-span-2 space-y-8">
+              {/* OVERVIEW TAB */}
+              {activeTab === "overview" && (
+                <>
+                  {firmData.aboutFirm && (
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-normal text-[#1E1E1E] mb-6">
+                        About {firmData.firmName || "Law Firm"}
+                      </h2>
+                      <p className="text-base text-[#364153] leading-relaxed mb-8">
+                        {firmData.aboutFirm}
+                      </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6 bg-white border border-[#0000001A]  rounded-2xl overflow-hidden">
-                      {firmData.practiceAreas && (
-                        <div className="space-y-5 p-5">
-                          <h3 className="font-normal text-lg text-[#1E1E1E] mb-4 flex items-center gap-2">
-                            <span>  <Target className="w-4 h-4 text-[#1E1E1E]" /></span>
-                            Key Practice Areas
-                          </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-16 gap-y-6 bg-white border border-[#0000001A] rounded-2xl overflow-hidden">
+                        {firmData.practiceAreas && (
+                          <div className="space-y-5 p-5">
+                            <h3 className="font-normal text-lg text-[#1E1E1E] mb-4 flex items-center gap-2">
+                              <Target className="w-4 h-4 text-[#1E1E1E]" />
+                              Key Practice Areas
+                            </h3>
 
-                          <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                            {firmData.practiceAreas
-                              .split(",")
-                              .map((area, index) => (
+                            <ul className="space-y-2 text-gray-700">
+                              {firmData.practiceAreas.split(",").map((area, index) => (
                                 <li key={index} className="flex gap-2 items-center">
-                                  <span><CircleCheckBig className="w-4 h-4 text-green-500" /></span>
+                                  <CircleCheckBig className="w-4 h-4 text-green-500" />
                                   {area.trim()}
-                                  </li>
+                                </li>
                               ))}
-                          </ul>
-                        </div>
-                      )}
+                            </ul>
+                          </div>
+                        )}
 
-                      {firmData.keyHighlights && (
-                        <div className="space-y-5 p-5">
-                          <h3 className="font-normal text-lg text-[#1E1E1E] mb-4 flex items-center gap-2">
-                            <span> <Award className="w-4 h-4 text-[#1E1E1E]" /></span>
-                            Key Highlights
-                          </h3>
+                        {firmData.keyHighlights && (
+                          <div className="space-y-5 p-5">
+                            <h3 className="font-normal text-lg text-[#1E1E1E] mb-4 flex items-center gap-2">
+                              <Award className="w-4 h-4 text-[#1E1E1E]" />
+                              Key Highlights
+                            </h3>
 
-                          <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                            {firmData.keyHighlights
-                              .split(",")
-                              .map((highlight, index) => (
-                                 <li key={index} className="flex gap-2 items-center">
-                                  <span><CircleCheckBig className="w-4 h-4 text-green-500" /></span>
+                            <ul className="space-y-2 text-gray-700">
+                              {firmData.keyHighlights.split(",").map((highlight, index) => (
+                                <li key={index} className="flex gap-2 items-center">
+                                  <CircleCheckBig className="w-4 h-4 text-green-500" />
                                   {highlight.trim()}
-                                  </li>
+                                </li>
                               ))}
-                          </ul>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {firmData.exertise && !firmData.practiceAreas && (
+                    <div className="border-t border-gray-100 pt-8">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Areas of Expertise</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {firmData.exertise.split(",").map((item, index) => (
+                          <span
+                            key={index}
+                            className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium"
+                          >
+                            {item.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {firmData.internshipTraining && (
+                    <div className="border-t border-gray-100 pt-8">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z" />
+                          </svg>
                         </div>
-                      )}
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-gray-900 mb-3">Internship & Training</h3>
+                          <p className="text-gray-700 text-sm leading-relaxed">
+                            {firmData.internshipTraining}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {firmData.exertise && !firmData.practiceAreas && (
-                  <div className="border-t border-gray-100 pt-8">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">
-                      Areas of Expertise
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {firmData.exertise.split(",").map((item, index) => (
-                        <span
-                          key={index}
-                          className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium"
-                        >
-                          {item.trim()}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {firmData.internshipTraining && (
-                  <div className="border-t border-gray-100 pt-8">
+                  {/* Extra cards */}
+                  <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg
-                          className="w-5 h-5 text-gray-600"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z" />
-                        </svg>
+                        <Image
+                          src="/lawicon.png"
+                          width={1000}
+                          height={1000}
+                          alt="Recent Annual Revenue"
+                          className="w-6 h-6 object-cover"
+                        />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 mb-3">
-                          Internship & Training
+
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
+                          {firmData?.recentAnnualRevenue?.title || "Recent Awards"}
+                        </h2>
+                        <h3 className="text-base font-normal text-[#4A5565] mb-3">
+                          {firmData.recentAnnualRevenue?.description}
                         </h3>
-                        <p className="text-gray-700 text-sm leading-relaxed">
-                          {firmData.internshipTraining}
+
+                        <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                          Url Link:{" "}
+                          <span className="text-blue-600 text-base break-all">
+                            {firmData.recentAnnualRevenue?.link}
+                          </span>
                         </p>
                       </div>
                     </div>
                   </div>
-                )}
 
-                <div className=" shadow-md rounded-[12px] pt-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg
-                        className="w-5 h-5 text-gray-600"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
-                      </svg>
-                    </div>
-
-                    <div className="flex-1">
-                      <h3 className="text-base font-normal text-[#4A5565] mb-3">
-                        {firmData.description || "Recent Awards"}
-                      </h3>
-
-                      <p className="text-gray-700 text-sm leading-relaxed mb-4">
-                        Url Link :{" "}
-                        <span className="text-blue-600 text-base">
-                          {firmData.website}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-6 ">
-                  {/* Your Career Strengths Card */}
-                  <div
-                    className=" max-w-6xl mx-auto  border-2 border-[#BEDBFF] rounded-2xl p-[32px] shadow-sm"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)",
-                    }}
-                  >
+                  <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
                     <div className="flex items-start gap-4">
-                      {/* Icon */}
-                      <div className="w-[64px] h-[64px] ">
+                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
                         <Image
-                          src="/images/icon11.png"
+                          src="/lawicon.png"
                           width={1000}
                           height={1000}
-                          alt="Career Strengths"
-                          className="w-full h-full object-cover"
+                          alt="Recent Works"
+                          className="w-6 h-6 object-cover"
                         />
                       </div>
 
-                      {/* Content */}
-                      <div className="flex-1 ">
-                        <h3 className="text-xl font-semibold text-[#1E1E1E] mb-2">
-                          Your Career Strengths
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
+                          {firmData?.recentWorks?.title || "Recent Works"}
+                        </h2>
+                        <h3 className="text-base font-normal text-[#4A5565] mb-3">
+                          {firmData.recentWorks?.description}
                         </h3>
-                        <p className="text-base text-[#4A5565] leading-relaxed mb-4">
-                          Based on your psychometric test results, you excel in
-                          analytical thinking and problem-solving. We've found 5
-                          new job opportunities that match your profile.
+
+                        <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                          Url Link:{" "}
+                          <span className="text-blue-600 text-base break-all">
+                            {firmData.recentWorks?.link}
+                          </span>
                         </p>
-                        <Link href="/plans">
-                          <button className="bg-[#FFFF00] rounded-[24px] w-[215px] hover:bg-[#FFFF00]/90 text-[#1E1E1E] font-normal py-3 px-2 transition-colors shadow-md ">
-                            Upgrade Your Plan
-                          </button>
-                        </Link>
                       </div>
                     </div>
                   </div>
 
-                  {/* Motivational Quote Card */}
-                  <div className="bg-[#FFFEF0] border-2 border-[#FFFF00] rounded-2xl p-6 shadow-sm w-[60%] mx-auto">
-                    <div className="flex items-start ">
-                      {/* Quote Icon */}
-                      <div className="flex-shrink-0 ">
+                  <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
                         <Image
-                          src="/images/icon2.png"
+                          src="/lawicon.png"
                           width={1000}
                           height={1000}
-                          alt="Motivational Quote"
-                          className="w-7 h-7 object-cover"
+                          alt="Technology Initiatives"
+                          className="w-6 h-6 object-cover"
                         />
                       </div>
 
-                      {/* Quote Text */}
-                      <div className="flex-1">
-                        <p className="text-[#1E1E1E] text-lg text-center font-medium italic leading-relaxed">
-                          "Success is the sum of small efforts repeated day in
-                          and day out."
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
+                          {firmData?.technologyInitiatives?.title || "Technology Initiatives"}
+                        </h2>
+                        <h3 className="text-base font-normal text-[#4A5565] mb-3">
+                          {firmData.technologyInitiatives?.description}
+                        </h3>
+
+                        <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                          Url Link:{" "}
+                          <span className="text-blue-600 text-base break-all">
+                            {firmData.technologyInitiatives?.link}
+                          </span>
                         </p>
                       </div>
                     </div>
                   </div>
+
+                  <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Image
+                          src="/lawicon.png"
+                          width={1000}
+                          height={1000}
+                          alt="Diversity, Equity & Inclusion"
+                          className="w-6 h-6 object-cover"
+                        />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
+                          {firmData?.diversityEquityAndInclusion?.title || "Diversity, Equity & Inclusion"}
+                        </h2>
+                        <h3 className="text-base font-normal text-[#4A5565] mb-3">
+                          {firmData.diversityEquityAndInclusion?.description}
+                        </h3>
+
+                        <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                          Url Link:{" "}
+                          <span className="text-blue-600 text-base break-all">
+                            {firmData.diversityEquityAndInclusion?.link}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Image
+                          src="/lawicon.png"
+                          width={1000}
+                          height={1000}
+                          alt="CSR & Pro Bono"
+                          className="w-6 h-6 object-cover"
+                        />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
+                          {firmData?.CSRAndProBono?.title || "CSR & Pro Bono"}
+                        </h2>
+                        <h3 className="text-base font-normal text-[#4A5565] mb-3">
+                          {firmData.CSRAndProBono?.description}
+                        </h3>
+
+                        <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                          Url Link:{" "}
+                          <span className="text-blue-600 text-base break-all">
+                            {firmData.CSRAndProBono?.link}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Career Strengths */}
+                    <div
+                      className="max-w-6xl mx-auto border-2 border-[#BEDBFF] rounded-2xl p-4 sm:p-[32px] shadow-sm"
+                      style={{
+                        background: "linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)",
+                      }}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 sm:w-[64px] sm:h-[64px]">
+                          <Image
+                            src="/images/icon11.png"
+                            width={1000}
+                            height={1000}
+                            alt="Career Strengths"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+
+                        <div className="flex-1">
+                          <h3 className="text-lg sm:text-xl font-semibold text-[#1E1E1E] mb-2">
+                            Your Career Strengths
+                          </h3>
+                          <p className="text-sm sm:text-base text-[#4A5565] leading-relaxed mb-4">
+                            Based on your psychometric test results, you excel in analytical thinking and
+                            problem-solving. We've found 5 new job opportunities that match your profile.
+                          </p>
+
+                          {(datass === "Free Plan" || datass === "") && (
+                            <Link href="/plans">
+                              <button className="bg-[#FFFF00] rounded-[24px] w-full sm:w-[215px] hover:bg-[#FFFF00]/90 text-[#1E1E1E] font-normal py-3 px-2 transition-colors shadow-md">
+                                Upgrade Your Plan
+                              </button>
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quote */}
+                    <div className="bg-[#FFFEF0] border-2 border-[#FFFF00] rounded-2xl p-5 sm:p-6 shadow-sm w-full sm:w-[80%] lg:w-[60%] mx-auto">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0">
+                          <Image
+                            src="/images/icon2.png"
+                            width={1000}
+                            height={1000}
+                            alt="Motivational Quote"
+                            className="w-6 h-6 sm:w-7 sm:h-7 object-cover"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[#1E1E1E] text-base sm:text-lg text-center font-medium italic leading-relaxed">
+                            "Success is the sum of small efforts repeated day in and day out."
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* POSITIONS TAB */}
+              {activeTab === "positions" && (
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 mb-6">Open Positions</h2>
+                  <ShowOpenPosition firmName={firmData?.firmName} />
                 </div>
-              </>
-            )}
+              )}
 
-            {/* POSITIONS TAB */}
-            {activeTab === "positions" && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">
-                  Open Positions
-                </h2>
+              {/* CULTURE TAB */}
+              {activeTab === "culture" && (
+                <div className="space-y-6">
+                  <div className="border border-[#0000001A] rounded-[12px] py-6">
+                    <h2 className="text-xl font-medium mb-4 px-4 sm:px-6">Culture & Benefits</h2>
 
-                <ShowOpenPosition firmName={firmData?.firmName} />
-              </div>
-            )}
+                    <div className="px-4 sm:px-6">
+                      {Array.isArray(firmData?.cultureAndValue) && firmData.cultureAndValue.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+                          {firmData.cultureAndValue.map((item: string, index: number) => (
+                            <div key={index} className="flex items-start gap-3 text-gray-700">
+                              <div className="w-10 h-10 bg-[#FFFF00] flex justify-center items-center rounded-full">
+                                <CircleCheckBig className="w-5 h-5 text-[#1E1E1E] mt-1 flex-shrink-0" />
+                              </div>
+                              <p className="leading-relaxed text-[#364153]">{item}</p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 italic">No culture and benefits information available.</p>
+                      )}
+                    </div>
+                  </div>
 
-            {/* CULTURE & BENEFITS TAB */}
-            {activeTab === "culture" && (
-              <div className="space-y-6">
-                <div className="border border-[#0000001A] rounded-lg py-6">
-                  <h2 className="text-xl font-medium mb-4 px-6">
-                    Culture & Benefits
-                  </h2>
+                  <div className="border border-[#0000001A] rounded-[12px] py-6">
+                    <h2 className="text-xl font-medium mb-4 px-4 sm:px-6">Benefits & Perks</h2>
 
-                  <div className="px-6">
-                    {Array.isArray(firmData?.cultureAndValue) &&
-                    firmData.cultureAndValue.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {firmData.cultureAndValue.map(
-                          (item: string, index: number) => (
+                    <div className="px-4 sm:px-6">
+                      {Array.isArray(firmData?.benefitsAndPerks) && firmData.benefitsAndPerks.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+                          {firmData.benefitsAndPerks.map((item: string, index: number) => (
                             <div
                               key={index}
-                              className="flex items-start gap-3 text-gray-700"
+                              className="flex items-start gap-3 text-gray-700 p-3 rounded-[8px]"
+                              style={{
+                                background: "linear-gradient(135deg, #EFF6FF 0%, #ECFEFF 100%)",
+                              }}
                             >
-                              <CircleCheckBig className="w-5 h-5 text-yellow-400 mt-1 flex-shrink-0" />
-                              <p className="leading-relaxed">{item}</p>
+                              <Award className="w-5 h-5 text-[#155DFC] mt-1 flex-shrink-0" />
+                              <p className="leading-relaxed text-base text-[#364153] font-normal">{item}</p>
                             </div>
-                          ),
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-gray-500 italic">
-                        No culture and benefits information available.
-                      </p>
-                    )}
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 italic">No culture and benefits information available.</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                <div className="border border-[#0000001A] rounded-lg py-6">
-                  <h2 className="text-xl font-medium mb-4 px-6">
-                    Benefits & Perks
-                  </h2>
-
-                  <div className="px-6">
-                    {Array.isArray(firmData?.benefitsAndPerks) &&
-                    firmData.benefitsAndPerks.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {firmData.benefitsAndPerks.map(
-                          (item: string, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-start gap-3 text-gray-700 bg-[#ECFEFF] p-3 rounded-md"
-                            >
-                              <CircleCheckBig className="w-5 h-5 text-yellow-400 mt-1 flex-shrink-0" />
-                              <p className="leading-relaxed">{item}</p>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-gray-500 italic">
-                        No culture and benefits information available.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right Column - Sidebar */}
-          {/* <div className="space-y-6">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Your Career Strengths</h3>
-                  <p className="text-sm text-gray-700 leading-relaxed mb-4">
-                    Based on your preferences you match, you and a analysis profiling and problem solving test as much to you appreciated the not smart
-                  </p>
-                  <button className="w-full bg-yellow-300 hover:bg-yellow-400 text-black font-semibold py-3 rounded-lg transition-colors">
-                    Try my Vise Fit
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
-          </div> */}
+          </div>
+          {/* END TAB CONTENT */}
         </div>
       </div>
 
- 
+      {/* Optional: put this in globals.css */}
+      {/* 
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      */}
     </div>
   );
 }

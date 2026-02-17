@@ -4,7 +4,7 @@ import WhyMockInterview from "./_components/why-mock-interview";
 
 export default function MockInterviewPage() {
   return (
-    <div className="container mt-5 mb-10 space-y-6">
+    <div className="container mt-16 space-y-10 mb-14">
       <Title />
 
       <div>

@@ -14,44 +14,11 @@ import { ICONS, IMAGES } from '@/assets';
 import { useRegister } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useMutation } from '@tanstack/react-query';
-import { Eye, EyeOff, Mail, PhoneCall } from 'lucide-react';
+import { Eye, EyeOff, Mail, PhoneCall, ArrowLeft } from 'lucide-react';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 // Social Login Component
-const SocialLogin = ({ onManualContinue }: { onManualContinue: () => void }) => (
-    <div className="w-full space-y-4">
-        <Button
-            variant="outline"
-            size="lg"
-            className="w-full h-12 bg-[#ffff00] border-[#ffff00] text-black font-bold text-base hover:bg-[#ffff00]/90"
-            onClick={() => { }} // Handle Google Login later
-        >
-            {/* Icon placeholder since we don't have ant-design icons installed yet in this file, reusing SVG from login or generic */}
-            <span className="mr-2">G</span> Continue with Google
-        </Button>
-
-        <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#f0f2f5] px-2 text-muted-foreground hidden">Or</span>
-                {/* Divider logic simulation */}
-            </div>
-        </div>
-
-        {/* Manual separator */}
-        <div className="flex items-center justify-center text-sm text-gray-500 font-medium">or</div>
-
-        <Button
-            variant="outline"
-            size="lg"
-            className="w-full h-12 border-[#D9D9D9] text-black font-bold text-base hover:bg-gray-50"
-            onClick={onManualContinue}
-        >
-            Continue manually
-        </Button>
-    </div>
-);
+// Social Login Component Replaced
 
 export default function SignUpPage() {
     const [showManualForm, setShowManualForm] = useState(false);
@@ -73,9 +40,9 @@ export default function SignUpPage() {
     };
 
 
-    const {mutate, isPending} = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationKey: ['registerUser'],
-        mutationFn: async (formData: any) =>{
+        mutationFn: async (formData: any) => {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
@@ -91,9 +58,9 @@ export default function SignUpPage() {
 
             return res.json();
         },
-        onSuccess: (data)=>{
+        onSuccess: (data) => {
             console.log("Registration successful:", data);
-            if(!data?.success){
+            if (!data?.success) {
                 toast.error(data?.message || "Signup failed. Please try again.");
                 return;
             }
@@ -106,7 +73,7 @@ export default function SignUpPage() {
     const onSubmit = (data: any) => {
         const formData =
             activeTab === 'Students'
-                ? { 
+                ? {
                     email: data.email,
                     phone: data.phone,
                     password: data.password,
@@ -165,6 +132,10 @@ export default function SignUpPage() {
         return (
             <div className="min-h-screen bg-[#f0f2f5] flex items-center justify-center p-4">
                 <div className="w-full max-w-md bg-white p-8 md:p-12 rounded-xl shadow-lg">
+                    <Link href="/" className="flex items-center text-gray-500 hover:text-black mb-6 transition-colors w-fit font-medium">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Go Home
+                    </Link>
                     <div className="flex justify-center mb-6">
                         <Logo height={88} mobileHeight={70} name="Aspiring Legal Network" />
                     </div>
@@ -180,7 +151,20 @@ export default function SignUpPage() {
                         </Link>
                     </p>
 
-                    <SocialLogin onManualContinue={() => setShowManualForm(true)} />
+                    <div className="w-full space-y-4">
+                        <GoogleLoginButton />
+
+                        <div className="flex items-center justify-center text-sm text-gray-500 font-medium">or</div>
+
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className="w-full h-12 border-[#D9D9D9] text-black font-bold text-base hover:bg-gray-50"
+                            onClick={() => setShowManualForm(true)}
+                        >
+                            Continue manually
+                        </Button>
+                    </div>
 
                     <p className="text-center text-xs text-gray-500 mt-6">
                         By creating an account, you agree to the{" "}
@@ -202,9 +186,13 @@ export default function SignUpPage() {
             {/* Left: Form */}
             <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 bg-white">
                 <div className="w-full max-w-xl">
-                    <Link href="/" className="flex justify-center mb-8">
-                        <Logo height={120} mobileHeight={70} name="Aspiring Legal Network" />
+                    <Link href="/" className="flex items-center text-gray-500 hover:text-black mb-8 transition-colors w-fit font-medium">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Go Home
                     </Link>
+                    <div className="flex justify-center mb-8">
+                        <Logo height={120} mobileHeight={70} name="Aspiring Legal Network" />
+                    </div>
 
                     {/* Tabs */}
                     <div className="flex justify-center mb-6">
@@ -285,7 +273,7 @@ export default function SignUpPage() {
                                     })}
                                 />
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <Mail className="opacity-60"/>
+                                    <Mail className="opacity-60" />
                                 </div>
                             </div>
                             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message as string}</p>}
@@ -301,7 +289,7 @@ export default function SignUpPage() {
                                     {...register("phone", { required: "Phone is required" })}
                                 />
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                   <PhoneCall className="opacity-60"/>
+                                    <PhoneCall className="opacity-60" />
                                 </div>
                             </div>
                             {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message as string}</p>}
@@ -325,7 +313,7 @@ export default function SignUpPage() {
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
                                 >
-                                     {showPassword ?  <Eye /> : <EyeOff />}
+                                    {showPassword ? <Eye /> : <EyeOff />}
                                 </button>
                             </div>
                             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message as string}</p>}
@@ -373,11 +361,11 @@ export default function SignUpPage() {
                         : "Aspiring is a simple yet powerful system that helps schools manage students, teachers, and activities with ease."}
                 </p>
 
-                <div className="flex space-x-2 mb-8">
+                {/* <div className="flex space-x-2 mb-8">
                     <div className="w-3 h-3 rounded-full bg-[#ffff00]" />
                     <div className="w-3 h-3 rounded-full bg-[#cccccc]" />
                     <div className="w-3 h-3 rounded-full bg-[#cccccc]" />
-                </div>
+                </div> */}
 
                 <div className="w-full rounded-lg shadow-lg overflow-hidden">
                     <img

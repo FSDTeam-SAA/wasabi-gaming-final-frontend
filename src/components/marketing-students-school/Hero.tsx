@@ -1,22 +1,53 @@
+
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select'
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from './ui/select'
 import { Button } from './ui/button'
 import { Card, CardContent } from './ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Star } from 'lucide-react'
+import JoinCommunityModal from './JoinCommunityModal'
+import { useRouter } from 'next/navigation'
+import HeroDropDown from '../ui/HeroDropDown'
+import { useQuery } from '@tanstack/react-query'
+import { LocationsApiResponse } from '@/types/location-data-type'
+
+const jobTypeList = [
+  { id: 1, name: "None", value: "__none__" },
+  { id: 2, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeship" },
+  { id: 3, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeship" },
+  { id: 4, name: "Year 12 Work Experience", value: "Year 12 Work Experience" },
+  { id: 5, name: "Year 13 Work Experience", value: "Year 13 Work Experience" },
+  { id: 6, name: "Training Contracts", value: "Training Contracts" },
+  { id: 7, name: "Vacation Schemes", value: "Vacation Schemes" },
+  { id: 8, name: "Insight Days", value: "Insight Days" },
+  { id: 9, name: "Open Days", value: "Open Days" },
+];
+
+// const locationList = [
+//   { id: 1, name: "London", value: "London" },
+//   { id: 2, name: "Manchester", value: "Manchester" },
+//   { id: 3, name: "Birmingham", value: "Birmingham" },
+//   { id: 4, name: "Leeds", value: "Leeds" },
+//   { id: 5, name: "Liverpool", value: "Liverpool" },
+//   { id: 6, name: "Cardiff", value: "Cardiff" },
+// ];
 
 const Hero = () => {
   const words = ['DREAMS', 'FUTURE', 'PASSION']
   const [index, setIndex] = useState(0)
+  const router = useRouter();
+
+  const [openModal, setOpenModal] = useState(false)
+  const [jobType, setJobType] = useState<string | undefined>("");
+  const [location, setLocation] = useState<string | undefined>("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,6 +56,45 @@ const Hero = () => {
 
     return () => clearInterval(interval)
   }, [])
+
+  const handleSearch = () => {
+    const filterData = {
+      jobType,
+      location,
+      source: "hero",
+    };
+
+    localStorage.setItem("jobFilters", JSON.stringify(filterData));
+
+    router.push("/dashboard/application-tracker");
+  };
+
+
+  const { data } = useQuery<LocationsApiResponse>({
+    queryKey: ["location-data"],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/job/locations`)
+
+      return res.json();
+    }
+  })
+
+  console.log(data?.data)
+
+  const locationData = data?.data || []
+
+
+  const locationDataWithNone = [
+    { id: 0, name: "None", value: "__none__" },
+    ...locationData.map((loc, index) => ({
+      id: loc.id || index + 1,
+      name: loc.name.trim(),
+      value: loc.value.trim(),
+    })),
+  ];
+
+
+
 
   return (
     <section
@@ -36,19 +106,18 @@ const Hero = () => {
       }}
     >
       {/* FLOATING CARD */}
-      {/* FLOATING CARD */}
       <Card
         className="
-    hidden lg:block rounded-[16px]
-    lg:absolute lg:left-4 lg:top-12
-    xl:left-12
-    2xl:left-24
-    bg-white border-none
-    lg:w-52 
-    shadow-[0px_8px_16px_0px_#0000001F]
-  "
+          hidden lg:block rounded-[16px]
+          lg:absolute lg:left-4 lg:top-12
+          xl:left-12
+          2xl:left-24
+          bg-white border-none
+          lg:w-56 py-2
+          shadow-[0px_8px_16px_0px_#0000001F]
+        "
       >
-        <CardContent className="py-2  flex flex-col px-2 lg:px-4 items-start gap-2">
+        <CardContent className="py-2 flex flex-col px-2 lg:px-4 items-start gap-2">
           {/* Avatars */}
           <div className="flex -space-x-2 sm:-space-x-3">
             {[
@@ -60,12 +129,7 @@ const Hero = () => {
             ].map((src, i) => (
               <Avatar
                 key={i}
-                className="
-              h-8 w-8
-              xl:h-10 xl:w-10
-              
-              border-2 border-white ring-1 ring-gray-100
-            "
+                className="h-8 w-8 xl:h-10 xl:w-10 border-2 border-white ring-1 ring-gray-100"
               >
                 <AvatarImage src={src} alt={`Student ${i + 1}`} />
                 <AvatarFallback>ST</AvatarFallback>
@@ -78,18 +142,13 @@ const Hero = () => {
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                className="
-                  h-3 w-3
-                  xl:h-4 xl:w-4
-                  2xl:h-5 2xl:w-5
-                  fill-current
-                "
+                className="h-3 w-3 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5 fill-current"
               />
             ))}
           </div>
 
-          <p className="text-xs xl:text-sm 2xl:text-base font-semibold text-gray-900">
-            Joined by 10K+ Students
+          <p className="text-xs w-full text-left font-medium text-gray-900">
+            Joined by Students Nationwide
           </p>
         </CardContent>
       </Card>
@@ -116,37 +175,58 @@ const Hero = () => {
       </div>
 
       {/* SEARCH BAR */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-4xl mx-auto">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-4xl mx-auto ">
         <div
           className="
-            flex flex-col sm:flex-row items-center gap-4 w-full
-            sm:bg-white rounded-full py-4 px-4 sm:px-6
-            sm:shadow-[0px_8px_16px_0px_#00000014,8px_0px_16px_0px_#00000014]
-          "
+             w-full flex flex-col sm:flex-row items-center gap-4 bg-white shadow-[0px_8px_16px_0px_#00000014,8px_0px_16px_0px_#00000014] border border-[#E7E7E7] rounded-[12px] md:rounded-full py-4 px-4 sm:px-6"
         >
-          <Select>
-            <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
-              <SelectValue placeholder="Select Type" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border-none">
-              <SelectItem value="type1">Type 1</SelectItem>
-              <SelectItem value="type2">Type 2</SelectItem>
-              <SelectItem value="type3">Type 3</SelectItem>
-            </SelectContent>
-          </Select>
 
-          <Select>
-            <SelectTrigger className="rounded-full py-3 px-4 border-0 bg-transparent focus:ring-0">
-              <SelectValue placeholder="Select Location" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border-none">
-              <SelectItem value="location1">Location 1</SelectItem>
-              <SelectItem value="location2">Location 2</SelectItem>
-              <SelectItem value="location3">Location 3</SelectItem>
-            </SelectContent>
-          </Select>
 
-          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-gray-900 border border-[#CACA00] font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+          <div className="w-full flex flex-col sm:flex-row items-center gap-4 md:border md:border-[#E7E7E7] md:rounded-full">
+            {/* job type  */}
+            <div className="w-full xs:border xs:border-[#E7E7E7] xs:rounded-full ">
+              <HeroDropDown
+                list={jobTypeList}
+                selectedValue={jobType}
+                // onValueChange={setJobType}
+
+                onValueChange={(value) => {
+                  if (value === "__none__") {
+                    setJobType("");
+                  } else {
+                    setJobType(value);
+                  }
+                }}
+
+                placeholderText="Select Type"
+              />
+            </div>
+            {/* location */}
+            <div className="w-full xs:border xs:border-[#E7E7E7] xs:rounded-full  md:border-l md:border-[#E7E7E7] ">
+              <HeroDropDown
+                list={locationDataWithNone}
+                selectedValue={location}
+                onValueChange={(value) => {
+                  if (value === "__none__") {
+                    setLocation("");
+                  } else {
+                    setLocation(value);
+                  }
+                }}
+                placeholderText="Select Location"
+              />
+
+              {/* <HeroDropDown
+                list={locationData}
+                selectedValue={location}
+                onValueChange={setLocation}
+
+                placeholderText="Select Location"
+              /> */}
+            </div>
+          </div>
+
+          <Button onClick={handleSearch} className="w-full h-[50px] sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#131313] text-base border border-[#CACA00] font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
             Search
           </Button>
         </div>
@@ -154,12 +234,16 @@ const Hero = () => {
 
       {/* CTA */}
       <div className="flex justify-center mt-10 sm:mt-12">
-        <Link href="/dashboard">
-          <Button className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg">
-            Join the Community!
-          </Button>
-        </Link>
+        <Button
+          onClick={() => setOpenModal(true)}
+          className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg"
+        >
+          Join the Community!
+        </Button>
       </div>
+
+      {/* MODAL */}
+      <JoinCommunityModal open={openModal} onOpenChange={setOpenModal} />
     </section>
   )
 }

@@ -18,6 +18,12 @@ import Image from 'next/image'
 
 import iconImage from '@/assets/images/Icon.png'
 import { cn } from '@/utils/cn'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { useSession } from 'next-auth/react'
+import { useQuery } from '@tanstack/react-query'
+import { getProfile } from '@/lib/api/profileApi'
+import { IUser } from '@/types/profile'
 
 const recentActivity = [
   { icon: CheckCircle, text: 'Applied to TechCo Inc.', time: '2 hours ago' },
@@ -29,68 +35,119 @@ const recentActivity = [
   { icon: Calendar, text: 'Updated Resume', time: '3 days ago' },
 ]
 
-const statsData = [
-  {
-    id: 1,
-    title: 'CV Completion',
-    value: '85%',
-    width: '85%',
-  },
-  {
-    id: 2,
-    title: 'Applications Sent',
-    value: '12',
-    width: '60%',
-  },
-  {
-    id: 3,
-    title: 'Interview Rate',
-    value: '25%',
-    width: '25%',
-  },
-  {
-    id: 4, // Added ID for uniqueness if needed, though map index is fine
-    title: 'Profile Strength',
-    value: 'Good',
-    width: '70%',
-  },
-]
-
-const quickActions = [
-  {
-    id: 1,
-    title: 'Build Your CV',
-    subtitle: '85% Complete',
-    icon: <FileText className="w-5 h-5 text-black" />,
-    bg: 'bg-[#FEF9C2]',
-    hoverBg: 'hover:bg-yellow-100',
-    iconHoverBg: 'group-hover:bg-yellow-300',
-    link: '/dashboard/cv-builder',
-  },
-  {
-    id: 2,
-    title: 'Take Psychometric Test',
-    subtitle: 'Discover your strengths',
-    icon: <LuBrain className="w-5 h-5 text-[#9810FA]" />,
-    bg: 'bg-purple-200',
-    hoverBg: 'hover:bg-purple-100',
-    iconHoverBg: 'group-hover:bg-purple-300',
-    link: '/dashboard/psychometric-test',
-  },
-  {
-    id: 3,
-    title: 'Track Applications',
-    subtitle: '12 active applications',
-    icon: <MessageCircle className="w-5 h-5 text-[#155DFC]" />,
-    bg: 'bg-blue-200 border border-[#0000001A]',
-    hoverBg: 'hover:bg-blue-100',
-    iconHoverBg: 'group-hover:bg-blue-300',
-    link: '/dashboard/student/application-tracker',
-  },
-]
-
 export default function CareerDashboard() {
   const router = useRouter()
+
+  const { data: session } = useSession()
+  // @ts-ignore
+  const token = session?.accessToken || session?.user?.accessToken || ''
+
+  const { data: profileResponse, isLoading } = useQuery({
+    queryKey: ['profile', token],
+    queryFn: () => getProfile(token),
+    enabled: !!token,
+  })
+
+  // @ts-ignore
+  const userData: IUser = profileResponse?.data?.data || {}
+  const jobs = userData?.applicationJob || []
+
+  // Calculate CV Completion
+  const calculateCVCompletion = () => {
+    let completed = 0
+    let total = 4 // Basic Info, Education, Experience, Skills
+
+    if (userData.firstName && userData.email && userData.phone) completed++
+    if (userData.education && userData.education.length > 0) completed++
+    if (userData.experience && userData.experience.length > 0) completed++
+    if (userData.skills && userData.skills.length > 0) completed++
+
+    return Math.round((completed / total) * 100)
+  }
+
+  const cvCompletion = calculateCVCompletion()
+  const applicationsSent = jobs.length
+  // Calculate Interview Rate based on "Interview" status count vs total applications
+  const interviewsScheduled = jobs.filter(
+    job => job.status === 'Interview',
+  ).length
+  const interviewRate =
+    applicationsSent > 0
+      ? Math.round((interviewsScheduled / applicationsSent) * 100)
+      : 0
+
+  // Determine Profile Strength based on CV completion
+  const getProfileStrength = (completion: number) => {
+    if (completion >= 75) return 'Excellent'
+    if (completion >= 50) return 'Good'
+    if (completion >= 25) return 'Fair'
+    return 'Needs Work'
+  }
+
+  const profileStrength = getProfileStrength(cvCompletion)
+
+  const stats = [
+    {
+      id: 1,
+      title: 'CV Completion',
+      value: `${cvCompletion}%`,
+      width: `${cvCompletion}%`,
+    },
+    {
+      id: 2,
+      title: 'Applications Sent',
+      value: applicationsSent.toString(),
+      width: `${Math.min(applicationsSent * 5, 100)}%`, // Example scaling
+    },
+    {
+      id: 3,
+      title: 'Interview Rate', // Changed from rate to count if desired, but user asked for "percentage like image"?? Waittt...
+      // User said: "image er mto kore interview percantange ber kore dw" -> Calculate interview percentage like image.
+      // But image shows "Interviews Scheduled: 3".
+      // Current card title is "Interview Rate" and value is percentage.
+      // I will keep percentage for now as "Rate" implies %.
+      // If user meant "Interviews Scheduled" and "Count", I should change title and value logic.
+      // But preserving existing design (progress bars) usually means %, so rate fits better.
+      // I will add a comment if needed.
+      value: `${interviewRate}%`,
+      width: `${interviewRate}%`,
+    },
+    // Adding Profile Strength as 4th card logic but grid only shows slice(0,3) in original code.
+    // I will show top 3.
+  ]
+
+  const quickActions = [
+    { 
+      id: 1,
+      title: 'Build Your CV',
+      subtitle: `${cvCompletion}% Complete`,
+      icon: <FileText className="w-5 h-5 text-black" />,
+      bg: 'bg-[#FEF9C2]',
+      hoverBg: 'hover:bg-yellow-100',
+      iconHoverBg: 'group-hover:bg-yellow-300',
+      link: '/dashboard/cv-builder',
+    },
+    {
+      id: 2,
+      title: 'Take Psychometric Test',
+      subtitle: 'Discover your strengths',
+      icon: <LuBrain className="w-5 h-5 text-[#9810FA]" />,
+      bg: 'bg-purple-200',
+      hoverBg: 'hover:bg-purple-100',
+      iconHoverBg: 'group-hover:bg-purple-300',
+      link: '/dashboard/psychometric-test',
+    },
+    {
+      id: 3,
+      title: 'Track Applications',
+      subtitle: `${applicationsSent} active applications`,
+      icon: <MessageCircle className="w-5 h-5 text-[#155DFC]" />,
+      bg: 'bg-blue-200 border border-[#0000001A]',
+      hoverBg: 'hover:bg-blue-100',
+      iconHoverBg: 'group-hover:bg-blue-300',
+      link: '/dashboard/application-tracker',
+    },
+  ]
 
   const handleNavigate = (link: string) => {
     if (link) router.push(link)
@@ -141,10 +198,10 @@ export default function CareerDashboard() {
         </div>
       </div>
 
-      <div className="px-6 py-12 mx-auto ">
+      <div className="px-6 mx-auto ">
         {/* Progress Cards */}
         <div className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-3">
-          {statsData.slice(0, 3).map(item => (
+          {stats.map(item => (
             <div
               key={item.id}
               // onClick={() => handleNavigate(item.link || "")} // No link in original data for stats
@@ -173,7 +230,7 @@ export default function CareerDashboard() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 neuton">
+        <div className="w-full neuton">
           {/* Quick Actions */}
           <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
             <h2 className="mb-6 text-xl font-bold main-color">Quick Actions</h2>
@@ -207,46 +264,11 @@ export default function CareerDashboard() {
               ))}
             </div>
           </div>
-
-          {/* Recent Activity */}
-          <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
-            <h2 className="mb-6 text-xl font-bold main-color">
-              Recent Activity
-            </h2>
-            <div className="space-y-4">
-              {recentActivity.map((activity, index) => {
-                const IconComponent = activity.icon
-                return (
-                  <div
-                    key={index}
-                    className="flex items-start justify-between border-b border-b-[#F3F4F6] p-4 "
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full bg-gray-50">
-                        <IconComponent className="w-5 h-5 text-gray-600" />
-                      </div>
-                      <div>
-                        <div className="text-base font-bold main-color inter">
-                          {activity.text}
-                        </div>
-                        <div className="text-xs text-[#6A7282] mt-0.5 inter">
-                          {activity.time}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-xl text-green-400">
-                      <CiCircleCheck />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
         </div>
 
         {/* Career Strengths Section */}
         <div className="p-6 mt-6 bg-[#EFF6FF] shadow-sm border border-[#BEDBFF]  rounded-2xl">
-          <div className="flex items-start gap-4">
+          <div className="flex flex-col md:flex-row items-start gap-4">
             <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-blue-500 rounded-full">
               <FiAward className="w-6 h-6 text-white" />
             </div>
@@ -259,12 +281,14 @@ export default function CareerDashboard() {
                 analysing/thinking and problem solving. We believe it has job
                 opportunities that match your strength.
               </p>
-              <button
-                className="px-6 py-2.5 rounded-full font-normal text-base transition-colors main-color"
-                style={{ backgroundColor: '#FFFF00' }}
-              >
-                View Recommended Jobs
-              </button>
+              <Link href={'/dashboard/application-tracker'}>
+                <Button
+                  className="px-6 py-2.5 rounded-full font-normal text-base transition-all duration-300 hover:scale-105 active:scale-95 main-color"
+                  style={{ backgroundColor: '#FFFF00' }}
+                >
+                  View Recommended Jobs
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
