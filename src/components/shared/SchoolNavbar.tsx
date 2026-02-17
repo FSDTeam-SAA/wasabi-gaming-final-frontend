@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X, LogOut, User } from 'lucide-react'
 import Logo from '@/components/shared/logo/Logo'
 import { useSession, signOut } from 'next-auth/react'
 import LogoutModal from '@/components/shared/LogoutModal'
+import { useUserProfile } from '@/hooks/useUserProfile'
+import { toast } from 'sonner'
 
 interface NavItem {
   name: string
@@ -15,13 +17,53 @@ interface NavItem {
 
 const SchoolNavbar = () => {
   const pathname = usePathname()
+  const router = useRouter()
   const { data: session } = useSession()
+  const { hasActiveSubscription, isAuthenticated } = useUserProfile()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
 
   const confirmLogout = async () => {
     await signOut({ callbackUrl: '/' })
     setIsLogoutModalOpen(false)
+  }
+
+  // Routes that require subscription
+  const subscriptionRequiredRoutes = [
+    '/school/manage-students',
+    '/school/invite-students',
+    '/school/profile',
+  ]
+
+  // Routes that only require login
+  const loginRequiredRoutes = ['/school/premium-features']
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+    // Check if route requires subscription
+    if (subscriptionRequiredRoutes.includes(path)) {
+      if (!isAuthenticated) {
+        e.preventDefault()
+        toast.error('Please login to access this feature')
+        router.push('/login')
+        return
+      }
+      if (!hasActiveSubscription) {
+        e.preventDefault()
+        toast.error('This feature requires an active subscription')
+        router.push('/plans')
+        return
+      }
+    }
+
+    // Check if route requires login only
+    if (loginRequiredRoutes.includes(path)) {
+      if (!isAuthenticated) {
+        e.preventDefault()
+        toast.error('Please login to access this feature')
+        router.push('/login')
+        return
+      }
+    }
   }
 
   const navItems: NavItem[] = [
@@ -59,11 +101,11 @@ const SchoolNavbar = () => {
               <li key={item.name}>
                 <Link
                   href={item.path}
-                  className={`px-3.5 py-2 rounded-full font-medium transition-all duration-200 ${
-                    isActive(item.path)
-                      ? 'yellow text-[#1E1E1E]'
-                      : 'text-[#505050] hover:text-black'
-                  }`}
+                  onClick={(e) => handleNavClick(e, item.path)}
+                  className={`px-3.5 py-2 rounded-full font-medium transition-all duration-200 ${isActive(item.path)
+                    ? 'yellow text-[#1E1E1E]'
+                    : 'text-[#505050] hover:text-black'
+                    }`}
                 >
                   {item.name}
                 </Link>
@@ -76,11 +118,11 @@ const SchoolNavbar = () => {
             <div className="hidden lg:flex items-center space-x-3">
               <Link
                 href="/school/profile"
-                className={`px-4 py-2 rounded-2xl font-medium transition-all duration-200 border-2 ${
-                  isActive('/school/profile')
-                    ? 'bg-[#FFFF00] text-[#1E1E1E] border-[#E5E500]'
-                    : 'bg-white border-transparent text-[#505050] hover:text-black hover:bg-gray-50'
-                }`}
+                onClick={(e) => handleNavClick(e, '/school/profile')}
+                className={`px-4 py-2 rounded-2xl font-medium transition-all duration-200 border-2 ${isActive('/school/profile')
+                  ? 'bg-[#FFFF00] text-[#1E1E1E] border-[#E5E500]'
+                  : 'bg-white border-transparent text-[#505050] hover:text-black hover:bg-gray-50'
+                  }`}
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center">
@@ -141,12 +183,14 @@ const SchoolNavbar = () => {
                 <li key={item.name}>
                   <Link
                     href={item.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                      isActive(item.path)
-                        ? 'bg-[#FFFF00] text-black border-2 border-[#E5E500]'
-                        : 'text-[#505050] hover:text-black'
-                    }`}
+                    onClick={(e) => {
+                      handleNavClick(e, item.path)
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className={`block px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${isActive(item.path)
+                      ? 'bg-[#FFFF00] text-black border-2 border-[#E5E500]'
+                      : 'text-[#505050] hover:text-black'
+                      }`}
                   >
                     {item.name}
                   </Link>
@@ -159,7 +203,10 @@ const SchoolNavbar = () => {
               <div className="flex flex-col space-y-2 mt-4 pt-4 border-t border-[#E5E500]">
                 <Link
                   href="/school/profile"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    handleNavClick(e, '/school/profile')
+                    setIsMobileMenuOpen(false)
+                  }}
                   className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-yellow-100 transition-colors"
                 >
                   <div className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center">
