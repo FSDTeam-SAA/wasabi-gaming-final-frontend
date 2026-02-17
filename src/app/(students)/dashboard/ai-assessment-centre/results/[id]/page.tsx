@@ -212,7 +212,7 @@ export default function ResultsPage() {
               onClick={() => router.push('/dashboard/ai-assessment-centre')}
               className="inline-flex items-center gap-2 bg-[#FACC15] text-sm text-black font-semibold px-3 md:px-5 lg:px-6 py-3 rounded-[12px] "
             >
-              Start AI Assessment
+              Start Assessment Center Suite
               <ArrowRight size={18} />
             </button>
           </div>
