@@ -35,14 +35,14 @@ const HeroDropDown = ({
         onValueChange(val); // ✅ no number conversion
       }}
     >
-      <SelectTrigger className="h-[50px] w-[200px] md:w-[350px] lg:w-[360px] bg-[#FFFFFF] border border-[#E7E7E7] rounded-[8px] text-[#0E2A5C] dark:text-black text-base focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0">
+      <SelectTrigger className="h-[50px] w-full md:w-[272px] lg:w-[354px] border-none text-[#0E2A5C] dark:text-black text-base focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0">
         <SelectValue
           className="placeholder:text-[#424242] placeholder:text-base placeholder:font-bold dark:text-black"
           placeholder={placeholderText ?? "Select"}
         />
       </SelectTrigger>
 
-      <SelectContent className="min-w-[unset] w-auto h-[200px] rounded-[8px] shadow-[0px_0px_56px_0px_#00000029] border-none bg-white mt-1">
+      <SelectContent className="min-w-[unset] w-auto h-[250px] rounded-[8px] shadow-[0px_0px_56px_0px_#00000029] border-none bg-white mt-1">
         <SelectGroup>
           {list
             .filter((item) => item.value !== "")

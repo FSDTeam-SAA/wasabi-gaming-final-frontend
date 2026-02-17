@@ -42,7 +42,7 @@ const WasabiDropDown = ({
         />
       </SelectTrigger>
 
-      <SelectContent className="min-w-[unset] w-auto h-[200px] rounded-[8px] shadow-[0px_0px_56px_0px_#00000029] border-none bg-white mt-1">
+      <SelectContent className="min-w-[unset] w-auto h-[250px] rounded-[8px] shadow-[0px_0px_56px_0px_#00000029] border-none bg-white mt-1">
         <SelectGroup>
           {list
             .filter((item) => item.value !== "")
