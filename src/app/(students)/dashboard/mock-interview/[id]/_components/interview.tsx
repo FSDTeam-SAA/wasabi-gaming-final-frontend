@@ -67,7 +67,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     if (totalQuestions === 0) return 0;
 
     const submittedAnswers = answers.filter((a) => a.submitted).length;
-    const baseProgress = 96; // Starting progress
+    const baseProgress = 0; // Starting progress
 
     // Distribute remaining 4% across all questions
     const progressPerQuestion = 4 / totalQuestions;
