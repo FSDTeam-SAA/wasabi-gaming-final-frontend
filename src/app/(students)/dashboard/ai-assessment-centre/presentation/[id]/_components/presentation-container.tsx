@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { PresentationTaskApiResponse } from "../../../_components/written-presentation-data-type";
+import AILoader from "@/components/student/psychometric/AILoader";
 
 export default function PresentationTaskPage({ id }: { id: string }) {
   const assessmentId = id;
@@ -338,6 +339,7 @@ export default function PresentationTaskPage({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      {isPending && <AILoader />}
       <main className="flex-1 w-full px-6 py-8 mx-auto max-w-7xl">
         <div className="flex items-start justify-between mb-8">
           <div className="space-y-2">
