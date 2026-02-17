@@ -19,10 +19,14 @@ import { useRouter } from 'next/navigation'
 import HeroDropDown from '../ui/HeroDropDown'
 
 const jobTypeList = [
-  { id: 1, name: "Apprenticeship", value: "Apprenticeship" },
-  { id: 2, name: "Work Experience", value: "Work Experience" },
-  { id: 3, name: "Training Contracts", value: "Training Contracts" },
-  { id: 4, name: "Paralegal", value: "Paralegal" },
+  { id: 1, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeships" },
+  { id: 2, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeships" },
+  { id: 3, name: "Year 12 Work Experience", value: "Year 12 Work Experience" },
+  { id: 4, name: "Year 13 Work Experience", value: "Year 13 Work Experience" },
+  { id: 5, name: "Training Contracts", value: "Training Contracts" },
+  { id: 6, name: "Vacation Schemes", value: "Vacation Schemes" },
+  { id: 7, name: "Insight Days", value: "Insight Days" },
+  { id: 8, name: "Open Days", value: "Open Days" },
 ];
 
 const locationList = [
