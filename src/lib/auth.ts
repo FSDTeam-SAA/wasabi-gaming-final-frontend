@@ -107,8 +107,15 @@ export const authOptions: NextAuthOptions = {
             }),
           });
 
-          const result = await res.json();
-          console.log("📥 Google Login API Result:", JSON.stringify(result, null, 2));
+          const resText = await res.text();
+          let result;
+          try {
+            result = JSON.parse(resText);
+            console.log("📥 Google Login API Result:", JSON.stringify(result, null, 2));
+          } catch (e) {
+            console.error("❌ Failed to parse Google Login API response:", resText);
+            throw new Error(`Invalid response from server: ${resText.substring(0, 100)}`);
+          }
 
           if (!res.ok || !result?.success) {
             // Check if backend returned needsRole in a failure structure
