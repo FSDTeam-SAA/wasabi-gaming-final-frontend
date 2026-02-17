@@ -15,7 +15,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/utils/cn'
 import Image from 'next/image'
-import PremiumFeaturesCareer from './PremiumFeaturesCareer'
+
+import Features from '../marketing-students-school/school/Features'
 
 export function PremiumFeatures() {
   const [isYearly, setIsYearly] = useState(false)
@@ -125,7 +126,7 @@ export function PremiumFeatures() {
       </section>
 
       <section>
-        <PremiumFeaturesCareer />
+        <Features />
       </section>
 
       {/* <section className="bg-gray-50/50 py-24 px-6 border-y border-gray-100">
