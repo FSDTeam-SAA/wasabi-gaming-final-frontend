@@ -19,13 +19,14 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { SingleCourseResponse } from "@/types/course";
 import { useSession } from "next-auth/react";
+import CourseDetailsSkeleton from "./CourseDetailsSkeleton";
 
 const SingelCourse = ({ id }: { id: string }) => {
   const router = useRouter();
 
-    const { data: sessionData } = useSession();
-    const token = sessionData?.accessToken;
-    const enrollid = sessionData?.user?.id
+  const { data: sessionData } = useSession();
+  const token = sessionData?.accessToken;
+  const enrollid = sessionData?.user?.id
   // const enrollid = "697895b9b155095e9d6dab51"
 
   const { data, isLoading, isError } = useQuery<SingleCourseResponse>({
@@ -63,6 +64,7 @@ const SingelCourse = ({ id }: { id: string }) => {
 
   const course = data?.data;
   const lessons = course?.courseVideo || [];
+  console.log(lessons)
 
   const [currentLesson, setCurrentLesson] = useState<
     (typeof lessons)[0] | null
@@ -77,11 +79,13 @@ const SingelCourse = ({ id }: { id: string }) => {
     }
   }, [lessons, currentLesson]);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) {
+    return <CourseDetailsSkeleton />
+  }
   if (isError || !course) return <p>Something went wrong</p>;
 
   return (
-    <div className="container mx-auto p-6 bg-white min-h-screen font-sans">
+    <div className="container mx-auto p-6 bg-white min-h-screen mb-6 font-sans">
 
       <header className="mb-8 flex items-center gap-4 pb-4">
         <Button
@@ -150,10 +154,10 @@ const SingelCourse = ({ id }: { id: string }) => {
                 <p className="text-sm font-semibold text-[#1E1E1E]">
                   {lesson.title}
                 </p>
-                <div className="flex items-center text-[11px] text-slate-500 mt-1">
+                {/* <div className="flex items-center text-[11px] text-slate-500 mt-1">
                   <Clock className="w-3 h-3 mr-1" />
                   {lesson.time}
-                </div>
+                </div> */}
               </div>
             </div>
           ))}
@@ -214,8 +218,12 @@ const SingelCourse = ({ id }: { id: string }) => {
               </span>
             </div>
             {
-              currentLesson?.attempted && <p className="text-sm font-semibold text-green-500 mt-2">You have already attempted the quiz.</p>
+              currentLesson?.attempted && <p className="text-sm font-semibold text-green-500 mt-2">You have already attempted the quiz.</p> 
             }
+              {
+              currentLesson?.quiz?.length === 0 && <p className="text-sm font-semibold text-red-500 mt-2">No quiz available for this lesson.</p>
+            }
+          
             <Button
               onClick={() => setOpen(true)}
               disabled={currentLesson?.attempted || !currentLesson?.quiz?.length}
@@ -228,9 +236,9 @@ const SingelCourse = ({ id }: { id: string }) => {
       </Card>
 
       {/* ================= FOOTER ================= */}
-      <footer className="mt-12 py-8 border-t border-slate-100 text-center">
+      {/* <footer className="mt-12 py-8 border-t border-slate-100 text-center">
         <p className="text-[10px] text-slate-400">© 2025 Aspiring</p>
-      </footer>
+      </footer> */}
 
       {/* ================= QUIZ MODAL ================= */}
       <QuizModal
