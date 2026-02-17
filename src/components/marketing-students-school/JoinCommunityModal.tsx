@@ -264,6 +264,7 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
                   <Input
                     id="phoneNumber"
                     name="phoneNumber"
+                    type="Number"
                     placeholder={helperEnter('your phone number')}
                     value={formData.phoneNumber}
                     onChange={handleChange}
