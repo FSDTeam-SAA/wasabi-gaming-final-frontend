@@ -130,7 +130,7 @@ export default function Home() {
 
               <div>
                 <h2 className="text-lg md:text-xl font-semibold text-[#1E1E1E] mb-2">
-                  Why Use Our AI Assessment Centre Suite?
+                  Why Use Our Assessment Centre Suite?
                 </h2>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-3">
