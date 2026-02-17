@@ -47,7 +47,7 @@ export default function ResultsPage() {
           <div className="flex items-start justify-between mb-8">
             <div className="space-y-2">
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1E1E1E] flex items-center gap-2">
-                AI Assessment Result 🎉
+                Assessment Suite Result 🎉
               </h1>
               <p className="text-[#4A5565] font-normal font-sm md:text-base">
                 Great job! Here's how you performed in this Written Case Study session.
