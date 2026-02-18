@@ -21,7 +21,6 @@ interface SessionData {
   _id: string;
   category: string;
   questions: Question[];
-  // ... other properties
 }
 
 interface InterviewProps {
@@ -35,11 +34,15 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const router = useRouter();
   const { id } = useParams();
 
+  // Max recording time = 2 minutes
+  const MAX_RECORDING_TIME = 2 * 60; // 120 seconds
+  const PREP_TIME = 20; // 20 seconds preparation time
+
   // State management
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [recordingTime, setRecordingTime] = useState<number>(0);
-  const [prepTimer, setPrepTimer] = useState<number>(20);
+  const [prepTimer, setPrepTimer] = useState<number>(PREP_TIME);
   const [autoStartTimer, setAutoStartTimer] = useState<number>(28);
   const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const [isVideoRecorded, setIsVideoRecorded] = useState<boolean>(false);
@@ -47,6 +50,9 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number>(0);
+  const [showRecordingComplete, setShowRecordingComplete] =
+    useState<boolean>(false);
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -61,27 +67,44 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const questions: Question[] = sessionData?.questions || [];
   const currentQuestion = questions[currentQuestionIndex];
 
-  // Calculate dynamic progress based on answers submitted
+  // Progress calculation
   const calculateProgress = (): number => {
     const totalQuestions = questions.length;
     if (totalQuestions === 0) return 0;
 
+    let currentQuestionProgress = 0;
+
+    if (!isVideoRecorded && !isRecording && isCameraActive) {
+      // Preparation time progress (0-20 seconds)
+      currentQuestionProgress = ((PREP_TIME - prepTimer) / PREP_TIME) * 100;
+    } else if (isRecording) {
+      // Recording time progress (0-120 seconds)
+      currentQuestionProgress = (recordingTime / MAX_RECORDING_TIME) * 100;
+    } else if (isVideoRecorded) {
+      // Recording completed
+      currentQuestionProgress = 100;
+    }
+
     const submittedAnswers = answers.filter((a) => a.submitted).length;
-    const baseProgress = 96; // Starting progress
+    const totalProgress =
+      (submittedAnswers * 100 + currentQuestionProgress) / totalQuestions;
 
-    // Distribute remaining 4% across all questions
-    const progressPerQuestion = 4 / totalQuestions;
-    const currentQuestionProgress = (submittedAnswers / totalQuestions) * 4;
-
-    return Math.min(baseProgress + currentQuestionProgress, 100);
+    return Math.min(totalProgress, 100);
   };
 
-  const [progress, setProgress] = useState<number>(calculateProgress());
-
-  // Update progress whenever answers change
+  // Progress update effect
   useEffect(() => {
     setProgress(calculateProgress());
-  }, [answers, questions.length]);
+  }, [
+    answers,
+    questions.length,
+    prepTimer,
+    recordingTime,
+    isRecording,
+    isVideoRecorded,
+    isCameraActive,
+    currentQuestionIndex,
+  ]);
 
   // Start camera function
   const startCamera = async (): Promise<MediaStream | null> => {
@@ -123,10 +146,10 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     return !!blob && blob.type.startsWith("video/");
   };
 
-  // Get supported MIME type (prefer mp4 for backend compatibility)
+  // Get supported MIME type
   const getSupportedMimeType = (): string => {
     const types = [
-      "video/mp4", // MP4 - most compatible with backend
+      "video/mp4",
       "video/webm;codecs=vp9,opus",
       "video/webm;codecs=vp8,opus",
       "video/webm",
@@ -134,12 +157,10 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
 
     for (const type of types) {
       if (MediaRecorder.isTypeSupported(type)) {
-        console.log("Using MIME type:", type);
         return type;
       }
     }
 
-    // Fallback to empty string, browser will choose default
     return "";
   };
 
@@ -147,7 +168,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const getFileExtension = (mimeType: string): string => {
     if (mimeType.includes("mp4")) return "mp4";
     if (mimeType.includes("webm")) return "webm";
-    return "mp4"; // Default to mp4
+    return "mp4";
   };
 
   // Save answer to server
@@ -168,10 +189,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     setApiError(null);
 
     try {
-      // Create FormData
       const formData = new FormData();
-
-      // Use MP4 extension for backend compatibility
       const mimeType = getSupportedMimeType();
       const extension = getFileExtension(mimeType);
 
@@ -185,26 +203,18 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       formData.append("question", currentQuestion?.questionText || "");
       formData.append("segment", `question-${currentQuestionIndex + 1}`);
 
-      // Save answer locally
       const answer: Answer = {
         questionIndex: currentQuestionIndex,
         question: currentQuestion?.questionText || "",
         videoUrl: videoUrl,
         timestamp: new Date().toISOString(),
-        submitted: false, // Initially false, will be true after successful API call
+        submitted: false,
       };
 
-      // Send to server
       const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
       if (!apiUrl) {
         throw new Error("API base URL is not configured");
       }
-
-      console.log("Sending video to server...", {
-        size: blob.size,
-        type: blob.type,
-        extension: extension,
-      });
 
       const response = await fetch(
         `${apiUrl}/mock-interview-session/start-interview`,
@@ -220,13 +230,9 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       const result = await response.json();
 
       if (!result.success) {
-        console.error("Failed to save answer:", result.message);
         throw new Error(result.message || "Failed to save answer");
       }
 
-      console.log("Answer saved successfully:", result);
-
-      // Update answer with submitted flag
       answer.submitted = true;
 
       setAnswers((prev) => {
@@ -242,14 +248,14 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
         return newAnswers;
       });
 
-      // Progress will be updated via useEffect
+      toast.success("Answer saved successfully!");
     } catch (error) {
       console.error("Error saving answer:", error);
       setApiError(
         error instanceof Error ? error.message : "Failed to save answer",
       );
+      toast.error("Failed to save answer. Please try again.");
 
-      // Keep answer but mark as not submitted
       const answer: Answer = {
         questionIndex: currentQuestionIndex,
         question: currentQuestion?.questionText || "",
@@ -277,7 +283,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
 
   // Start recording function
   const startRecording = async () => {
-    // Clear all timers
+    // Clear timers
     if (prepTimerRef.current) {
       clearInterval(prepTimerRef.current);
       prepTimerRef.current = null;
@@ -286,8 +292,8 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       clearInterval(autoStartTimerRef.current);
       autoStartTimerRef.current = null;
     }
+    setShowRecordingComplete(false);
 
-    // Start camera if not already started
     if (!streamRef.current) {
       const stream = await startCamera();
       if (!stream) return;
@@ -298,13 +304,11 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       return;
     }
 
-    // Check if MediaRecorder is supported
     if (!window.MediaRecorder) {
       toast.error("MediaRecorder API is not supported in this browser");
       return;
     }
 
-    // Setup media recorder with preferred MP4 format
     const mimeType = getSupportedMimeType();
 
     if (!mimeType) {
@@ -333,18 +337,10 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
             return;
           }
 
-          // Create video blob
           const blob = new Blob(chunksRef.current, {
             type: mimeType,
           });
 
-          console.log("Video recorded:", {
-            size: blob.size,
-            type: blob.type,
-            duration: recordingTime,
-          });
-
-          // Validate blob
           if (!isValidVideoFile(blob)) {
             console.error("Invalid video blob");
             setApiError("Invalid video format");
@@ -354,8 +350,8 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
           const videoUrl = URL.createObjectURL(blob);
           setRecordedVideoUrl(videoUrl);
           setIsVideoRecorded(true);
+          setShowRecordingComplete(true);
 
-          // Set video for playback
           if (videoRef.current) {
             videoRef.current.srcObject = null;
             videoRef.current.src = videoUrl;
@@ -364,7 +360,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
             videoRef.current.load();
           }
 
-          // Save the recorded answer
           await saveAnswer(videoUrl, blob);
         } catch (error) {
           console.error("Error processing recording:", error);
@@ -372,17 +367,16 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
         }
       };
 
-      // Start recording
-      mediaRecorder.start(1000); // Collect data every second
+      mediaRecorder.start(1000);
       setIsRecording(true);
       setRecordingTime(0);
 
-      // Start recording timer
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => {
-          if (prev >= 119) {
+          if (prev >= MAX_RECORDING_TIME - 1) {
             stopRecording();
-            return 120;
+            toast.info("Maximum recording time reached (2 minutes)");
+            return MAX_RECORDING_TIME;
           }
           return prev + 1;
         });
@@ -411,14 +405,52 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     }
   };
 
+  // Setup auto timers
+  const setupAutoTimers = () => {
+    if (prepTimerRef.current) clearInterval(prepTimerRef.current);
+    if (autoStartTimerRef.current) clearInterval(autoStartTimerRef.current);
+
+    setPrepTimer(PREP_TIME);
+    setAutoStartTimer(28);
+
+    // Preparation timer - updates every second
+    prepTimerRef.current = setInterval(() => {
+      setPrepTimer((prev) => {
+        if (prev <= 1) {
+          if (prepTimerRef.current) {
+            clearInterval(prepTimerRef.current);
+            prepTimerRef.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // Auto start timer - updates every second
+    autoStartTimerRef.current = setInterval(() => {
+      setAutoStartTimer((prev) => {
+        if (prev <= 1) {
+          if (autoStartTimerRef.current) {
+            clearInterval(autoStartTimerRef.current);
+            autoStartTimerRef.current = null;
+          }
+          if (!isRecording && !isVideoRecorded && isCameraActive) {
+            startRecording();
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
   // Handle next question
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
-      // Reset states for next question
       setCurrentQuestionIndex((prev) => prev + 1);
       resetRecordingState();
     } else {
-      // All questions completed
       handleInterviewComplete();
     }
   };
@@ -429,7 +461,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       setCurrentQuestionIndex((prev) => prev - 1);
       resetRecordingState();
 
-      // Load previous answer if exists
       const prevAnswer = answers.find(
         (a) => a.questionIndex === currentQuestionIndex - 1,
       );
@@ -455,11 +486,11 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     setIsVideoRecorded(false);
     setRecordedVideoUrl(null);
     setRecordingTime(0);
-    setPrepTimer(20);
+    setPrepTimer(PREP_TIME);
     setAutoStartTimer(28);
     setApiError(null);
+    setShowRecordingComplete(false);
 
-    // Clear timers
     if (prepTimerRef.current) {
       clearInterval(prepTimerRef.current);
       prepTimerRef.current = null;
@@ -473,20 +504,17 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       autoStartTimerRef.current = null;
     }
 
-    // Stop camera
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
 
-    // Clear video element
     if (videoRef.current) {
       videoRef.current.srcObject = null;
       videoRef.current.src = "";
       videoRef.current.controls = false;
     }
 
-    // Restart timers
     setupAutoTimers();
   };
 
@@ -499,48 +527,17 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   // Handle interview completion
   const handleInterviewComplete = () => {
     const submittedCount = answers.filter((a) => a.submitted).length;
-    toast.error(
+    toast.success(
       `Interview completed! ${submittedCount} of ${questions.length} responses have been recorded successfully.`,
     );
     router.push(`/dashboard/mock-interview/${id}/interview-summery`);
   };
 
-  // Setup auto timers
-  const setupAutoTimers = () => {
-    // Clear any existing timers first
-    if (prepTimerRef.current) clearInterval(prepTimerRef.current);
-    if (autoStartTimerRef.current) clearInterval(autoStartTimerRef.current);
-
-    // Preparation timer
-    prepTimerRef.current = setInterval(() => {
-      setPrepTimer((prev) => {
-        if (prev <= 1) {
-          if (prepTimerRef.current) {
-            clearInterval(prepTimerRef.current);
-            prepTimerRef.current = null;
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    // Auto start recording timer
-    autoStartTimerRef.current = setInterval(() => {
-      setAutoStartTimer((prev) => {
-        if (prev <= 1) {
-          if (autoStartTimerRef.current) {
-            clearInterval(autoStartTimerRef.current);
-            autoStartTimerRef.current = null;
-          }
-          if (!isRecording && !isVideoRecorded) {
-            startRecording();
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  // Handle manual recording start
+  const handleStartRecording = () => {
+    startRecording();
+    setPrepTimer(PREP_TIME);
+    setAutoStartTimer(28);
   };
 
   // Initialize timers
@@ -548,12 +545,10 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     setupAutoTimers();
 
     return () => {
-      // Cleanup timers
       if (prepTimerRef.current) clearInterval(prepTimerRef.current);
       if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
       if (autoStartTimerRef.current) clearInterval(autoStartTimerRef.current);
 
-      // Stop camera stream
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
@@ -565,13 +560,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // Handle manual recording start
-  const handleStartRecording = () => {
-    startRecording();
-    setPrepTimer(20);
-    setAutoStartTimer(28);
   };
 
   // Check if current question has been answered
@@ -596,7 +584,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   }
 
   return (
-    <div className="flex flex-col font-sans text-[#444]">
+    <div className="flex flex-col font-sans text-[#444] p-4">
       {/* Header with navigation */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -678,15 +666,12 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
             {isRecording && (
               <div className="absolute z-30 top-4 right-4">
                 <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 px-4 py-2 mb-2 text-white bg-red-600 rounded-full animate-pulse">
+                  <div className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 rounded-full animate-pulse">
                     <div className="w-3 h-3 bg-white rounded-full"></div>
                     <span className="font-bold">REC</span>
                     <span className="font-mono">
-                      {formatTime(recordingTime)}
+                      {formatTime(recordingTime)} / 2:00
                     </span>
-                  </div>
-                  <div className="px-3 py-1 text-sm text-white rounded-full bg-black/80">
-                    Max 2:00
                   </div>
                 </div>
               </div>
@@ -705,7 +690,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
               </div>
             )}
 
-            {/* Default content */}
+            {/* Default content - No camera */}
             {!isCameraActive && !isVideoRecorded && !isRecording && (
               <div className="z-10 p-6">
                 <div className="mb-6 text-4xl">🧠</div>
@@ -719,7 +704,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                 <div className="relative w-40 h-40 mx-auto mb-8 flex items-center justify-center rounded-full border-[8px] border-[#FAFF00]">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-4xl font-bold text-[#FAFF00]">
-                      {progress.toFixed(0)}%
+                      {Math.round(progress)}%
                     </span>
                   </div>
                 </div>
@@ -730,52 +715,37 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
               </div>
             )}
 
-            {/* Camera active but not recording */}
+            {/* Camera active but not recording - with real-time progress bar */}
             {isCameraActive && !isRecording && !isVideoRecorded && (
-              <div className="z-10 max-w-md p-8 text-white bg-black/80 rounded-2xl">
-                <div className="mb-4 text-4xl">📹 Camera Ready</div>
-                <p className="mb-8 text-lg">
+              <div className="z-10 w-full max-w-md p-6">
+                <div className="mb-4 text-4xl">📹</div>
+                <h2 className="mb-3 text-2xl font-bold text-white drop-shadow-lg">
+                  Camera Ready
+                </h2>
+                <p className="mb-8 text-lg text-white drop-shadow-lg">
                   Click below to start recording your answer
                 </p>
-              </div>
-            )}
 
-            {/* Video recorded */}
-            {isVideoRecorded && !isRecording && (
-              <div className="z-10 max-w-md p-8 text-white bg-black/80 rounded-2xl">
-                <div className="mb-4 text-4xl">✅ Recording Complete!</div>
-                <p className="mb-6 text-lg">
-                  Your {formatTime(recordingTime)} response has been recorded
-                </p>
-                <div className="flex justify-center gap-4">
-                  <button
-                    onClick={() => {
-                      if (recordedVideoUrl) {
-                        const a = document.createElement("a");
-                        a.href = recordedVideoUrl;
-                        a.download = `question-${currentQuestionIndex + 1}.mp4`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                      }
-                    }}
-                    className="flex items-center gap-2 px-5 py-3 transition bg-green-600 rounded-lg hover:bg-green-700"
-                    disabled={!recordedVideoUrl}
-                  >
-                    <span>💾</span> Download
-                  </button>
-                  <button
-                    onClick={handleRetake}
-                    className="flex items-center gap-2 px-5 py-3 transition rounded-lg bg-amber-500 hover:bg-amber-600"
-                  >
-                    <span>🔄</span> Retake
-                  </button>
+                {/* Real-time progress bar for preparation time */}
+                <div className="w-full mx-auto mb-4">
+                  <div className="flex justify-between mb-2 text-sm text-white">
+                    <span>Preparation Time: {prepTimer}s</span>
+                    <span>Auto-start: {autoStartTimer}s</span>
+                  </div>
+                  <div className="w-full h-3 overflow-hidden bg-gray-700 rounded-full">
+                    <div
+                      className="h-full bg-[#FAFF00] transition-all duration-300 ease-linear"
+                      style={{
+                        width: `${((PREP_TIME - prepTimer) / PREP_TIME) * 100}%`,
+                      }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between mt-1 text-xs text-white/80">
+                    <span>0s</span>
+                    <span>{prepTimer}s remaining</span>
+                    <span>{PREP_TIME}s</span>
+                  </div>
                 </div>
-                {isSubmitting && (
-                  <p className="mt-4 text-sm text-blue-300">
-                    Saving your answer to server...
-                  </p>
-                )}
               </div>
             )}
 
@@ -811,7 +781,57 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
             </div>
           </div>
 
-          {/* MOVED NAVIGATION BUTTONS HERE - BELOW THE VIDEO AREA */}
+          {/* Recording complete section - MOVED OUTSIDE video area */}
+          {isVideoRecorded && !isRecording && (
+            <div className="p-4 mt-4 border border-green-200 rounded-lg bg-green-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="text-3xl">✅</div>
+                  <div>
+                    <h3 className="font-bold text-green-800">
+                      Recording Complete!
+                    </h3>
+                    <p className="text-sm text-green-600">
+                      Your {formatTime(recordingTime)} response has been
+                      recorded
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      if (recordedVideoUrl) {
+                        const a = document.createElement("a");
+                        a.href = recordedVideoUrl;
+                        a.download = `question-${currentQuestionIndex + 1}.mp4`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-white transition bg-green-600 rounded-lg hover:bg-green-700"
+                    disabled={!recordedVideoUrl}
+                  >
+                    <span>💾</span> Download
+                  </button>
+                  <button
+                    onClick={handleRetake}
+                    className="flex items-center gap-2 px-4 py-2 text-white transition rounded-lg bg-amber-500 hover:bg-amber-600"
+                  >
+                    <span>🔄</span> Retake
+                  </button>
+                </div>
+              </div>
+              {isSubmitting && (
+                <p className="flex items-center gap-2 mt-2 text-sm text-blue-600">
+                  <span className="animate-spin">⏳</span>
+                  Saving your answer to server...
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Navigation Buttons */}
           <div className="flex justify-between gap-2 mt-6">
             <button
               onClick={handlePreviousQuestion}
@@ -831,7 +851,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
               className={`px-6 py-3 rounded-xl transition flex items-center gap-2 flex-1 justify-center ${
                 !isCurrentQuestionAnswered
                   ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-primary text-black "
+                  : "bg-[#FAFF00] text-black hover:bg-[#e6e600]"
               }`}
             >
               {currentQuestionIndex < questions.length - 1
@@ -867,8 +887,8 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                   : isVideoRecorded
                     ? "Your response has been recorded"
                     : isCameraActive
-                      ? 'Click "Start Recording Now"'
-                      : 'Click "Start to Begin Recording"'}
+                      ? `Preparation: ${prepTimer}s • Auto-start: ${autoStartTimer}s`
+                      : 'Click "Start Recording Now"'}
               </p>
             </div>
           </div>
@@ -897,7 +917,9 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 mt-0.5">✅</span>
-                    <span className="opacity-80">You have 2 min to answer</span>
+                    <span className="opacity-80">
+                      You have 2 minutes to answer
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 mt-0.5">✅</span>
@@ -915,7 +937,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
               </div>
             </div>
 
-            {/* Preparation Box */}
+            {/* Preparation Box - Real-time progress */}
             <div className="bg-[#E5E5E5] border border-black rounded-xl p-5 flex gap-4">
               <div className="p-3 text-xs text-white bg-black rounded-lg h-fit">
                 🧠
@@ -924,49 +946,69 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                 <h5 className="mb-2 font-bold">Preparation Time:</h5>
                 <p className="mb-3 text-sm italic">
                   {isRecording
-                    ? "Recording in progress..."
+                    ? `Recording in progress... ${formatTime(recordingTime)} / 2:00`
                     : isVideoRecorded
                       ? "Recording completed!"
-                      : `Think about your answer. ${isCameraActive ? "Ready to record" : `Recording starts in ${autoStartTimer}s`}`}
+                      : isCameraActive
+                        ? `Prepare your answer. Recording starts automatically in ${autoStartTimer}s`
+                        : `Think about your answer. Recording starts in ${autoStartTimer}s`}
                 </p>
-                {/* Progress Bar */}
+
+                {/* Progress Bar - Real-time update every second */}
                 <div className="w-full h-3 overflow-hidden bg-gray-300 rounded-full">
                   <div
-                    className="bg-[#007185] h-full transition-all duration-300"
+                    className="bg-[#007185] h-full transition-all duration-300 ease-linear"
                     style={{
                       width: isRecording
-                        ? `${(recordingTime / 120) * 100}%`
+                        ? `${(recordingTime / MAX_RECORDING_TIME) * 100}%`
                         : isVideoRecorded
                           ? "100%"
-                          : `${((20 - prepTimer) / 20) * 100}%`,
+                          : isCameraActive
+                            ? `${((PREP_TIME - prepTimer) / PREP_TIME) * 100}%`
+                            : "0%",
                     }}
                   ></div>
+                </div>
+
+                {/* Time remaining display */}
+                <div className="flex justify-between mt-2 text-xs text-gray-600">
+                  <span className="font-medium">
+                    {isRecording
+                      ? `Elapsed: ${formatTime(recordingTime)}`
+                      : isCameraActive
+                        ? `Preparation: ${prepTimer}s remaining`
+                        : "Ready to start"}
+                  </span>
+                  <span className="font-medium">
+                    {isRecording && "Max: 2:00"}
+                    {isCameraActive &&
+                      !isRecording &&
+                      `Auto in: ${autoStartTimer}s`}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Progress Summary */}
             <div className="p-5 mt-8 border border-gray-200 bg-gray-50 rounded-xl">
-              <h5 className="mb-3 font-bold">Progress Summary</h5>
+              <h5 className="mb-3 font-bold">Overall Progress</h5>
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex-1 h-3 overflow-hidden bg-gray-200 rounded-full">
                   <div
                     className="h-full transition-all duration-500 bg-green-500"
-                    style={{
-                      width:
-                        questions.length > 0
-                          ? `${(answers.filter((a) => a.submitted).length / questions.length) * 100}%`
-                          : "0%",
-                    }}
+                    style={{ width: `${progress}%` }}
                   ></div>
                 </div>
                 <span className="text-sm font-semibold whitespace-nowrap">
-                  {answers.filter((a) => a.submitted).length} of{" "}
-                  {questions.length} answered
+                  {Math.round(progress)}%
                 </span>
               </div>
+              <p className="text-sm text-gray-600">
+                {answers.filter((a) => a.submitted).length} of{" "}
+                {questions.length} questions completed
+              </p>
               {isSubmitting && (
-                <p className="flex items-center gap-2 text-sm text-blue-600">
+                <p className="flex items-center gap-2 mt-2 text-sm text-blue-600">
                   <span className="animate-spin">⏳</span>
                   Saving your answer...
                 </p>
@@ -998,7 +1040,9 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                 ? `Recording... ${formatTime(recordingTime)} / 2:00`
                 : isVideoRecorded
                   ? "You can download or retake your recording"
-                  : `Or wait ${autoStartTimer}s for recording to start automatically`}
+                  : isCameraActive
+                    ? `Recording starts automatically in ${autoStartTimer}s`
+                    : `Or wait ${autoStartTimer}s for recording to start automatically`}
             </p>
           </div>
         </div>

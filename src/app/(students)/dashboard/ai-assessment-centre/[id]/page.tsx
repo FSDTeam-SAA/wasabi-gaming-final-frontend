@@ -10,6 +10,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useSession } from "next-auth/react"
 import { WrittenAiAssessmentApiResponse } from "../_components/written-assessment-data-type"
+import AILoader from "@/components/student/psychometric/AILoader"
 
 export default function AssessmentPage() {
   const params = useParams()
@@ -146,6 +147,8 @@ export default function AssessmentPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+
+      {isPending && <AILoader />}
 
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

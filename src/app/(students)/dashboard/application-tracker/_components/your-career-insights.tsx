@@ -2,9 +2,52 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { useQuery } from "@tanstack/react-query"
 import { Brain, TrendingUp } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { PsychometricScoreApiResponse, ResumeCompletionApiResponse } from "./your-career-insights-data-type"
 
 const YourCareerInsights = () => {
+
+  const session = useSession();
+  const token = session?.data?.accessToken
+  console.log(token)
+
+  const { data : PsychometricScore} = useQuery<PsychometricScoreApiResponse>({
+    queryKey: ["psychometric-test"],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/psychometric-test/average-score`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      return res.json();
+    }
+  })
+
+  console.log(PsychometricScore)
+
+  const { data : CvBuilder} = useQuery<ResumeCompletionApiResponse>({
+    queryKey: ["cv-builder"],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cvbuilder/average-score`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      return res.json();
+    }
+  })
+
+  console.log(CvBuilder?.data?.averageScore)
+
+
   return (
     <div>
        <Card className="bg-gradient-to-br from-[#FEFCE8] to-white border-[2px] border-[#FFFF00] rounded-[20px] shadow-sm">
@@ -26,7 +69,7 @@ const YourCareerInsights = () => {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-sm font-normal leading-[20px] text-[#4A5565]">Resume Completion</span>
-              <span className="text-base font-semibold leading-[24px] text-[#1E1E1E]">85%</span>
+              <span className="text-base font-semibold leading-[24px] text-[#1E1E1E]">{CvBuilder?.data?.averageScore || 0}%</span>
             </div>
 
             <Progress
@@ -43,7 +86,7 @@ const YourCareerInsights = () => {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-sm font-normal leading-[20px] text-[#4A5565]">Psychometric Score</span>
-              <span className="text-base font-semibold leading-[24px] text-[#1E1E1E]">92/100</span>
+              <span className="text-base font-semibold leading-[24px] text-[#1E1E1E]">{PsychometricScore?.data?.averageScore || 0}/100</span>
             </div>
 
             <Progress

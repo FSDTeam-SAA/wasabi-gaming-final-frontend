@@ -1,16 +1,11 @@
-
-
-
 'use client'
 
-import {  Brain, CircleCheckBig } from 'lucide-react'
+import { Brain, CircleCheckBig } from 'lucide-react'
 import { AssessmentCard } from './_components/assessment-card'
 import { AiAssessmentsApiResponse } from './_components/ai-assessment-data-type'
 import { useQuery } from '@tanstack/react-query'
 import { AssessmentGridLoader } from './_components/assessment-card-skeleton'
 import { ErrorContainer } from './_components/ai-assessment-error-container'
-
-
 
 // const assessments = [
 //   {
@@ -48,46 +43,41 @@ import { ErrorContainer } from './_components/ai-assessment-error-container'
 
 // ]
 
-
-
 export default function Home() {
-
-  // ai assessment api integration 
+  // ai assessment api integration
   const { data, isLoading, isError, refetch } =
     useQuery<AiAssessmentsApiResponse>({
-      queryKey: ["ai-assessment-all"],
+      queryKey: ['ai-assessment-all'],
       queryFn: async () => {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/aiassessment/?sortOrder=asc`
-        );
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/aiassessment/?sortOrder=asc`,
+        )
 
         if (!res.ok) {
-          throw new Error("Failed to fetch invitations");
+          throw new Error('Failed to fetch invitations')
         }
 
-        return res.json();
+        return res.json()
       },
-    });
+    })
 
   console.log(data?.data)
 
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <div className="space-y-2 mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#1E1E1E]">
-              AI Assessment Centre
+              Assessment Centre Suite
             </h1>
             <p className="text-base text-[#4A5565] font-normal">
               Discover your cognitive strengths and ideal career paths.
             </p>
           </div>
 
-           {/* LOADER */}
+          {/* LOADER */}
           {isLoading && <AssessmentGridLoader />}
 
           {/* ERROR */}
@@ -101,11 +91,8 @@ export default function Home() {
           {/* DATA */}
           {!isLoading && !isError && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-              {data?.data?.map((assessment) => (
-                <AssessmentCard
-                  key={assessment._id}
-                  data={assessment}
-                />
+              {data?.data?.map(assessment => (
+                <AssessmentCard key={assessment._id} data={assessment} />
               ))}
             </div>
           )}
@@ -130,25 +117,28 @@ export default function Home() {
 
               <div>
                 <h2 className="text-lg md:text-xl font-semibold text-[#1E1E1E] mb-2">
-                  Why Use Our AI Assessment Centre Suite?
+                  Why Use Our Assessment Centre Suite?
                 </h2>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-3">
                     <CircleCheckBig className="w-5 h-5 text-[#9810FA] flex-shrink-0" />
                     <span className="text-sm md:text-base text-[#364153] font-normal">
-                      Experience realistic law firm assessment tasks powered by AI
+                      Experience realistic law firm assessment tasks powered by
+                      AI
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CircleCheckBig className="w-5 h-5 text-[#9810FA] flex-shrink-0" />
                     <span className="text-sm md:text-base text-[#364153] font-normal">
-                      Strengthen your problem-solving, analysis, and communication skills
+                      Strengthen your problem-solving, analysis, and
+                      communication skills
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CircleCheckBig className="w-5 h-5 text-[#9810FA] flex-shrink-0" />
                     <span className="text-sm md:text-base text-[#364153] font-normal">
-                      Stand out to employers with verified test scores on your profile
+                      Stand out to employers with verified test scores on your
+                      profile
                     </span>
                   </li>
                 </ul>
