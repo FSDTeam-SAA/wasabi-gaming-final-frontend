@@ -50,11 +50,11 @@ export default function CloseJobViewDetailsModal({ id }: JobDetailsModalProps) {
   const jobData = singleJobData?.data;
 
   const addSaveBookmarkMutation = useMutation({
-    mutationFn: async (body: { bookmarkedLaws: string }) => {
+    mutationFn: async (body: { jobId: string }) => {
       if (!token) throw new Error("No token found");
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/law-bookmark`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/book-mark`,
         {
           method: "POST",
           headers: {
@@ -203,7 +203,7 @@ export default function CloseJobViewDetailsModal({ id }: JobDetailsModalProps) {
           )}
           <Button
             onClick={() =>
-              addSaveBookmarkMutation.mutate({ bookmarkedLaws: jobData?._id })
+              addSaveBookmarkMutation.mutate({ jobId: jobData?._id })
             }
             variant="outline"
             className="flex-1 h-12 border-2 border-[#FFFF00] text-[#1E1E1E] text-base font-semibold rounded-full hover:bg-[#FFFF00]/10"
