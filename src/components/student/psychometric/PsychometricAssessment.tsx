@@ -105,7 +105,7 @@ const PsychometricAssessment = () => {
 
   return (
     <div className="min-h-screen bg-white py-4 md:py-8 font-poppins">
-      <div className="container mx-auto px-2 md:px-0 space-y-12 pb-20">
+      <div className="container mx-auto px-2 md:px-3 space-y-12 pb-20">
         <header className="mt-10">
           <div className="space-y-2 mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1E1E1E]">
