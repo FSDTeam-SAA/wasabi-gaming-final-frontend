@@ -67,7 +67,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="container mx-auto px-2 pt-12 lg:pt-16">
+        <section className="container mx-auto px-2 md:px-3 pt-12 lg:pt-16 pb-20">
           <div className="space-y-2 mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1E1E1E]">
               Assessment Centre Suite
@@ -109,7 +109,7 @@ export default function Home() {
           </div> */}
 
           {/* Benefits Section */}
-          <section className="bg-gradient-to-br from-[#FAF5FF] to-[#FFFFFF] border-[2px] border-[#E9D4FF] rounded-[20px] p-8">
+          <section className="bg-gradient-to-br from-[#FAF5FF] to-[#FFFFFF] border-[2px] border-[#E9D4FF] rounded-[20px] p-4 md:p-8">
             <div className="flex items-start gap-3">
               <div className="bg-[#AD46FF] p-4 rounded-[20px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
                 <Brain className="w-8 h-8 text-white" />
