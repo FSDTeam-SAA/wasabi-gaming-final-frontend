@@ -43,7 +43,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [recordingTime, setRecordingTime] = useState<number>(0);
   const [prepTimer, setPrepTimer] = useState<number>(PREP_TIME);
-  const [autoStartTimer, setAutoStartTimer] = useState<number>(28);
   const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const [isVideoRecorded, setIsVideoRecorded] = useState<boolean>(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
@@ -61,7 +60,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const streamRef = useRef<MediaStream | null>(null);
   const prepTimerRef = useRef<NodeJS.Timeout | null>(null);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const autoStartTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const sessionId = sessionData?._id || "";
   const questions: Question[] = sessionData?.questions || [];
@@ -73,10 +71,9 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     if (totalQuestions === 0) return 0;
 
     let currentQuestionProgress = 0;
-
-    if (!isVideoRecorded && !isRecording && isCameraActive) {
-      // Preparation time progress (0-20 seconds)
-      currentQuestionProgress = ((PREP_TIME - prepTimer) / PREP_TIME) * 100;
+    if (!isVideoRecorded && !isRecording) {
+      // Do not count preparation time toward overall progress
+      currentQuestionProgress = 0;
     } else if (isRecording) {
       // Recording time progress (0-120 seconds)
       currentQuestionProgress = (recordingTime / MAX_RECORDING_TIME) * 100;
@@ -288,10 +285,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       clearInterval(prepTimerRef.current);
       prepTimerRef.current = null;
     }
-    if (autoStartTimerRef.current) {
-      clearInterval(autoStartTimerRef.current);
-      autoStartTimerRef.current = null;
-    }
     setShowRecordingComplete(false);
 
     if (!streamRef.current) {
@@ -408,10 +401,8 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   // Setup auto timers
   const setupAutoTimers = () => {
     if (prepTimerRef.current) clearInterval(prepTimerRef.current);
-    if (autoStartTimerRef.current) clearInterval(autoStartTimerRef.current);
 
     setPrepTimer(PREP_TIME);
-    setAutoStartTimer(28);
 
     // Preparation timer - updates every second
     prepTimerRef.current = setInterval(() => {
@@ -421,21 +412,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
             clearInterval(prepTimerRef.current);
             prepTimerRef.current = null;
           }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    // Auto start timer - updates every second
-    autoStartTimerRef.current = setInterval(() => {
-      setAutoStartTimer((prev) => {
-        if (prev <= 1) {
-          if (autoStartTimerRef.current) {
-            clearInterval(autoStartTimerRef.current);
-            autoStartTimerRef.current = null;
-          }
-          if (!isRecording && !isVideoRecorded && isCameraActive) {
+          if (!isRecording && !isVideoRecorded) {
             startRecording();
           }
           return 0;
@@ -443,6 +420,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
         return prev - 1;
       });
     }, 1000);
+
   };
 
   // Handle next question
@@ -487,7 +465,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     setRecordedVideoUrl(null);
     setRecordingTime(0);
     setPrepTimer(PREP_TIME);
-    setAutoStartTimer(28);
     setApiError(null);
     setShowRecordingComplete(false);
 
@@ -499,11 +476,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
       clearInterval(recordingTimerRef.current);
       recordingTimerRef.current = null;
     }
-    if (autoStartTimerRef.current) {
-      clearInterval(autoStartTimerRef.current);
-      autoStartTimerRef.current = null;
-    }
-
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
@@ -537,7 +509,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const handleStartRecording = () => {
     startRecording();
     setPrepTimer(PREP_TIME);
-    setAutoStartTimer(28);
   };
 
   // Initialize timers
@@ -547,7 +518,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
     return () => {
       if (prepTimerRef.current) clearInterval(prepTimerRef.current);
       if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
-      if (autoStartTimerRef.current) clearInterval(autoStartTimerRef.current);
 
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
@@ -710,7 +680,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                 </div>
 
                 <p className="mt-4 text-sm serif-font italic text-[#555]">
-                  Recording starts automatically in {autoStartTimer}s
+                  Recording starts automatically in {prepTimer}s
                 </p>
               </div>
             )}
@@ -730,7 +700,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                 <div className="w-full mx-auto mb-4">
                   <div className="flex justify-between mb-2 text-sm text-white">
                     <span>Preparation Time: {prepTimer}s</span>
-                    <span>Auto-start: {autoStartTimer}s</span>
+                    <span>Auto-start: {prepTimer}s</span>
                   </div>
                   <div className="w-full h-3 overflow-hidden bg-gray-700 rounded-full">
                     <div
@@ -887,7 +857,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                   : isVideoRecorded
                     ? "Your response has been recorded"
                     : isCameraActive
-                      ? `Preparation: ${prepTimer}s • Auto-start: ${autoStartTimer}s`
+                      ? `Preparation: ${prepTimer}s • Auto-start: ${prepTimer}s`
                       : 'Click "Start Recording Now"'}
               </p>
             </div>
@@ -943,15 +913,17 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                 🧠
               </div>
               <div className="w-full">
-                <h5 className="mb-2 font-bold">Preparation Time:</h5>
+                <h5 className="mb-2 font-bold">
+                  {isRecording ? "Recording Time:" : "Preparation Time:"}
+                </h5>
                 <p className="mb-3 text-sm italic">
                   {isRecording
                     ? `Recording in progress... ${formatTime(recordingTime)} / 2:00`
                     : isVideoRecorded
                       ? "Recording completed!"
                       : isCameraActive
-                        ? `Prepare your answer. Recording starts automatically in ${autoStartTimer}s`
-                        : `Think about your answer. Recording starts in ${autoStartTimer}s`}
+                        ? `Prepare your answer. Recording starts automatically in ${prepTimer}s`
+                        : `Think about your answer. Recording starts in ${prepTimer}s`}
                 </p>
 
                 {/* Progress Bar - Real-time update every second */}
@@ -963,9 +935,13 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                         ? `${(recordingTime / MAX_RECORDING_TIME) * 100}%`
                         : isVideoRecorded
                           ? "100%"
-                          : isCameraActive
-                            ? `${((PREP_TIME - prepTimer) / PREP_TIME) * 100}%`
-                            : "0%",
+                          : `${Math.min(
+                              Math.max(
+                                ((PREP_TIME - prepTimer) / PREP_TIME) * 100,
+                                0,
+                              ),
+                              100,
+                            )}%`,
                     }}
                   ></div>
                 </div>
@@ -975,15 +951,11 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                   <span className="font-medium">
                     {isRecording
                       ? `Elapsed: ${formatTime(recordingTime)}`
-                      : isCameraActive
-                        ? `Preparation: ${prepTimer}s remaining`
-                        : "Ready to start"}
+                      : `Preparation: ${prepTimer}s remaining`}
                   </span>
                   <span className="font-medium">
                     {isRecording && "Max: 2:00"}
-                    {isCameraActive &&
-                      !isRecording &&
-                      `Auto in: ${autoStartTimer}s`}
+                    {isCameraActive && !isRecording && `Auto in: ${prepTimer}s`}
                   </span>
                 </div>
               </div>
@@ -1041,8 +1013,8 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
                 : isVideoRecorded
                   ? "You can download or retake your recording"
                   : isCameraActive
-                    ? `Recording starts automatically in ${autoStartTimer}s`
-                    : `Or wait ${autoStartTimer}s for recording to start automatically`}
+                    ? `Recording starts automatically in ${prepTimer}s`
+                    : `Or wait ${prepTimer}s for recording to start automatically`}
             </p>
           </div>
         </div>
