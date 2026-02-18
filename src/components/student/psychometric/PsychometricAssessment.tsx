@@ -104,7 +104,7 @@ const PsychometricAssessment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-poppins">
+    <div className="min-h-screen bg-white px-2 py-4 md:p-8 font-poppins">
       <div className="container mx-auto space-y-12">
         <header className="mt-10">
           <div className="space-y-2 mb-8">

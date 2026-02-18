@@ -67,7 +67,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="container mx-auto pt-12 lg:pt-16">
+        <section className="container mx-auto px-2 pt-12 lg:pt-16">
           <div className="space-y-2 mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1E1E1E]">
               Assessment Centre Suite
