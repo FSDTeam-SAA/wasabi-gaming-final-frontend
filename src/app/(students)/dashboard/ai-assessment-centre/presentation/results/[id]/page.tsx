@@ -235,6 +235,7 @@ import {
   Trophy,
   AlertCircle,
   FileText,
+  ArrowRight,
 } from 'lucide-react';
 
 interface PresentationTaskData {
@@ -467,19 +468,8 @@ export default function PresentationResultsPage() {
                 <CheckCircle2 size={16} className="shrink-0 mt-1 text-green-600" />
                 <span>{tip}</span>
               </div>
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">Ready to Participate again?</h2>
-            <p className="text-[#FFFFE6] font-normal text-sm md:text-base max-w-2xl mx-auto">
-              Watch your recorded responses, get detailed feedback on each question and see full analysis
-              of your body language and communication
-            </p>
-            <button
-              onClick={() => router.push('/dashboard/ai-assessment-centre')}
-              className="inline-flex items-center gap-2 bg-[#FFFF00] hover:bg-[#FFFF00]/80 text-sm text-black font-semibold px-3 md:px-5 lg:px-6 py-3 rounded-[12px] "
-            >
-              Start Assessment Centre Suite
-              <ArrowRight size={18} />
-            </button>
-          </div> 
+            ))}
+          </div>
         </div>
       )}
 
