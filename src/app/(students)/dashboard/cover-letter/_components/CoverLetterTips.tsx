@@ -11,7 +11,7 @@ const tips = [
 
 export function CoverLetterTips() {
   return (
-    <Card className="border-2 border-yellow-200 bg-yellow-50 rounded-xl p-6 md:p-8">
+    <Card className="border-2 border-yellow-200 bg-yellow-50 rounded-xl p-2 md:p-8">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
         Cover Letter Tips
       </h3>
