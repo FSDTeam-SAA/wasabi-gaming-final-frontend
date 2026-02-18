@@ -114,6 +114,36 @@ const OpenApplicationContainer = () => {
   
     const locationData = locations?.data || []
 
+      const cleanedLocations = Array.from(
+    new Map(
+      locationData
+        .map((loc) => {
+          let cleanName = loc.name.trim();
+
+          // remove postcode (anything inside bracket)
+          cleanName = cleanName.replace(/\(.*?\)/g, "");
+
+          // remove "and X other location"
+          cleanName = cleanName.replace(/and\s+\d+\s+other\s+location(s)?/gi, "");
+
+          cleanName = cleanName.trim();
+
+          return cleanName;
+        })
+        .filter((name) => name && name.toLowerCase() !== "paralegal") // remove paralegal
+        .map((name) => [name.toLowerCase(), name]) // key দিয়ে duplicate remove
+    ).values()
+  );
+
+  const locationDataWithNone = [
+    { id: 0, name: "None", value: "__none__" },
+    ...cleanedLocations.map((name, index) => ({
+      id: index + 1,
+      name,
+      value: name,
+    })),
+  ];
+
 
 // location api end 
 
@@ -308,7 +338,7 @@ const OpenApplicationContainer = () => {
         {/* job type  */}
         <div>
           <WasabiDropDown
-            list={locationData}
+            list={locationDataWithNone}
             selectedValue={location}
             // onValueChange={(value) => {
             //   setLocation(value);
