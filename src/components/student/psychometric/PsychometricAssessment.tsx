@@ -1,22 +1,20 @@
 'use client'
 
-import React, { useCallback, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
   Clock,
-  CheckCircle2,
-  PlayCircle,
+  CircleCheckBig,
+  Play,
   Brain,
   BarChart,
   Lightbulb,
   Users,
 } from 'lucide-react'
 import PsychometricAssessmentSkeleton from './PsychometricAssessmentSkeleton'
-import { cn } from '@/utils/cn'
 import {
   getAllPsychometricTests,
   getMyPsychometricAnswers,
@@ -26,12 +24,15 @@ import {
 // Helper to map API category to icons
 const getTestIcon = (category: string) => {
   const cat = category?.toLowerCase() || ''
-  if (cat.includes('verbal')) return <Brain className="w-6 h-6" />
-  if (cat.includes('numerical')) return <BarChart className="w-6 h-6" />
-  if (cat.includes('abstract')) return <Lightbulb className="w-6 h-6" />
+  if (cat.includes('verbal'))
+    return <Brain className="w-6 h-6 text-[#8200DB]" />
+  if (cat.includes('numerical'))
+    return <BarChart className="w-6 h-6 text-[#8200DB]" />
+  if (cat.includes('abstract'))
+    return <Lightbulb className="w-6 h-6 text-[#8200DB]" />
   if (cat.includes('situational') || cat.includes('sjt'))
-    return <Users className="w-6 h-6" />
-  return <Brain className="w-6 h-6" />
+    return <Users className="w-6 h-6 text-[#8200DB]" />
+  return <Brain className="w-6 h-6 text-[#8200DB]" />
 }
 
 const PsychometricAssessment = () => {
@@ -85,133 +86,145 @@ const PsychometricAssessment = () => {
     return <PsychometricAssessmentSkeleton />
   }
 
+  const getStatusStyle = (status: string) => {
+    const s = status?.toLowerCase()
+    if (s === 'completed') {
+      return 'bg-[#DCFCE7] text-[#016630] border border-[#7BF1A8]'
+    } else if (s === 'available') {
+      return 'bg-[#FEF9C2] text-[#894B00] border border-[#FFDF20]'
+    }
+    return 'bg-blue-100 text-blue-800'
+  }
+
+  const getStatusLabel = (status: string) => {
+    const s = status?.toLowerCase()
+    if (s === 'completed') return 'Completed'
+    if (s === 'available') return 'Available'
+    return status
+  }
+
   return (
-    <div className="min-h-screen bg-white p-4 md:p-12 font-poppins">
-      <div className="max-w-7xl mx-auto space-y-12">
-        <header className="mb-14">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Psychometric Assessment
-          </h1>
-          <p className="text-gray-500">
-            Discover your cognitive strengths and ideal career paths.
-          </p>
+    <div className="min-h-screen bg-white p-4 md:p-8 font-poppins">
+      <div className="container mx-auto space-y-12">
+        <header className="mt-10">
+          <div className="space-y-2 mb-8">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1E1E1E]">
+              Psychometric Assessment
+            </h1>
+            <p className="text-base text-[#4A5565] font-normal">
+              Discover your cognitive strengths and ideal career paths.
+            </p>
+          </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {dashboardTests?.map(test => (
             <div
               key={test?._id}
-              className="bg-white rounded-3xl border border-gray-200 shadow-[0_2px_20px_rgba(0,0,0,0.04)] p-8 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
+              className="bg-white rounded-[20px] border-[2px] border-[#E5E7EB] p-6 hover:shadow-lg transition-shadow flex flex-col justify-between"
             >
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-start gap-4">
-                  <div
-                    className={cn(
-                      'w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-purple-100 text-purple-600',
-                    )}
-                  >
-                    {test?.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">
-                      {test?.category}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1 leading-relaxed">
-                      {test?.description}
-                    </p>
-                  </div>
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="bg-gradient-to-br from-[#F3E8FF] to-[#E9D4FF] p-3 rounded-[24px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+                  {test?.icon}
                 </div>
-                {test?.status === 'completed' ? (
-                  <Badge
-                    variant="secondary"
-                    className="bg-green-200 text-green-800 hover:bg-green-200 border border-green-300 px-3 py-1 font-medium rounded-full gap-1.5 shrink-0"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Completed
-                  </Badge>
-                ) : (
-                  <Badge
-                    variant="outline"
-                    className="text-yellow-800 border-yellow-300 bg-yellow-200 px-3 py-1 font-medium rounded-full shrink-0"
-                  >
-                    Available
-                  </Badge>
-                )}
+                <div className="flex-1">
+                  <h3 className="font-semibold text-base text-[#1E1E1E] mb-1">
+                    {test?.category}
+                  </h3>
+                  <p className="text-sm text-[#4A5565] line-clamp-2">
+                    {test?.description}
+                  </p>
+                </div>
+
+                <span
+                  className={`flex items-center gap-2 text-xs font-medium px-2 py-[2px] rounded-full ${getStatusStyle(test.status)}`}
+                >
+                  {test?.status === 'completed' && (
+                    <CircleCheckBig className="w-3 h-3" />
+                  )}
+                  {getStatusLabel(test.status)}
+                </span>
               </div>
 
               {test?.status === 'completed' && test?.userScore !== null ? (
-                <div className="space-y-4 mt-auto">
-                  <div className="flex justify-between items-end">
-                    <span className="text-sm font-medium text-gray-500">
-                      Your Score
-                    </span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {test?.userScore}
-                      <span className="text-gray-400 text-sm font-normal">
-                        /100
+                <div className="mt-auto">
+                  <div className="mb-4">
+                    <div className="flex justify-between items-end mb-2">
+                      <span className="text-sm font-medium text-[#4A5565]">
+                        Your Score
                       </span>
-                    </span>
+                      <span className="text-lg font-bold text-[#1E1E1E]">
+                        {test?.userScore}
+                        <span className="text-[#9CA3AF] text-sm font-normal">
+                          /100
+                        </span>
+                      </span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#FFFF00] rounded-full"
+                        style={{ width: `${test?.userScore}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#FFFF00] rounded-full"
-                      style={{ width: `${test?.userScore}%` }}
-                    />
-                  </div>
-                  <Button
-                    variant="outline"
+
+                  <button
                     onClick={() => handleStartTest(test?._id)}
-                    className="w-full rounded-xl border-gray-200 h-11"
+                    className="w-full flex items-center justify-center gap-2 rounded-[14px] text-sm font-semibold py-2 bg-[#FFFF00] text-[#1E1E1E] hover:opacity-90"
                   >
                     Try Again
-                  </Button>
+                  </button>
                 </div>
               ) : (
-                <div className="space-y-6 mt-auto">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <Clock className="w-4 h-4" />
-                    <span>{test?.duration}</span>
+                <>
+                  <div className="pb-4">
+                    <div className="flex items-center gap-2 text-sm text-[#4A5565]">
+                      <Clock size={16} />
+                      {test?.duration}
+                    </div>
                   </div>
-                  <Button
-                    onClick={() => handleStartTest(test?._id)}
-                    className="w-full rounded-xl h-11 font-bold"
-                  >
-                    <PlayCircle className="w-4 h-4 mr-2" /> Start Test
-                  </Button>
-                </div>
+                  <div className="mt-auto">
+                    <button
+                      onClick={() => handleStartTest(test?._id)}
+                      className="w-full flex items-center justify-center gap-2 rounded-[14px] text-sm font-semibold py-2 bg-[#FFFF00] text-[#1E1E1E] hover:opacity-90"
+                    >
+                      <Play className="w-4 h-4 ml-0.5 fill-current" /> Start
+                      Test
+                    </button>
+                  </div>
+                </>
               )}
             </div>
           ))}
         </div>
 
-        <div className="rounded-[20px] border-2 border-[#d1aff7] bg-[#E9D4FF]/20 p-6 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/30 rounded-full blur-3xl -z-0 translate-x-1/2 -translate-y-1/2 opacity-60"></div>
-          <div className="relative z-10 flex flex-col md:flex-row gap-4 items-start">
-            <div className="w-16 h-16 rounded-2xl bg-[#AD46FF] flex items-center justify-center shadow-sm shrink-0">
-              <Brain className="w-7 h-7 text-white" />
+        <section className="bg-gradient-to-br from-[#FAF5FF] to-[#FFFFFF] border-[2px] border-[#E9D4FF] rounded-[20px] p-8">
+          <div className="flex items-start gap-3">
+            <div className="bg-[#AD46FF] p-4 rounded-[20px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+              <Brain className="w-8 h-8 text-white" />
             </div>
-            <div className="space-y-2 flex-1">
-              <h3 className="text-xl font-bold text-gray-900">
+
+            <div>
+              <h2 className="text-lg md:text-xl font-semibold text-[#1E1E1E] mb-2">
                 Why Take Psychometric Tests?
-              </h3>
-              <div className="grid gap-2">
+              </h2>
+              <ul className="space-y-2">
                 {[
                   'Discover your natural cognitive strengths and abilities',
                   'Get personalised career recommendations based on your results',
                   'Stand out to employers with verified test scores on your profile',
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-1">
-                    <div className="mt-1 w-5 h-5 rounded-full flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-5 h-5 text-purple-900" />
-                    </div>
-                    <p className="text-gray-800 font-normal leading-relaxed">
+                  <li key={i} className="flex items-center gap-3">
+                    <CircleCheckBig className="w-5 h-5 text-[#9810FA] flex-shrink-0" />
+                    <span className="text-sm md:text-base text-[#364153] font-normal">
                       {item}
-                    </p>
-                  </div>
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   )

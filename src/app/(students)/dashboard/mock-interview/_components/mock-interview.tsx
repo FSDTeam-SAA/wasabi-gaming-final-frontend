@@ -1,9 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { Clock4, Play } from "lucide-react";
+import { Clock, Play, CircleCheckBig, Brain, ChartColumn, Lightbulb, Target } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import React from "react";
 import MockSkeleton from "./mock-skeleton";
 import Link from "next/link";
@@ -36,18 +35,18 @@ interface ApiResponse {
   };
 }
 
-const getInterviewImage = (title: string): string => {
+const getInterviewIcon = (title: string) => {
   switch (title) {
     case "Motivational Interview":
-      return "/mock-interview/motivational_interview.png";
+      return <Target className="text-[#8200DB]" />;
     case "Situational Interview":
-      return "/mock-interview/situational_interview.png";
+      return <Lightbulb className="text-[#8200DB]" />;
     case "Technical Interview":
-      return "/mock-interview/technical_interview.png";
+      return <ChartColumn className="text-[#8200DB]" />;
     case "Behavioural Interview":
-      return "/mock-interview/behavioural_interview.png";
+      return <Brain className="text-[#8200DB]" />;
     default:
-      return "/mock-interview/default_interview.png";
+      return <Brain className="text-[#8200DB]" />;
   }
 };
 
@@ -96,54 +95,68 @@ const MockInterview = () => {
     );
   }
 
+  const getStatusStyle = (status: string) => {
+    const s = status?.toLowerCase();
+    if (s === "completed") {
+      return "bg-[#DCFCE7] text-[#016630] border border-[#7BF1A8]";
+    } else if (s === "available") {
+      return "bg-[#FEF9C2] text-[#894B00] border border-[#FFDF20]";
+    }
+    return "bg-blue-100 text-blue-800";
+  };
+
+  const getStatusLabel = (status: string) => {
+    const s = status?.toLowerCase();
+    if (s === 'completed') return 'Completed';
+    if (s === 'available') return 'Available';
+    return status;
+  }
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       {interviews.map((interview: Interview) => (
         <div
           key={interview._id}
-          className="p-6 border-2 border-gray-300/50 rounded-xl flex flex-col justify-between"
+          className="bg-white rounded-[20px] border-[2px] border-[#E5E7EB] p-6 hover:shadow-lg transition-shadow flex flex-col justify-between"
         >
-          <div className="flex items-start gap-4">
-            <Image
-              src={getInterviewImage(interview.title)}
-              alt={interview.title}
-              width={48}
-              height={48}
-              className="object-cover w-12 h-12"
-            />
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="bg-gradient-to-br from-[#F3E8FF] to-[#E9D4FF] p-3 rounded-[24px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+              {getInterviewIcon(interview.title)}
+            </div>
 
-            <div className="w-full">
-              <div className="flex items-center justify-between">
-                <h1 className="text-xl font-semibold">{interview.title}</h1>
-                <button
-                  className={`px-5 py-[2px] text-sm rounded-3xl ${interview.status === "available" ? "bg-[#fcf9c2] border border-[#894b01] text-[#894b01]" : ""} ${interview.status === "completed" ? "bg-green-100 border border-green-700 text-green-700" : ""}`}
-                >
-                  {interview.status}
-                </button>
-              </div>
-              <p className="mt-4 text-sm text-gray-700 leading-relaxed">
+            <div className="flex-1">
+              <h4 className="font-semibold text-base text-[#1E1E1E] mb-1">
+                {interview.title}
+              </h4>
+              <p className="text-sm text-[#4A5565] line-clamp-2">
                 {interview.description}
               </p>
             </div>
+
+            <span
+              className={`flex items-center gap-2 text-xs font-medium px-2 py-[2px] rounded-full ${getStatusStyle(interview.status)}`}
+            >
+              {interview.status?.toLowerCase() === "completed" && (
+                <CircleCheckBig className="w-3 h-3" />
+              )}
+              {getStatusLabel(interview.status)}
+            </span>
           </div>
 
-          <div className="mt-8">
-            <div>
-              <h4 className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-                <Clock4 className="w-4 h-4" /> {interview.duration}
-              </h4>
+          <div className="pb-4">
+            <div className="flex items-center gap-2 text-sm text-[#4A5565]">
+              <Clock size={16} />
+              {interview.duration}
             </div>
+          </div>
 
-            <div className="mt-6">
-              <Link href={`/dashboard/mock-interview/${interview._id}`}>
-                <Button className="flex items-center justify-center w-full gap-3 py-6 text-lg font-semibold rounded-xl">
-                  <span>
-                    <Play className="w-4 h-4" />
-                  </span>{" "}
-                  <span>Start Test</span>
-                </Button>
-              </Link>
-            </div>
+          <div className="mt-auto">
+            <Link href={`/dashboard/mock-interview/${interview._id}`} className="w-full block">
+              <button className="w-full flex items-center justify-center gap-2 rounded-[14px] text-sm font-semibold py-2 bg-[#FFFF00] text-[#1E1E1E] hover:opacity-90">
+                <Play size={18} />
+                Start Test
+              </button>
+            </Link>
           </div>
         </div>
       ))}

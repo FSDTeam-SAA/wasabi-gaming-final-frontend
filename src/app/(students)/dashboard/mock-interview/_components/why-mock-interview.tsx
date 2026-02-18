@@ -1,4 +1,4 @@
-import { Brain, CheckCircle2 } from "lucide-react";
+import { Brain, CircleCheckBig } from "lucide-react";
 import React from "react";
 
 const WhyMockInterview = () => {
@@ -9,27 +9,21 @@ const WhyMockInterview = () => {
   ];
 
   return (
-    <div className="flex items-center justify-center">
-      <div className="flex flex-col items-start w-full gap-4 p-5 border-2 shadow-sm border-purple-300/50 bg-purple-50 rounded-2xl md:flex-row">
-        {/* Brain Icon Container */}
-        <div className="bg-[#a855f7] p-4 rounded-xl flex-shrink-0 shadow-lg shadow-purple-200">
-          <Brain className="w-4 h-4 text-white" strokeWidth={1.5} />
+    <section className="bg-gradient-to-br from-[#FAF5FF] to-[#FFFFFF] border-[2px] border-[#E9D4FF] rounded-[20px] p-8">
+      <div className="flex items-start gap-3">
+        <div className="bg-[#AD46FF] p-4 rounded-[20px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+          <Brain className="w-8 h-8 text-white" />
         </div>
 
-        {/* Text Content */}
-        <div className="flex flex-col gap-2">
-          <h2 className="text-[20px] font-bold tracking-tight text-gray-900">
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold text-[#1E1E1E] mb-2">
             Why Take A Mock Interview?
           </h2>
-
           <ul className="space-y-2">
             {benefits.map((text, index) => (
-              <li key={index} className="flex items-start gap-2 group">
-                <CheckCircle2
-                  className="w-4 h-4 text-[#a855f7] flex-shrink-0 mt-0.5 transition-transform group-hover:scale-110"
-                  strokeWidth={2}
-                />
-                <span className="text-[16px] font-medium leading-tight text-gray-600">
+              <li key={index} className="flex items-center gap-3">
+                <CircleCheckBig className="w-5 h-5 text-[#9810FA] flex-shrink-0" />
+                <span className="text-sm md:text-base text-[#364153] font-normal">
                   {text}
                 </span>
               </li>
@@ -37,7 +31,7 @@ const WhyMockInterview = () => {
           </ul>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
