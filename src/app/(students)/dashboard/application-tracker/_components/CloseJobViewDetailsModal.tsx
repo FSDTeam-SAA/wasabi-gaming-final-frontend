@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Eye } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Neuton } from "next/font/google";
+import Link from "next/link";
+import { toast } from "sonner";
 
 interface JobDetailsModalProps {
   id: string;
@@ -46,6 +48,37 @@ export default function CloseJobViewDetailsModal({ id }: JobDetailsModalProps) {
   });
 
   const jobData = singleJobData?.data;
+
+  const addSaveBookmarkMutation = useMutation({
+    mutationFn: async (body: { bookmarkedLaws: string }) => {
+      if (!token) throw new Error("No token found");
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/law-bookmark`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body),
+        },
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to save bookmark");
+      }
+
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Saved successfully!");
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to save");
+    },
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -161,11 +194,17 @@ export default function CloseJobViewDetailsModal({ id }: JobDetailsModalProps) {
 
         {/* Action Buttons - NO spacing above or below */}
         <div className="px-5 mt-5 flex gap-3">
-          <Button className="flex-1 h-12 bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] text-base font-semibold rounded-full border-2 border-[#FFFF00]">
-            Apply
-          </Button>
-
+          {jobData?.url && (
+            <Link href={jobData.url} className="flex-1">
+              <Button className="w-full h-12 bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] text-base font-semibold rounded-full border-2 border-[#FFFF00]">
+                Apply
+              </Button>
+            </Link>
+          )}
           <Button
+            onClick={() =>
+              addSaveBookmarkMutation.mutate({ bookmarkedLaws: jobData?._id })
+            }
             variant="outline"
             className="flex-1 h-12 border-2 border-[#FFFF00] text-[#1E1E1E] text-base font-semibold rounded-full hover:bg-[#FFFF00]/10"
           >
