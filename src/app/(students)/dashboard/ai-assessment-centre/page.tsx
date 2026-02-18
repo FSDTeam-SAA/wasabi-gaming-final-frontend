@@ -67,9 +67,9 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <section className="container mx-auto pt-12 lg:pt-16">
           <div className="space-y-2 mb-8">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#1E1E1E]">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1E1E1E]">
               Assessment Centre Suite
             </h1>
             <p className="text-base text-[#4A5565] font-normal">
@@ -90,7 +90,7 @@ export default function Home() {
 
           {/* DATA */}
           {!isLoading && !isError && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {data?.data?.map(assessment => (
                 <AssessmentCard key={assessment._id} data={assessment} />
               ))}

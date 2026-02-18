@@ -117,7 +117,7 @@ export default function CareerDashboard() {
   ]
 
   const quickActions = [
-    { 
+    {
       id: 1,
       title: 'Build Your CV',
       subtitle: `${cvCompletion}% Complete`,
@@ -154,10 +154,10 @@ export default function CareerDashboard() {
   }
 
   return (
-    <div className="min-h-screen container mx-auto p-4 bg-transparent">
+    <div className="min-h-screen container mx-auto px-1 py-4 md:p-4 bg-transparent">
       {/* Hero Banner */}
       <div
-        className="relative p-8 mb-8 overflow-hidden rounded-3xl md:p-12"
+        className="relative p-4 mb-8 overflow-hidden rounded-3xl md:p-12"
         style={{
           background: 'linear-gradient(135deg, #FFFF00 0%, #E6E600 100%)',
         }}
@@ -198,14 +198,14 @@ export default function CareerDashboard() {
         </div>
       </div>
 
-      <div className="px-6 mx-auto ">
+      <div className="px-1 mx-auto md:px-6">
         {/* Progress Cards */}
         <div className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-3">
           {stats.map(item => (
             <div
               key={item.id}
               // onClick={() => handleNavigate(item.link || "")} // No link in original data for stats
-              className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl"
+              className="p-4 md:p-6 bg-white border border-gray-200 shadow-sm rounded-2xl"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-base text-gray-600 inter ">{item.title}</h3>
@@ -232,7 +232,7 @@ export default function CareerDashboard() {
 
         <div className="w-full neuton">
           {/* Quick Actions */}
-          <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
+          <div className="p-4 md:p-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
             <h2 className="mb-6 text-xl font-bold main-color">Quick Actions</h2>
 
             <div className="space-y-3">
@@ -267,7 +267,7 @@ export default function CareerDashboard() {
         </div>
 
         {/* Career Strengths Section */}
-        <div className="p-6 mt-6 bg-[#EFF6FF] shadow-sm border border-[#BEDBFF]  rounded-2xl">
+        <div className="p-4 md:p-6 mt-6 bg-[#EFF6FF] shadow-sm border border-[#BEDBFF]  rounded-2xl">
           <div className="flex flex-col md:flex-row items-start gap-4">
             <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-blue-500 rounded-full">
               <FiAward className="w-6 h-6 text-white" />
@@ -294,7 +294,7 @@ export default function CareerDashboard() {
         </div>
 
         {/* Success Quote */}
-        <div className="max-w-5xl p-8 mx-auto mt-12 text-center border border-[#FFFF00] bg-yellow-100/20 rounded-3xl inter">
+        <div className="max-w-5xl p-4 md:p-8 mx-auto mt-12 text-center border border-[#FFFF00] bg-yellow-100/20 rounded-3xl inter">
           <p className="max-w-3xl mx-auto text-lg italic text-[#1E1E1E]">
             “Success is the sum of small efforts repeated day in and day out.”
           </p>

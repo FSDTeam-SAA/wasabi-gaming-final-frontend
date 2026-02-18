@@ -85,7 +85,7 @@ export function CoverLetterBuilder() {
       {isLoading && <AILoader />}
 
       <div className="mb-12">
-        <h1 className="text-4xl md:text-5xl font-semibold text-[#1E1E1E] mb-3 text-balance">
+        <h1 className="text-2xl md:text-[36px] font-semibold text-[#1E1E1E] mb-3 text-balance">
           Cover letter Builder
         </h1>
         <p className="text-base text-[#4A5565] font-normal">
@@ -93,7 +93,7 @@ export function CoverLetterBuilder() {
         </p>
       </div>
 
-      <Card className="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 mb-8 p-6 md:p-8">
+      <Card className=" lg:max-w-6xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 mb-8 px-2 py-6 md:p-8">
         <div className="flex items-start gap-3 mb-8">
           <div className="bg-[#FFFF00] !h-[70px] !w-[70px] rounded-[24px] flex items-center justify-center shrink-0">
             <SquareMenu className="!w-7 !h-7 text-[#000000]" />
@@ -165,3 +165,4 @@ export function CoverLetterBuilder() {
     </>
   )
 }
+
