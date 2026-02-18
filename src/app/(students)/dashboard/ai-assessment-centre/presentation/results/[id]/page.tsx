@@ -212,7 +212,7 @@ export default function ResultsPage() {
               Start Assessment Center Suite
               <ArrowRight size={18} />
             </button>
-          </div>
+          </div> 
         </div>
       </main>
 
