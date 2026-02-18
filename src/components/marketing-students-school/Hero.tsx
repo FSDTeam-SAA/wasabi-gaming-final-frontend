@@ -123,7 +123,7 @@ const Hero = () => {
     })),
   ];
 
-  console.log(locationDataWithNone)
+  // console.log(locationDataWithNone)
 
 
 
