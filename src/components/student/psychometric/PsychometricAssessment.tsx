@@ -104,8 +104,8 @@ const PsychometricAssessment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-poppins">
-      <div className="container mx-auto space-y-12">
+    <div className="min-h-screen bg-white py-4 md:py-8 font-poppins">
+      <div className="container mx-auto px-2 md:px-3 space-y-12 pb-20">
         <header className="mt-10">
           <div className="space-y-2 mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1E1E1E]">
@@ -198,7 +198,7 @@ const PsychometricAssessment = () => {
           ))}
         </div>
 
-        <section className="bg-gradient-to-br from-[#FAF5FF] to-[#FFFFFF] border-[2px] border-[#E9D4FF] rounded-[20px] p-8">
+        <section className="bg-gradient-to-br from-[#FAF5FF] to-[#FFFFFF] border-[2px] border-[#E9D4FF] rounded-[20px] p-4 md:p-8">
           <div className="flex items-start gap-3">
             <div className="bg-[#AD46FF] p-4 rounded-[20px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
               <Brain className="w-8 h-8 text-white" />

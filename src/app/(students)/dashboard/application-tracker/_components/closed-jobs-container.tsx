@@ -207,7 +207,7 @@ const ClosedJobsContainer = () => {
           )}
 
           <div className="text-center text-gray-600 mt-6">
-            Showing {data?.data.length} of 10 opportunities{" "}
+            Showing {data?.data?.length} of 10 opportunities{" "}
             {`(Page ${currentPage} of ${totalPages})`}
           </div>
         </>
