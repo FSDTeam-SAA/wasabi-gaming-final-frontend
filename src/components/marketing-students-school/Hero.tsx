@@ -16,6 +16,8 @@ import { Star } from 'lucide-react'
 import JoinCommunityModal from './JoinCommunityModal'
 import { useRouter } from 'next/navigation'
 import HeroDropDown from '../ui/HeroDropDown'
+import { useUserProfile } from '@/hooks/useUserProfile'
+import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import { LocationsApiResponse } from '@/types/location-data-type'
 
@@ -44,6 +46,7 @@ const Hero = () => {
   const words = ['DREAMS', 'FUTURE', 'PASSION']
   const [index, setIndex] = useState(0)
   const router = useRouter();
+  const { hasActiveSubscription, isAuthenticated } = useUserProfile()
 
   const [openModal, setOpenModal] = useState(false)
   const [jobType, setJobType] = useState<string | undefined>("");
@@ -268,7 +271,14 @@ const Hero = () => {
       {/* CTA */}
       <div className="flex justify-center mt-10 sm:mt-12">
         <Button
-          onClick={() => setOpenModal(true)}
+          onClick={() => {
+            if (!isAuthenticated || !hasActiveSubscription) {
+              toast.error('This feature requires an active subscription')
+              router.push('/plans')
+              return
+            }
+            setOpenModal(true)
+          }}
           className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg"
         >
           Join the Community!

@@ -20,6 +20,7 @@ import {
     Award,
     ShieldCheck,
     ChevronRight,
+    Crown,
 } from "lucide-react";
 import { IMAGES } from "@/assets";
 import { Button } from "@/components/ui/button";
@@ -30,9 +31,12 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/utils/cn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import Link from "next/link";
 
 const ProfileSettingsSection = () => {
     const [isEditing, setIsEditing] = useState(false);
+    const { hasActiveSubscription } = useUserProfile();
 
     // Mock user data
     const userData = {
@@ -301,10 +305,23 @@ const ProfileSettingsSection = () => {
                             Tailor your professional identity for Law Firm visibility.
                         </p>
                     </div>
-                    <div className="flex items-center gap-4 animate-bounce">
-                        <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100 border-none px-6 py-2 rounded-full font-black flex items-center gap-3 shadow-sm">
-                            <Award className="w-5 h-5" /> PREMIER ACCOUNT
-                        </Badge>
+                    <div className="flex items-center gap-4">
+                        {hasActiveSubscription ? (
+                            <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100 border-none px-6 py-2 rounded-full font-black flex items-center gap-3 shadow-sm animate-bounce">
+                                <Crown className="w-5 h-5" /> PREMIUM ACCOUNT
+                            </Badge>
+                        ) : (
+                            <div className="flex items-center gap-3">
+                                <Badge className="bg-gray-100 text-gray-600 hover:bg-gray-100 border-none px-6 py-2 rounded-full font-black flex items-center gap-3 shadow-sm">
+                                    <Award className="w-5 h-5" /> FREE PLAN
+                                </Badge>
+                                <Link href="/plans">
+                                    <Button className="bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-black font-bold px-6 py-2 rounded-full border border-[#CACA00] shadow-md hover:shadow-lg transition-all">
+                                        <Crown className="w-4 h-4 mr-2" /> Upgrade Plan
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </header>
 
