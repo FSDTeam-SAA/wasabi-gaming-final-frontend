@@ -7,10 +7,15 @@ import image3 from '../../../assets/images/blacko 1.png'
 import image4 from '../../../assets/images/Starblack 1.png'
 import BannerCard from './bannerCard.jsx'
 import JoinCommunityModal from '@/components/marketing-students-school/JoinCommunityModal'
+import { useRouter } from 'next/navigation'
+import { useUserProfile } from '@/hooks/useUserProfile'
+import { toast } from 'sonner'
 const StudentHero = () => {
   const [selectedType, setSelectedType] = useState('')
   const [selectedLocation, setSelectedLocation] = useState('')
-   const [openModal, setOpenModal] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+  const router = useRouter()
+  const { hasActiveSubscription, isAuthenticated } = useUserProfile()
   const [isTypeOpen, setIsTypeOpen] = useState(false)
   const [isLocationOpen, setIsLocationOpen] = useState(false)
 
@@ -20,8 +25,7 @@ const StudentHero = () => {
   const handleSearch = () => {
     console.log('Searching with:', { selectedType, selectedLocation })
     alert(
-      `Searching for:\nType: ${selectedType || 'Any'}\nLocation: ${
-        selectedLocation || 'Any'
+      `Searching for:\nType: ${selectedType || 'Any'}\nLocation: ${selectedLocation || 'Any'
       }`,
     )
   }
@@ -145,7 +149,14 @@ const StudentHero = () => {
             <button className="yellow main-color font-bold border-2 border-[#D9D937] py-2 px-8 lg:px-16 rounded-full neuton">
               Start Now
             </button>
-            <button onClick={() => setOpenModal(true)} className="hover:yellow main-color font-bold border-2 border-[#D9D937] py-2 px-8 lg:px-16 rounded-full neuton">
+            <button onClick={() => {
+              if (!isAuthenticated || !hasActiveSubscription) {
+                toast.error('This feature requires an active subscription')
+                router.push('/plans')
+                return
+              }
+              setOpenModal(true)
+            }} className="hover:yellow main-color font-bold border-2 border-[#D9D937] py-2 px-8 lg:px-16 rounded-full neuton">
               Join community
             </button>
           </div>
@@ -202,11 +213,11 @@ const StudentHero = () => {
         <img className="absolute top-0 right-0 z-0" src={image4.src} alt="" />
         <div className="flex flex-col justify-center items-center space-y-3">
           <h1 className="font-bold text-4xl neuton main-color">
-            Everything You Need to Launch Your Career 
+            Everything You Need to Launch Your Career
           </h1>
           <p className="base-color source text-center px-4 lg:text-2xlg text-xl">
             The Aspiring Legal Network equips you with smart tools to build,
-            prepare, and excel in your career. 
+            prepare, and excel in your career.
           </p>
 
           <BannerCard></BannerCard>
@@ -222,7 +233,7 @@ const StudentHero = () => {
           alt=""
         />
       </div>
-        {/* MODAL */}
+      {/* MODAL */}
       <JoinCommunityModal open={openModal} onOpenChange={setOpenModal} />
     </div>
   )
