@@ -231,7 +231,7 @@ const Hero = () => {
                   }
                 }}
 
-                placeholderText="Select Type"
+                placeholderText="Select Job Type"
               />
             </div>
             {/* location */}
