@@ -49,10 +49,7 @@ const InterviewSkeleton: React.FC = () => {
       {/* Question Navigation Skeleton */}
       <div className="flex gap-2 mb-6 overflow-x-auto">
         {[1, 2, 3, 4, 5].map((_, idx) => (
-          <div
-            key={idx}
-            className="w-16 h-10 bg-gray-200 rounded-lg"
-          ></div>
+          <div key={idx} className="w-16 h-10 bg-gray-200 rounded-lg"></div>
         ))}
       </div>
 
@@ -167,7 +164,7 @@ const ShimmerSkeleton: React.FC = () => {
     <div className="relative overflow-hidden">
       <InterviewSkeleton />
       <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-      
+
       {/* Add shimmer animation to global styles */}
       <style jsx global>{`
         @keyframes shimmer {
@@ -180,7 +177,11 @@ const ShimmerSkeleton: React.FC = () => {
   );
 };
 
-const Interview: React.FC<InterviewProps> = ({ sessionData, onBack, isLoading = false }) => {
+const Interview: React.FC<InterviewProps> = ({
+  sessionData,
+  onBack,
+  isLoading = false,
+}) => {
   const { data: session } = useSession();
   const token = session?.accessToken || "";
   const router = useRouter();
@@ -202,7 +203,8 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack, isLoading = 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
-  const [showRecordingComplete, setShowRecordingComplete] = useState<boolean>(false);
+  const [showRecordingComplete, setShowRecordingComplete] =
+    useState<boolean>(false);
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -520,11 +522,18 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack, isLoading = 
       setIsRecording(true);
       setRecordingTime(0);
 
+      // Use a ref to track if we've already shown the max time toast
+      let hasShownMaxTimeToast = false;
+
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => {
           if (prev >= MAX_RECORDING_TIME - 1) {
-            stopRecording();
-            toast.info("Maximum recording time reached (2 minutes)");
+            // Only stop recording and show toast once
+            if (!hasShownMaxTimeToast) {
+              hasShownMaxTimeToast = true;
+              stopRecording();
+              toast.info("Maximum recording time reached (2 minutes)");
+            }
             return MAX_RECORDING_TIME;
           }
           return prev + 1;
@@ -553,7 +562,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack, isLoading = 
       }
     }
   };
-
   // Setup auto timers
   const setupAutoTimers = () => {
     if (prepTimerRef.current) clearInterval(prepTimerRef.current);
@@ -576,7 +584,6 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack, isLoading = 
         return prev - 1;
       });
     }, 1000);
-
   };
 
   // Handle next question
