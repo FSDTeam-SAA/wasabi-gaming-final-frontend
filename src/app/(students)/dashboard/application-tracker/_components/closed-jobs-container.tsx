@@ -42,7 +42,7 @@ const ClosedJobsContainer = () => {
     queryKey: ["closed-jobs", currentPage],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=Closed&page=${currentPage}&limit=10`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=Closed&status=active&page=${currentPage}&limit=10`,
         {
           method: "GET",
           headers: {

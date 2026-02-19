@@ -35,6 +35,13 @@ interface Application {
   canApply: boolean;
 }
 
+import { Neuton } from "next/font/google";
+
+const neuton = Neuton({
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "700", "800"],
+});
+
 // ─── Helpers ──────────────────────────────────────────────────────────────
 
 const getStatusColor = (status: string) => {
@@ -195,7 +202,7 @@ export default function ApplicationTrackerPage() {
     <div className="min-h-screen bg-white pb-20">
       <div className="container mx-auto px-6 pt-10 max-w-7xl">
         {/* Header */}
-        <div className="mb-10">
+        <div className={`${neuton.className} mb-10`}>
           <h4 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-[#1E1E1E] leading-[40px] mb-3">
             Explore Legal Opportunities
           </h4>
@@ -206,7 +213,7 @@ export default function ApplicationTrackerPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-10 border-b border-[#FEF9C2] mb-8 overflow-x-auto">
+        <div className={`${neuton.className} flex gap-10 border-b border-[#FEF9C2] mb-8 overflow-x-auto`}>
           {(["op", "at", "cj"] as const).map((tab) => (
             <button
               key={tab}
