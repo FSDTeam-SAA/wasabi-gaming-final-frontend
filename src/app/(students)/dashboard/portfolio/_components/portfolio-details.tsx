@@ -47,15 +47,15 @@ const PortfolioDetails = ({ id }: { id: string }) => {
 
   return (
     <div className="min-h-screen font-sans bg-[#FCFCFC]">
-      <div className="relative h-[420px] sm:h-[580px] w-full overflow-hidden bg-black">
+      <div className="relative h-[580px] w-full overflow-hidden bg-black">
         {event.thumbnail ? (
           <Image
             src={event.thumbnail}
             alt={event.title}
-            fill
-            className="object-cover opacity-85"
-            quality={100}
-            priority
+            width={1000}
+            height={1000}
+            className="object-cover w-full h-full "
+
           />
         ) : (
           <div className="absolute inset-0 bg-slate-800" />
@@ -74,37 +74,34 @@ const PortfolioDetails = ({ id }: { id: string }) => {
       </div>
 
       {/* ================= CONTENT SECTION ================= */}
-      <div className="relative z-10 -mt-24 pb-16">
+      <div className="pb-16 pt-12">
         <Card className="border-none shadow-none bg-transparent">
-          <CardContent className="container mx-auto max-w-4xl bg-white border border-[#D9D9D9] rounded-xl shadow-[0px_1px_4px_0px_#00000026] p-8 pt-10 text-[#333]">
+          <CardContent className="container mx-auto max-w-7xl bg-[#FCFCFC] border border-[#D9D9D9] rounded-[4px] shadow-[0px_1px_4px_0px_#00000026] p-8 pt-10 text-[#333]">
+            {/* Meta */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 pb-6">
+              <p className="text-[10px] md:text-base font-normal text-[#4A5565] uppercase">
+                {new Date(event.date).toDateString()}
+              </p>
+
+              <div>
+                <span className="font-normal text-base text-[#4A5565]">Time:</span> {event.time}
+              </div>
+
+
+            </div>
             <div className="space-y-6">
               {/* Title */}
-              <h2 className="text-2xl font-bold text-gray-900 leading-tight">
+              <h2 className="text-2xl font-semibold text-[#000000] leading-tight">
                 {event.title}
               </h2>
-
-              {/* Meta */}
-              <div className="flex flex-wrap gap-4 text-sm text-gray-600 border-b pb-6">
-                <div>
-                  <span className="font-bold">Date:</span>{" "}
-                  {new Date(event.date).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </div>
-
-                <div>
-                  <span className="font-bold">Time:</span> {event.time}
-                </div>
-
-                <div>
-                  <span className="font-bold">Type:</span>{" "}
-                  <span className="capitalize px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
-                    {event.eventType}
-                  </span>
-                </div>
+              <div>
+                <span className="font-normal text-base text-[#000000]">Type:</span>{" "}
+                <span className="capitalize text-base px-2 py-0.5 bg-blue-100 text-[#000000] bg-transparent ">
+                  {event.eventType}
+                </span>
               </div>
+
+
 
               {/* Description */}
               <div
