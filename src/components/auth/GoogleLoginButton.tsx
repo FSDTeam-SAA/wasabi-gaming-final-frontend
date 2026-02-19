@@ -8,49 +8,55 @@ import { useRouter } from 'next/navigation'
 import RoleSelectionModal from './RoleSelectionModal'
 
 export default function GoogleLoginButton() {
-  const [showRoleModal, setShowRoleModal] = useState(false);
-  const [cachedIdToken, setCachedIdToken] = useState<string | null>(null);
+  const [showRoleModal, setShowRoleModal] = useState(false)
+  const [cachedIdToken, setCachedIdToken] = useState<string | null>(null)
 
-  const handleLogin = async ({ idToken, role }: { idToken: string, role?: string }) => {
+  const handleLogin = async ({
+    idToken,
+    role,
+  }: {
+    idToken: string
+    role?: string
+  }) => {
     try {
       const result = await signIn('google-login', {
         idToken,
         role: role || '',
         redirect: false,
-      });
+      })
 
       if (result?.error) {
-        console.error("❌ Google Login Error:", result.error);
+        console.error('❌ Google Login Error:', result.error)
 
         // Try to parse the error to see if it's the ROLE_REQUIRED case
         try {
-          const errorData = JSON.parse(result.error);
-          if (errorData.code === "ROLE_REQUIRED") {
+          const errorData = JSON.parse(result.error)
+          if (errorData.code === 'ROLE_REQUIRED') {
             // Cache the Google idToken so we can re-send it with the selected role
-            setCachedIdToken(idToken);
-            setShowRoleModal(true);
-            return;
+            setCachedIdToken(idToken)
+            setShowRoleModal(true)
+            return
           }
         } catch (e) {
           // Not a JSON error, proceed to show string error
         }
 
-        toast.error(result.error);
+        toast.error(result.error)
       } else {
-        toast.success('Login successful!');
-        window.location.href = '/';
+        toast.success('Login successful!')
+        window.location.href = '/'
       }
     } catch (error) {
-      console.error(error);
-      toast.error('An unexpected error occurred during Google Login');
+      console.error(error)
+      toast.error('An unexpected error occurred during Google Login')
     }
-  };
+  }
 
   const onRoleSelect = (role: 'student' | 'school') => {
     if (cachedIdToken) {
-      console.log('🎯 Role selected, completing registration...', role);
-      handleLogin({ idToken: cachedIdToken, role });
-      setShowRoleModal(false);
+      console.log('🎯 Role selected, completing registration...', role)
+      handleLogin({ idToken: cachedIdToken, role })
+      setShowRoleModal(false)
     }
   }
 
@@ -62,7 +68,9 @@ export default function GoogleLoginButton() {
           <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center text-[#FFFF00] font-bold text-sm">
             G
           </div>
-          <span className="text-black font-bold text-lg">Continue with google</span>
+          <span className="text-black font-bold text-lg">
+            Continue with google
+          </span>
         </div>
 
         {/* Invisible Google Button Overlay */}
@@ -70,13 +78,13 @@ export default function GoogleLoginButton() {
           <GoogleLogin
             onSuccess={credentialResponse => {
               if (credentialResponse.credential) {
-                handleLogin({ idToken: credentialResponse.credential });
+                handleLogin({ idToken: credentialResponse.credential })
               } else {
-                toast.error("Failed to retrieve Google Token");
+                toast.error('Failed to retrieve Google Token')
               }
             }}
             onError={() => {
-              toast.error('Google Login Failed');
+              toast.error('Google Login Failed')
             }}
             useOneTap={false}
             theme="outline"
@@ -84,7 +92,7 @@ export default function GoogleLoginButton() {
             text="continue_with"
             width="400"
             containerProps={{
-              style: { width: '100%', height: '100%', display: 'block' }
+              style: { width: '100%', height: '100%', display: 'block' },
             }}
           />
         </div>
@@ -93,11 +101,13 @@ export default function GoogleLoginButton() {
       <RoleSelectionModal
         isOpen={showRoleModal}
         onClose={() => {
-          setShowRoleModal(false);
-          setCachedIdToken(null);
+          setShowRoleModal(false)
+          setCachedIdToken(null)
         }}
         onSelectRole={onRoleSelect}
       />
     </>
-  );
+  )
 }
+
+// "code changed by mamun"
