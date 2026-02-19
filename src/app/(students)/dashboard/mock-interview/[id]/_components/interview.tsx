@@ -26,9 +26,161 @@ interface SessionData {
 interface InterviewProps {
   sessionData: SessionData | null;
   onBack: () => void;
+  isLoading?: boolean; // Add loading prop
 }
 
-const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
+// Skeleton Loader Component
+const InterviewSkeleton: React.FC = () => {
+  return (
+    <div className="flex flex-col font-sans text-[#444] p-4 animate-pulse">
+      {/* Header Skeleton */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="space-y-2">
+          <div className="w-48 h-8 bg-gray-200 rounded-lg"></div>
+          <div className="w-32 h-4 bg-gray-200 rounded"></div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="w-20 h-10 bg-gray-200 rounded-lg"></div>
+          <div className="w-32 h-4 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+
+      {/* Question Navigation Skeleton */}
+      <div className="flex gap-2 mb-6 overflow-x-auto">
+        {[1, 2, 3, 4, 5].map((_, idx) => (
+          <div
+            key={idx}
+            className="w-16 h-10 bg-gray-200 rounded-lg"
+          ></div>
+        ))}
+      </div>
+
+      {/* Main Content Skeleton */}
+      <div className="flex flex-col gap-6 md:flex-row">
+        {/* LEFT PANEL SKELETON */}
+        <div className="lg:w-[60%] border-[3px] border-gray-200 rounded-2xl p-6 flex flex-col justify-between relative">
+          <div className="flex-grow flex flex-col items-center justify-center bg-gray-100 rounded-2xl text-center relative overflow-hidden min-h-[500px]">
+            {/* Camera placeholder */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-6xl text-gray-300">📷</div>
+            </div>
+
+            {/* Preparation placeholder */}
+            <div className="z-10 p-6">
+              <div className="mb-6 text-4xl text-gray-300">🧠</div>
+              <div className="w-64 h-8 mx-auto mb-3 bg-gray-200 rounded"></div>
+              <div className="w-48 h-4 mx-auto mb-10 bg-gray-200 rounded"></div>
+
+              {/* Circular progress skeleton */}
+              <div className="relative w-40 h-40 mx-auto mb-8 flex items-center justify-center rounded-full border-[8px] border-gray-200">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-12 h-8 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+
+              <div className="w-32 h-4 mx-auto mt-4 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+
+          {/* Navigation Buttons Skeleton */}
+          <div className="flex justify-between gap-2 mt-6">
+            <div className="flex-1 h-12 bg-gray-200 rounded-xl"></div>
+            <div className="flex-1 h-12 bg-gray-200 rounded-xl"></div>
+          </div>
+
+          {/* Footer Status Skeleton */}
+          <div className="flex items-center gap-4 mt-6">
+            <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+            <div className="flex-1 space-y-2">
+              <div className="w-32 h-5 bg-gray-200 rounded"></div>
+              <div className="w-48 h-4 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT PANEL SKELETON */}
+        <div className="flex-1 border-[3px] border-gray-200 rounded-2xl p-8 flex flex-col justify-between">
+          <div className="space-y-6">
+            {/* Question skeleton */}
+            <div className="space-y-3">
+              <div className="w-3/4 h-8 bg-gray-200 rounded"></div>
+              <div className="w-full h-8 bg-gray-200 rounded"></div>
+              <div className="w-2/3 h-8 bg-gray-200 rounded"></div>
+            </div>
+
+            {/* Tips Box Skeleton */}
+            <div className="bg-gray-100 border border-gray-200 rounded-xl p-5 flex gap-4">
+              <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+              <div className="flex-1 space-y-3">
+                <div className="w-24 h-5 bg-gray-200 rounded"></div>
+                <div className="space-y-2">
+                  {[1, 2, 3, 4].map((_, idx) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                      <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Preparation Box Skeleton */}
+            <div className="bg-gray-100 border border-gray-200 rounded-xl p-5 flex gap-4">
+              <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+              <div className="flex-1 space-y-3">
+                <div className="w-32 h-5 bg-gray-200 rounded"></div>
+                <div className="w-48 h-4 bg-gray-200 rounded"></div>
+                <div className="w-full h-3 bg-gray-200 rounded-full"></div>
+                <div className="flex justify-between">
+                  <div className="w-20 h-3 bg-gray-200 rounded"></div>
+                  <div className="w-20 h-3 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Summary Skeleton */}
+            <div className="p-5 border border-gray-200 bg-gray-50 rounded-xl space-y-3">
+              <div className="w-32 h-5 bg-gray-200 rounded"></div>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-3 bg-gray-200 rounded-full"></div>
+                <div className="w-12 h-4 bg-gray-200 rounded"></div>
+              </div>
+              <div className="w-48 h-4 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+
+          {/* Start Recording Button Skeleton */}
+          <div className="mt-8 space-y-3">
+            <div className="w-full h-14 bg-gray-200 rounded-xl"></div>
+            <div className="w-48 h-4 mx-auto bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Shimmer effect for smoother loading animation
+const ShimmerSkeleton: React.FC = () => {
+  return (
+    <div className="relative overflow-hidden">
+      <InterviewSkeleton />
+      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      
+      {/* Add shimmer animation to global styles */}
+      <style jsx global>{`
+        @keyframes shimmer {
+          100% {
+            transform: translateX(100%);
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+const Interview: React.FC<InterviewProps> = ({ sessionData, onBack, isLoading = false }) => {
   const { data: session } = useSession();
   const token = session?.accessToken || "";
   const router = useRouter();
@@ -50,8 +202,7 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
-  const [showRecordingComplete, setShowRecordingComplete] =
-    useState<boolean>(false);
+  const [showRecordingComplete, setShowRecordingComplete] = useState<boolean>(false);
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -64,6 +215,11 @@ const Interview: React.FC<InterviewProps> = ({ sessionData, onBack }) => {
   const sessionId = sessionData?._id || "";
   const questions: Question[] = sessionData?.questions || [];
   const currentQuestion = questions[currentQuestionIndex];
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return <ShimmerSkeleton />;
+  }
 
   // Progress calculation
   const calculateProgress = (): number => {

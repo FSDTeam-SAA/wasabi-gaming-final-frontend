@@ -39,7 +39,9 @@ const DetailsLayout = () => {
       }
     } catch (error) {
       console.error("Error creating session:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to create session");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create session",
+      );
     } finally {
       setLoading(false);
     }
@@ -57,6 +59,7 @@ const DetailsLayout = () => {
         <Interview
           sessionData={sessionData}
           onBack={() => setShowInterview(false)}
+          isLoading={loading}
         />
       )}
     </div>
