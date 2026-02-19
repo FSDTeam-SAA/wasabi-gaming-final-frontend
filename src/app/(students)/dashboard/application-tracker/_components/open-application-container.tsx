@@ -184,7 +184,7 @@ const OpenApplicationContainer = () => {
         }
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?${params.toString()}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?status=active&${params.toString()}`,
           {
             method: "GET",
             headers: {
