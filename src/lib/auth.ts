@@ -42,63 +42,31 @@ export const authOptions: NextAuthOptions = {
         const { user, accessToken } = result.data;
 
         return {
-          id: user._id,
+          id: String(user._id),
           email: user.email,
-          name: user.schoolName,
+          name: user.schoolName || user.name || "",
           role: user.role,
-          image: user.profileImage,
-          shareLink: user.shareLink,
-          accessToken,
+          image: user.profileImage || "",
+          shareLink: user.shareLink || "",
+          accessToken: String(accessToken),
         };
       },
     }),
     CredentialsProvider({
-      id: "google-login",
+      id: "google",
       name: "Google Login",
       credentials: {
         idToken: { label: "Google ID Token", type: "text" },
-        role: { label: "Role", type: "text" },
-        tempToken: { label: "Temp Token", type: "text" },
       },
       async authorize(credentials) {
-        // CASE 1: Completing Registration (Step 2)
-        if (credentials?.tempToken && credentials?.role) {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/complete-google-registration`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                tempToken: credentials.tempToken,
-                role: credentials.role,
-              }),
-            }
-          );
-
-          const result = await res.json();
-
-          if (!res.ok || !result?.success) {
-            throw new Error(result?.message || "Registration failed");
-          }
-
-          const { user, accessToken } = result.data;
-
-          return {
-            id: user._id,
-            email: user.email,
-            name: user.schoolName || `${user.firstName} ${user.lastName}`,
-            role: user.role,
-            image: user.profileImage,
-            shareLink: user.shareLink,
-            accessToken,
-          };
+        if (!credentials?.idToken) {
+          throw new Error("Google ID Token is required");
         }
 
-        // CASE 2: Initial Google Login (Step 1)
-        if (credentials?.idToken) {
-          const apiURL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google-login`;
-          console.log("🔐 Authenticating with Google ID Token at:", apiURL);
+        const apiURL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google-login`;
+        console.log("🔐 Authenticating with Google Login at:", apiURL);
 
+        try {
           const res = await fetch(apiURL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -107,49 +75,32 @@ export const authOptions: NextAuthOptions = {
             }),
           });
 
-          const resText = await res.text();
-          let result;
-          try {
-            result = JSON.parse(resText);
-            console.log("📥 Google Login API Result:", JSON.stringify(result, null, 2));
-          } catch (e) {
-            console.error("❌ Failed to parse Google Login API response:", resText);
-            throw new Error(`Invalid response from server: ${resText.substring(0, 100)}`);
-          }
+          const result = await res.json();
+          console.log("📥 Google Login API Result:", result);
 
           if (!res.ok || !result?.success) {
-            // Check if backend returned needsRole in a failure structure
-            if (result?.data?.needsRole) {
-              throw new Error(JSON.stringify({
-                code: "ROLE_REQUIRED",
-                tempToken: result.data.tempToken
-              }));
-            }
             throw new Error(result?.message || result?.error || "Google Login failed");
           }
 
-          // Handle needsRole case (Success 200 but needs action)
-          if (result?.data?.needsRole) {
-            throw new Error(JSON.stringify({
-              code: "ROLE_REQUIRED",
-              tempToken: result.data.tempToken
-            }));
+          const { user, token } = result;
+
+          if (!user || !token) {
+            throw new Error("Invalid response from auth server");
           }
 
-          const { user, accessToken } = result.data;
-
           return {
-            id: user._id,
+            id: String(user.id || user._id || ""),
             email: user.email,
-            name: user.schoolName || `${user.firstName} ${user.lastName}`,
-            role: user.role,
-            image: user.profileImage,
-            shareLink: user.shareLink,
-            accessToken,
+            name: String(user.name || user.schoolName || ""),
+            role: String(user.role || "student"),
+            image: String(user.picture || user.profileImage || ""),
+            shareLink: String(user.shareLink || ""),
+            accessToken: String(token),
           };
+        } catch (error: any) {
+          console.error("❌ Google Login authorize error:", error);
+          throw new Error(error.message || "Authentication failed");
         }
-
-        throw new Error("Invalid credentials");
       },
     }),
   ],
@@ -159,26 +110,16 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
-      // Initial login - populate token with user data
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = user.role;
+        token.role = (user as any).role;
         token.image = user.image;
-        token.shareLink = user.shareLink;
-        token.accessToken = user.accessToken;
+        token.shareLink = (user as any).shareLink;
+        token.accessToken = (user as any).accessToken;
       }
-
-      // Handle session update (e.g., profile changes)
-      if (trigger === "update" && session) {
-        if (session.user) {
-          token.name = session.user.name ?? token.name;
-          token.image = session.user.image ?? token.image;
-        }
-      }
-
       return token;
     },
 
@@ -197,16 +138,12 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      // Handle logout - redirect to home page
       if (url.startsWith(baseUrl + "/api/auth/signout") || url === baseUrl) {
         return baseUrl;
       }
-
-      // Handle login redirects based on role
       if (url.startsWith(baseUrl)) {
         return url;
       }
-
       return baseUrl;
     },
   },
