@@ -53,56 +53,67 @@ export const authOptions: NextAuthOptions = {
       },
     }),
     CredentialsProvider({
-      id: 'google',
-      name: 'Google Login',
+      id: "google-login",
+      name: "Google Login",
       credentials: {
-        idToken: { label: 'Google ID Token', type: 'text' },
+        idToken: { label: "Google ID Token", type: "text" },
+        role: { label: "Role", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.idToken) {
-          throw new Error('Google ID Token is required')
+          throw new Error("Google ID Token is required");
         }
 
-        const apiURL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google-login`
-        console.log('🔐 Authenticating with Google Login at:', apiURL)
+        const apiURL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google-login`;
 
+        // Build request body — always send idToken, optionally send role
+        const body: Record<string, string> = { idToken: credentials.idToken };
+        if (credentials.role) {
+          body.role = credentials.role;
+        }
+
+        console.log("🔐 Google Login →", apiURL, "| role:", credentials.role || "(none)");
+
+        const res = await fetch(apiURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        const resText = await res.text();
+        let result;
         try {
-          const res = await fetch(apiURL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              idToken: credentials.idToken,
-            }),
-          })
-
-          const result = await res.json()
-          console.log('📥 Google Login API Result:', result)
-
-          if (!res.ok || !result?.success) {
-            throw new Error(
-              result?.message || result?.error || 'Google Login failed',
-            )
-          }
-
-          const { user, token } = result
-
-          if (!user || !token) {
-            throw new Error('Invalid response from auth server')
-          }
-
-          return {
-            id: String(user.id || user._id || ''),
-            email: user.email,
-            name: String(user.name || user.schoolName || ''),
-            role: String(user.role || 'student'),
-            image: String(user.picture || user.profileImage || ''),
-            shareLink: String(user.shareLink || ''),
-            accessToken: String(token),
-          }
-        } catch (error: any) {
-          console.error('❌ Google Login authorize error:', error)
-          throw new Error(error.message || 'Authentication failed')
+          result = JSON.parse(resText);
+          console.log("📥 Google Login API Result:", JSON.stringify(result, null, 2));
+        } catch (e) {
+          console.error("❌ Failed to parse Google Login API response:", resText);
+          throw new Error(`Invalid response from server: ${resText.substring(0, 100)}`);
         }
+
+        if (!res.ok || !result?.success) {
+          if (result?.data?.needsRole) {
+            throw new Error(JSON.stringify({ code: "ROLE_REQUIRED" }));
+          }
+          throw new Error(result?.message || result?.error || "Google Login failed");
+        }
+
+        // New user → needs role selection
+        if (result?.data?.needsRole) {
+          throw new Error(JSON.stringify({ code: "ROLE_REQUIRED" }));
+        }
+
+        // Existing user login or new user registered with role
+        const { user, accessToken } = result.data;
+
+        return {
+          id: String(user._id),
+          email: user.email,
+          name: user.schoolName || `${user.firstName} ${user.lastName}`,
+          role: user.role,
+          image: user.profileImage || '',
+          shareLink: user.shareLink || '',
+          accessToken: String(accessToken),
+        };
       },
     }),
   ],
