@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
@@ -10,6 +10,7 @@ import Results from '@/components/student/psychometric/Results';
 import AILoader from '@/components/student/psychometric/AILoader';
 import PsychometricSkeleton from '@/components/student/psychometric/PsychometricSkeleton';
 import { toast } from 'sonner';
+import { useStudentDashboardStore } from '@/store/studentDashboardStore';
 
 export default function PsychometricTestPage() {
     const params = useParams();
@@ -24,6 +25,8 @@ export default function PsychometricTestPage() {
     const [answers, setAnswers] = useState<Record<number, number>>({});
     const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
     const [showAILoader, setShowAILoader] = useState(false);
+
+    const { setPsychometricResult } = useStudentDashboardStore();
 
     const queryClient = useQueryClient();
 
@@ -45,6 +48,16 @@ export default function PsychometricTestPage() {
 
     const existingAttempt = myAnswersData?.data?.find(a => a?.test?._id === testId);
 
+    useEffect(() => {
+        if (existingAttempt && activeTest) {
+            const rawScore = existingAttempt.score || 0;
+            const total = activeTest.allQuestions?.length || 0;
+            const pct = total > 0 ? Math.round((rawScore / total) * 100) : 0;
+            const insight = existingAttempt.keyStrength || '';
+            setPsychometricResult(pct, insight);
+        }
+    }, [existingAttempt, activeTest, setPsychometricResult]);
+
     // Mutation for submission
     const submissionMutation = useMutation({
         mutationFn: async ({ testId, answers, isRetry }: { testId: string; answers: any[]; isRetry: boolean }) => {
@@ -59,11 +72,18 @@ export default function PsychometricTestPage() {
             await Promise.all([submission, minTime]);
             return submission;
         },
-        onSuccess: () => {
+        onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ['myPsychometricAnswers', token] });
             setShowAILoader(false);
             setCurrentView('results');
             toast.success("Test submitted successfully!");
+
+            // Update Store
+            const rawScore = response?.data?.score || 0;
+            const total = activeTest?.allQuestions?.length || 0;
+            const pct = total > 0 ? Math.round((rawScore / total) * 100) : 0;
+            const insight = response?.data?.keyStrength || '';
+            setPsychometricResult(pct, insight);
         },
         onError: (error: any) => {
             console.error("Submission failed:", error);

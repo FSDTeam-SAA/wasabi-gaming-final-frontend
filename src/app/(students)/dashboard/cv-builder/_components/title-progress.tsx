@@ -1,8 +1,9 @@
 "use client";
 import { Progress } from "@/components/ui/progress";
-import React from "react";
+import React, { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { CvBuilderFormType } from "./cv-making-form";
+import { useStudentDashboardStore } from "@/store/studentDashboardStore";
 
 interface TitleProgressProps {
   form: UseFormReturn<CvBuilderFormType>;
@@ -11,7 +12,7 @@ interface TitleProgressProps {
 const TitleProgress = ({ form }: TitleProgressProps) => {
 
   const formValues = form.watch();
-  
+
   const calculateCompletion = () => {
     const requiredFields = [
       formValues.firstName,
@@ -30,10 +31,10 @@ const TitleProgress = ({ form }: TitleProgressProps) => {
       formValues.educationLevel?.[0]?.educationLevel,
 
       formValues.legalWorkExperience?.[0]?.jobTitle ||
-        formValues.nonLegalWorkExperienceSchema?.[0]?.jobTitle,
+      formValues.nonLegalWorkExperienceSchema?.[0]?.jobTitle,
 
       formValues.legalWorkExperience?.[0]?.organization ||
-        formValues.nonLegalWorkExperienceSchema?.[0]?.organization,
+      formValues.nonLegalWorkExperienceSchema?.[0]?.organization,
 
       formValues.achievements?.skills?.[0],
     ];
@@ -46,6 +47,12 @@ const TitleProgress = ({ form }: TitleProgressProps) => {
   };
 
   const completionPercentage = calculateCompletion();
+
+  const { setCvCompletion } = useStudentDashboardStore();
+
+  useEffect(() => {
+    setCvCompletion(completionPercentage);
+  }, [completionPercentage, setCvCompletion]);
 
   return (
     <div className="space-y-5">
