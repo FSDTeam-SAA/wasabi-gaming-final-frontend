@@ -10,7 +10,7 @@ import Link from "next/link";
 import { ClosedJobsApiResponse, ClosedJob } from "./closed-jobs-data-type";
 import moment from "moment";
 import JobDetailsModal from "./JobViewDetailsModal";
-import ReadyToNextStep from './ready-to-next-step';
+import ReadyToNextStep from "./ready-to-next-step";
 
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
@@ -105,7 +105,7 @@ const ClosedJobsContainer = () => {
                       }
                      `}
                   >
-                    {app?.status}
+                    {app?.jobStatus}
                   </button>
                 </div>
 
@@ -148,10 +148,7 @@ const ClosedJobsContainer = () => {
                   >
                     <Eye className="w-4 h-4 text-[#1E1E1E]" /> View Details
                   </Button> */}
-                  <JobDetailsModal id = {app?._id}/>
-
-
-
+                  <JobDetailsModal id={app?._id} />
 
                   {/* {canApplyToJob(app) && (
                     <Link href="/dashboard/application-tracker/cv-uplode">
@@ -213,11 +210,11 @@ const ClosedJobsContainer = () => {
         </>
       )}
 
-            {/* Ready to Take the Next Step? section  */}
-      
-            <section className="pt-8">
-              <ReadyToNextStep />
-            </section>
+      {/* Ready to Take the Next Step? section  */}
+
+      <section className="pt-8">
+        <ReadyToNextStep />
+      </section>
     </div>
   );
 };
