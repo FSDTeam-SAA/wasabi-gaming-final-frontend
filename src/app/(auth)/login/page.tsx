@@ -236,12 +236,12 @@ export default function LoginPage() {
         <h3 className="text-2xl font-semibold mb-4 text-black">
           {activeTab === 'Students'
             ? 'Your All-in-one Platform for Aspiring Legal Professionals!'
-            : 'Aspiring — Your All-in-One School Management Platform'}
+            : 'Aspiring Legal Network — Your All-in-One School Management Platform'}
         </h3>
         <p className="mb-8 text-gray-700">
           {activeTab === 'Students'
-            ? 'Aspiring is a simple, powerful tool that helps you create a professional resume in minutes. With modern templates and smart guidance, it lets you showcase your skills confidently and take the next step in your career.'
-            : 'Aspiring is a simple yet powerful system that helps schools manage students, teachers, and activities with ease. With smart tools and a modern interface, it lets you organize efficiently and focus on better learning outcomes.'}
+            ? 'Aspiring legal network is a simple, powerful tool that helps you create a professional resume in minutes. With modern templates and smart guidance, it lets you showcase your skills confidently and take the next step in your career.'
+            : 'Aspiring legal network is a simple yet powerful system that helps schools manage students, teachers, and activities with ease. With smart tools and a modern interface, it lets you organise efficiently and focus on better learning outcomes.'}
         </p>
         {/* <div className="flex space-x-2 mb-8">
           <div className="w-3 h-3 rounded-full bg-[#ffff00]" />
@@ -253,7 +253,7 @@ export default function LoginPage() {
             src={
               activeTab === 'Students'
                 ? IMAGES.signup_Image_Student.src
-                : IMAGES.signup_Image_School.src
+                : '/hero-image.jpg'
             }
             alt="Legal professionals"
             className="w-full object-cover"

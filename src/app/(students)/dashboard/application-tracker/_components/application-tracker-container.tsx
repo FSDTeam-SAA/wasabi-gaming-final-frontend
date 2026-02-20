@@ -84,6 +84,11 @@ const ApplicationTrackerContainer = () => {
 
   return (
     <div>
+      {/* YourCareerInsights section  */}
+      <section className="pb-8">
+        <YourCareerInsights />
+      </section>
+
       {/* Job Cards */}
       {data?.data?.length === 0 ? (
         <div className="text-center py-20 text-gray-500 text-xl">
@@ -99,10 +104,10 @@ const ApplicationTrackerContainer = () => {
               <div
                 key={app.jobId}
                 className="border border-[#E5E7EB] rounded-2xl p-6 hover:shadow-xl transition-all bg-white flex flex-col h-full cursor-pointer"
-                // onClick={() => {
-                //   setSelectedJob(app);
-                //   setIsJobModalOpen(true);
-                // }}
+              // onClick={() => {
+              //   setSelectedJob(app);
+              //   setIsJobModalOpen(true);
+              // }}
               >
                 <div className="flex justify-between items-start mb-5">
                   <div className="w-14 h-14 bg-gradient-to-br from-[#F3F4F6] to-[#E5E7EB] rounded-[20px] flex items-center justify-center">
@@ -110,12 +115,11 @@ const ApplicationTrackerContainer = () => {
                   </div>
                   <button
                     className={`h-[34px] rounded-[14px] py-1 px-3 font-medium leading-[16px] border
-                      ${
-                        app?.status === "Interview"
-                          ? "bg-[#FFFF00] border-[#E5E500] text-[#1E1E1E]"
-                          : app?.status === "Applied"
-                            ? "bg-[#FEF9C2] border-[#FFDF20] text-[#894B00]"
-                            : "bg-[#F3F4F6] border-[#D1D5DC] text-[#4A5565]"
+                      ${app?.status === "Interview"
+                        ? "bg-[#FFFF00] border-[#E5E500] text-[#1E1E1E]"
+                        : app?.status === "Applied"
+                          ? "bg-[#FEF9C2] border-[#FFDF20] text-[#894B00]"
+                          : "bg-[#F3F4F6] border-[#D1D5DC] text-[#4A5565]"
                       }
                      `}
                   >
@@ -171,7 +175,7 @@ const ApplicationTrackerContainer = () => {
                   {/* <button className="h-[36px] w-[36px] flex items-center justify-center rounded-[12px] border border-gray-300 hover:bg-gray-100 transition">
                     <SquarePen className="w-4 h-4 text-gray-600" />
                   </button> */}
-                  <EditApplyjob  id = {app?.jobId}/>
+                  <EditApplyjob id={app?.jobId} />
 
                   {/* Refresh Button */}
                   <button onClick={() => window.location.reload()} className="h-[36px] w-[36px] flex items-center justify-center rounded-[12px] border border-gray-300 hover:bg-gray-100 transition">
@@ -230,16 +234,11 @@ const ApplicationTrackerContainer = () => {
         </>
       )}
 
-       {/* YourCareerInsights section  */}
-            <section className="py-8">
-              <YourCareerInsights />
-            </section>
-      
-            {/* Ready to Take the Next Step? section  */}
-      
-            <section className="">
-              <ReadyToNextStep />
-            </section>
+      {/* Ready to Take the Next Step? section  */}
+
+      <section className="">
+        <ReadyToNextStep />
+      </section>
     </div>
   );
 };
