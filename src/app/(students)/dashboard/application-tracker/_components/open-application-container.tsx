@@ -23,8 +23,16 @@ import { LocationsApiResponse } from "@/types/location-data-type";
 
 const jobTypeList = [
   { id: 1, name: "None", value: "__none__" },
-  { id: 2, name: "Solicitor Apprenticeships", value: "Solicitor Apprenticeship" },
-  { id: 3, name: "Paralegal Apprenticeships", value: "Paralegal Apprenticeship" },
+  {
+    id: 2,
+    name: "Solicitor Apprenticeships",
+    value: "Solicitor Apprenticeship",
+  },
+  {
+    id: 3,
+    name: "Paralegal Apprenticeships",
+    value: "Paralegal Apprenticeship",
+  },
   { id: 4, name: "Year 12 Work Experience", value: "Year 12 Work Experience" },
   { id: 5, name: "Year 13 Work Experience", value: "Year 13 Work Experience" },
   { id: 6, name: "Training Contracts", value: "Training Contracts" },
@@ -65,7 +73,9 @@ const OpenApplicationContainer = () => {
   const [activeFilter, setActiveFilter] = useState<
     "search" | "jobType" | "location" | null
   >(null);
-  const [filterSource, setFilterSource] = useState<"hero" | "container" | null>(null);
+  const [filterSource, setFilterSource] = useState<"hero" | "container" | null>(
+    null,
+  );
 
   const session = useSession();
   const token = session?.data?.accessToken;
@@ -88,10 +98,7 @@ const OpenApplicationContainer = () => {
     }
   }, []);
 
-
-
   const buildSearchTerm = () => {
-
     if (activeFilter === "search") return debouncedSearch;
     if (activeFilter === "jobType") return jobType;
     if (activeFilter === "location") return location;
@@ -101,20 +108,22 @@ const OpenApplicationContainer = () => {
 
   // location api start
 
-  const { data:locations } = useQuery<LocationsApiResponse>({
-      queryKey: ["location-data"],
-      queryFn: async () => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/job/locations`)
-  
-        return res.json();
-      }
-    })
-  
-    console.log(locations?.data)
-  
-    const locationData = locations?.data || []
+  const { data: locations } = useQuery<LocationsApiResponse>({
+    queryKey: ["location-data"],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/locations`,
+      );
 
-      const cleanedLocations = Array.from(
+      return res.json();
+    },
+  });
+
+  console.log(locations?.data);
+
+  const locationData = locations?.data || [];
+
+  const cleanedLocations = Array.from(
     new Map(
       locationData
         .map((loc) => {
@@ -124,15 +133,18 @@ const OpenApplicationContainer = () => {
           cleanName = cleanName.replace(/\(.*?\)/g, "");
 
           // remove "and X other location"
-          cleanName = cleanName.replace(/and\s+\d+\s+other\s+location(s)?/gi, "");
+          cleanName = cleanName.replace(
+            /and\s+\d+\s+other\s+location(s)?/gi,
+            "",
+          );
 
           cleanName = cleanName.trim();
 
           return cleanName;
         })
         .filter((name) => name && name.toLowerCase() !== "paralegal") // remove paralegal
-        .map((name) => [name.toLowerCase(), name]) // key দিয়ে duplicate remove
-    ).values()
+        .map((name) => [name.toLowerCase(), name]), // key দিয়ে duplicate remove
+    ).values(),
   );
 
   const locationDataWithNone = [
@@ -144,11 +156,9 @@ const OpenApplicationContainer = () => {
     })),
   ];
 
+  // location api end
 
-// location api end 
-
-
-// open application api start 
+  // open application api start
   const { data, isLoading, isError, error } =
     useQuery<OpenApplicationApiResponse>({
       queryKey: [
@@ -160,7 +170,6 @@ const OpenApplicationContainer = () => {
         jobType,
         location,
       ],
-
 
       queryFn: async () => {
         const params = new URLSearchParams({
@@ -191,12 +200,11 @@ const OpenApplicationContainer = () => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         return res.json();
-      }
-
+      },
 
       // queryFn: async () => {
       //   const searchTerm = buildSearchTerm();
@@ -224,14 +232,11 @@ const OpenApplicationContainer = () => {
 
       //   return res.json();
       // },
-
-
-
     });
 
   // console.log(data);
 
-  // open application api end 
+  // open application api end
 
   const totalPages = data?.meta
     ? Math.ceil(data.meta.total / data.meta.limit)
@@ -270,7 +275,7 @@ const OpenApplicationContainer = () => {
       const redirectUrl = response?.data?.job?.url;
 
       if (redirectUrl) {
-        window.location.href = redirectUrl;
+        window.open(redirectUrl, "_blank");
       }
     },
 
@@ -278,7 +283,6 @@ const OpenApplicationContainer = () => {
       console.error("Apply failed:", error.message);
     },
   });
-
 
   const handleApply = (jobId: string) => {
     applideMutation.mutate(jobId);
@@ -309,7 +313,6 @@ const OpenApplicationContainer = () => {
               setSearch(e.target.value);
               setActiveFilter("search");
             }}
-
             placeholder="Search"
           />
         </div>
@@ -319,14 +322,14 @@ const OpenApplicationContainer = () => {
           <WasabiDropDown
             list={jobTypeList}
             selectedValue={jobType}
-              placeholderText="Job Type"
+            placeholderText="Job Type"
             // onValueChange={(value) => {
             //   setJobType(value);
             //   setActiveFilter("jobType");
             // }}
             onValueChange={(value) => {
               if (value === "__none__") {
-                setJobType("");        // API এর জন্য empty
+                setJobType(""); // API এর জন্য empty
                 setActiveFilter(null); // filter remove
               } else {
                 setJobType(value);
@@ -353,8 +356,6 @@ const OpenApplicationContainer = () => {
                 setActiveFilter("location");
               }
             }}
-
-
             placeholderText="Location"
           />
         </div>
@@ -379,10 +380,10 @@ const OpenApplicationContainer = () => {
               <div
                 key={app._id}
                 className="border-[2px] border-[#E5E7EB] rounded-[20px] p-6 hover:shadow-xl transition-all bg-white flex flex-col h-full"
-              // onClick={() => {
-              //   setSelectedJob(app);
-              //   setIsJobModalOpen(true);
-              // }}
+                // onClick={() => {
+                //   setSelectedJob(app);
+                //   setIsJobModalOpen(true);
+                // }}
               >
                 <div className="flex justify-between items-start mb-5">
                   <div className="w-14 h-14 bg-gradient-to-br from-[#F3F4F6] to-[#E5E7EB] rounded-[20px] flex items-center justify-center">
@@ -510,4 +511,3 @@ const OpenApplicationContainer = () => {
 };
 
 export default OpenApplicationContainer;
-

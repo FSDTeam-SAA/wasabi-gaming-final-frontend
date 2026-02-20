@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Building2,
@@ -41,9 +41,9 @@ const STATUS_PROGRESS: Record<string, number> = {
 
 export default function EditApplyjob({ id }: EditApplyjobProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [notes, setNotes] = useState("");
+  const [status, setStatus] = useState<string>("");
+  const [date, setDate] = useState<string>("");
+  const [notes, setNotes] = useState<string>("");
 
   const session = useSession();
   const token = session?.data?.accessToken;
@@ -65,10 +65,36 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
     enabled: !!id && isOpen,
   });
 
+  // Important: Set initial form values when data is loaded
+  useEffect(() => {
+    if (companyData) {
+      setStatus(companyData.status || "Applied");
+      setNotes(companyData.notes || "");
+      
+      // Handle date properly
+      if (companyData.dateApplied) {
+        // Assuming dateApplied comes as ISO string or similar
+        const d = new Date(companyData.dateApplied);
+        if (!isNaN(d.getTime())) {
+          setDate(d.toISOString().split("T")[0]);
+        }
+      } else {
+        setDate(new Date().toISOString().split("T")[0]);
+      }
+    }
+  }, [companyData]);
+
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!token) throw new Error("No token found");
 
+      const payload: any = {};
+      if (status && status !== companyData?.status) payload.status = status;
+      if (notes !== companyData?.notes) payload.notes = notes;
+      // You can also send date if you want backend to update it
+      // if (date) payload.dateApplied = date;
+
+      // If nothing changed → maybe skip, but for simplicity we always send
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/application-status/${id}`,
         {
@@ -77,25 +103,20 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            status,
-            date,
-            notes,
-          }),
+          body: JSON.stringify(payload),
         },
       );
 
-      const result = await res.json();
-      if (!res.ok)
-        throw new Error(result.message || "Failed to update application");
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to update application");
+      }
 
-      return result;
+      return await res.json();
     },
     onSuccess: () => {
       toast.success("Application updated successfully");
       setIsOpen(false);
-      setStatus("");
-      setNotes("");
     },
     onError: (err: any) => {
       toast.error(err.message || "Update failed");
@@ -107,6 +128,10 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!status) {
+      toast.error("Please select a status");
+      return;
+    }
     updateMutation.mutate();
   };
 
@@ -130,7 +155,6 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
           sm:rounded-3xl               
         "
       >
-        {/* Inner wrapper – this almost always fixes rounding issues */}
         <div className="rounded-3xl overflow-hidden bg-white shadow-2xl">
           <div className="px-6 pt-6 pb-6">
             {/* Header */}
@@ -161,7 +185,7 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
                   <Building2 size={28} className="text-gray-500" />
                 </div>
                 <div>
-                  <h3 className="text-[20xp] font-semibold text-[#1E1E1E] leading-[28px]">
+                  <h3 className="text-[20px] font-semibold text-[#1E1E1E] leading-[28px]">
                     {companyData.companyName}
                   </h3>
                   <p className="text-base font-normal leading-[24px] text-[#4A5565]">
@@ -189,45 +213,19 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-5">
-              <div className="bg-gray-50 rounded-xl p-3.5 flex items-start gap-3">
-                <CalendarDays className="w-5 h-5 text-gray-400 mt-0.5" />
-                <div>
-                  <p className="text-xs text-gray-400 font-medium mb-0.5">
-                    Date Applied
-                  </p>
-                  <p className="text-sm font-bold text-gray-800">
-                    {new Date(date).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-3.5 flex items-start gap-3">
-                <UserRound className="w-5 h-5 text-gray-400 mt-0.5" />
-                <div>
-                  <p className="text-xs text-gray-400 font-medium mb-0.5">
-                    Contact Person
-                  </p>
-                  <p className="text-sm font-bold text-gray-800">
-                    {companyData?.contactPerson || "HR Department"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
             <form onSubmit={handleSubmit}>
               <div className="mb-5">
                 <label className="block text-[14px] font-normal leading-[20px] text-[#4A5565] mb-2">
                   Update Status
                 </label>
                 <select
-                  value={currentStatus}
+                  value={status}           // ← now controlled by local state
                   onChange={(e) => setStatus(e.target.value)}
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-300"
                 >
                   <option value="Applied">Applied</option>
                   <option value="Interview">Interview</option>
-                  <option value="Offer">Accepted</option>
+                  <option value="Offer">Offer</option>           {/* changed label to match value */}
                   <option value="Rejected">Rejected</option>
                 </select>
               </div>
@@ -253,14 +251,14 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  disabled={updateMutation.isPending}
+                  disabled={updateMutation.isPending || !status}
                   className="w-[50%] h-[36px] rounded-xl bg-[#FFFF00] hover:bg-[#f5f502] text-sm font-medium text-[#1E1E1E] transition disabled:opacity-50"
                 >
                   {updateMutation.isPending ? "Updating..." : "Update Status"}
                 </button>
 
                 <Link
-                  href={companyData?.url || "#"}
+                  href={companyData?.url || companyData?.jobPostingUrl || "#"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center w-[50%] gap-2 px-5 h-[36px] rounded-xl border-2 border-gray-200 text-[14px] font-medium text-gray-700 hover:bg-gray-50 transition"
