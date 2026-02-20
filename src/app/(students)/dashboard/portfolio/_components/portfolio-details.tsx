@@ -66,9 +66,9 @@ const PortfolioDetails = ({ id }: { id: string }) => {
           <Button
             variant="secondary"
             size="sm"
-            className="h-7 text-[10px] px-2 bg-white/20 hover:bg-white/30 text-white border-none rounded-sm backdrop-blur-md"
+            className="h-10 text-sm px-4 bg-white/20 hover:bg-white/30 text-white border-none rounded-md backdrop-blur-md"
           >
-            <ArrowLeft className="mr-1 h-3 w-3" /> Back
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
           </Button>
         </Link>
       </div>
