@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import { getProfile } from '@/lib/api/profileApi'
+import { useStudentDashboardStore } from '@/store/studentDashboardStore';
 import { IUser } from '@/types/profile'
 
 const recentActivity = [
@@ -52,7 +53,8 @@ export default function CareerDashboard() {
   const userData: IUser = profileResponse?.data?.data || {}
   const jobs = userData?.applicationJob || []
 
-  // Calculate CV Completion
+  /*
+  // Calculate CV Completion (Deprecated - using store)
   const calculateCVCompletion = () => {
     let completed = 0
     let total = 4 // Basic Info, Education, Experience, Skills
@@ -66,6 +68,9 @@ export default function CareerDashboard() {
   }
 
   const cvCompletion = calculateCVCompletion()
+  */
+  const { cvCompletionPercentage } = useStudentDashboardStore();
+  const cvCompletion = cvCompletionPercentage;
   const applicationsSent = jobs.length
   // Calculate Interview Rate based on "Interview" status count vs total applications
   const interviewsScheduled = jobs.filter(
