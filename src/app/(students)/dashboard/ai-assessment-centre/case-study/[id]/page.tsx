@@ -8,7 +8,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
+import { BadgeInfo, Loader2, Save } from 'lucide-react';
 
 interface CareAnalysis {
   _id: string;
@@ -48,12 +48,7 @@ export default function CaseStudyPage() {
   const [isSaving, setIsSaving] = useState(false);
   const MAX_WORDS = 200;
 
-  // Participants – unchanged
-  const participants = [
-    { id: '1', name: 'William Stevenson', active: true },
-    { id: '2', name: 'Ethan Dickman', active: false },
-    { id: '3', name: 'Olivia Jackson', active: false },
-  ];
+ 
   const applicant = data?.applicant?.firstName || '';
   const applicantLastName = data?.applicant?.lastName || '';
 
@@ -195,17 +190,17 @@ export default function CaseStudyPage() {
                 <span className="mx-2">•</span>
                 <span className="font-semibold">{data.aiassigmentId.type.replace('_', ' ')}</span>
               </p>
-              <h1 className="text-4xl font-bold text-gray-900">
+              <h1 className="text-3xl font-extrabold text-[#000000]">
                 {data.aiassigmentId.title || 'Duty of Care Analysis'}
               </h1>
               <p className="text-[#374151]">{data.aiassigmentId.discription}</p>
             </div>
 
             {/* Precedent */}
-            <div className="border-l-4 border-black bg-white rounded-[12px] shadow-sm">
+            <div className="border-l-4 border-black bg-white rounded-[6px] shadow-sm">
               <div className="p-6 space-y-4">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-yellow-400 rounded flex items-center justify-center text-gray-900 font-bold">
+                  <div className="w-10 h-10 bg-[#FACC15] rounded flex items-center justify-center text-gray-900 font-bold">
                     01
                   </div>
                   <div>
@@ -220,10 +215,10 @@ export default function CaseStudyPage() {
             </div>
 
             {/* Fictional Case */}
-            <div className="border-l-4 border-yellow-400 bg-white rounded-[12px] shadow-sm">
+            <div className="border-l-4 border-[#EAB308] bg-white rounded-[6px] shadow-sm">
               <div className="p-6 space-y-4">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gray-900 rounded flex items-center justify-center text-yellow-400 font-bold text-lg">
+                  <div className="w-10 h-10 bg-gray-900 rounded flex items-center justify-center text-[#FACC15] font-bold text-lg">
                     02
                   </div>
                   <div>
@@ -238,11 +233,11 @@ export default function CaseStudyPage() {
             </div>
 
             {/* Your Analysis */}
-            <div className="border-t-8 border-yellow-400 bg-white rounded-[12px] shadow-sm">
+            <div className="border-t-8 border-[#EAB308] bg-white rounded-[6px] shadow-sm">
               <div className="p-6 space-y-6">
                 <div className="flex items-start justify-between flex-wrap gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-900 rounded flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 bg-gray-900 rounded flex items-center justify-center text-[#FACC15] font-bold">
                       03
                     </div>
                     <div>
@@ -262,9 +257,9 @@ export default function CaseStudyPage() {
                   </div>
                 </div>
 
-                <div className="bg-[#FEFCE8] rounded-[12px] border border-[#FACC15] p-4 space-y-3">
+                <div className="bg-[#FEFCE8] rounded-[12px] border-2 border-[#FACC15] p-4 space-y-3">
                   <h4 className="text-sm font-bold flex items-center gap-2">
-                    <span className="text-lg">ℹ️</span>
+                    <span className="text-lg">  <BadgeInfo className="w-4 h-4" /></span>
                     Instructions
                   </h4>
                   <ul className="text-sm text-gray-800 space-y-1.5 list-disc pl-5">
@@ -293,21 +288,21 @@ export default function CaseStudyPage() {
 
             {/* Buttons */}
             <div className="flex justify-end gap-4 pt-4">
-              <Button
+              {/* <Button
                 variant="outline"
                 disabled={isSaving}
                 onClick={() => router.back()}
               >
                 Cancel
-              </Button>
+              </Button> */}
 
               <Button
                 onClick={handleSave}
                 disabled={!canSave || isSaving}
-                className={`min-w-[140px] font-semibold ${
+                className={`min-w-[140px] h-[48px] rounded-[8px] font-semibold ${
                   isOverLimit
                     ? 'bg-gray-400 hover:bg-gray-400 cursor-not-allowed'
-                    : 'bg-yellow-400 hover:bg-yellow-500 text-gray-900'
+                    : 'bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-gray-900'
                 }`}
               >
                 {isSaving ? (
@@ -316,7 +311,10 @@ export default function CaseStudyPage() {
                     Saving...
                   </>
                 ) : (
-                  'Save & Submit'
+                  <span className="flex items-center gap-2">
+                    <Save className="w-4 h-4" />
+                    Save & Submit
+                  </span>
                 )}
               </Button>
             </div>

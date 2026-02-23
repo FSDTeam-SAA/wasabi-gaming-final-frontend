@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import MockInterviewDetails from "./mock-interview-details";
 import Interview from "./interview";
 import { useInterviewSessionStore } from "@/zustand/useInterviewSessionId";
+import { toast } from "sonner";
 
 const DetailsLayout = () => {
   const [showInterview, setShowInterview] = useState(false);
@@ -23,7 +24,7 @@ const DetailsLayout = () => {
           },
           body: JSON.stringify({
             category: "Technical Interview",
-            questionNumber: "5",
+            questionNumber: "3",
           }),
         },
       );
@@ -38,7 +39,9 @@ const DetailsLayout = () => {
       }
     } catch (error) {
       console.error("Error creating session:", error);
-      alert("Failed to start interview session. Please try again.");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create session",
+      );
     } finally {
       setLoading(false);
     }
@@ -56,6 +59,7 @@ const DetailsLayout = () => {
         <Interview
           sessionData={sessionData}
           onBack={() => setShowInterview(false)}
+          isLoading={loading}
         />
       )}
     </div>

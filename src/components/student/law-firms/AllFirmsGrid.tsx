@@ -59,7 +59,7 @@ const AllFirmsGrid = ({ searchTerm, selectedTag }: AllFirmsGridProps) => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // ✅ Bookmark list (single call) → firmId -> bookmarkedUser[]
+  // Bookmark list (single call) → firmId -> bookmarkedUser[]
   const { data: bookmarkMap = {}, isLoading: bmLoading } = useQuery<
     Record<string, string[]>
   >({
@@ -87,7 +87,7 @@ const AllFirmsGrid = ({ searchTerm, selectedTag }: AllFirmsGridProps) => {
 
   const firms = data?.data ?? [];
 
-  // ✅ helper: is this firm bookmarked by current user?
+  // helper: is this firm bookmarked by current user?
   const isFirmBookmarked = useMemo(() => {
     if (!userId) return () => false;
     return (firmId: string) => (bookmarkMap[firmId] ?? []).includes(userId);

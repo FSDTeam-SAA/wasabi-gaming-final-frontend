@@ -11,15 +11,15 @@
   .main-bg-color {
     background: linear-gradient(180deg, #ffee35 0%, #fffabf 100%);
   }
-  .main-font {
+  /* .main-font {
     font-family: 'Neuton', serif;
-  }
+  } */
 }
 
-h3,
+/* h3,
 Button {
   font-family: 'Neuton', serif;
-}
+} */
 
 @layer base {
   * {
@@ -72,4 +72,58 @@ Button {
 }
 .poppins {
   font-family: 'Poppins', sans-serif;
+}
+
+
+
+
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: white !important;
+  }
+
+  .cv-print-area {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+
+
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+
+/* Hide scrollbar but keep scroll working */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
 }

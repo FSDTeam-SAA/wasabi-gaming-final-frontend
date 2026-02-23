@@ -6,7 +6,7 @@ export function AssessmentGridLoader() {
       {Array.from({ length: 4 }).map((_, index) => (
         <div
           key={index}
-          className="rounded-xl border p-6 space-y-4 bg-white"
+          className="rounded-xl p-6 space-y-4 bg-white"
         >
           {/* Header */}
           <div className="flex items-start justify-between">

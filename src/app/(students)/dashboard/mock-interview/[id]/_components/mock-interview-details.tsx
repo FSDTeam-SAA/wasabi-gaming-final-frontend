@@ -107,9 +107,6 @@ const MockInterviewDetails = ({ onProceed }: { onProceed: any }) => {
 
         {isSessionDetailsOpen && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-              <span className="text-sm font-semibold">{interview?.role}</span>
-            </div>
 
             <div className="flex justify-between text-xs text-gray-500">
               <span>Duration</span>

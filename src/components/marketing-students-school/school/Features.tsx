@@ -5,18 +5,47 @@ import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '../ui/button'
+import { useQuery } from '@tanstack/react-query'
+import api from '@/lib/api'
 
 const Features = () => {
-  // 👉 active image & button state
-  const [activeImage, setActiveImage] = useState('/schoolProject1.png')
-  const [activeButton, setActiveButton] = useState('Student Tracking')
+  // 👉 API integration
+  const { data: apiData, isLoading } = useQuery({
+    queryKey: ['dynamic-websites', 'school'],
+    queryFn: async () => {
+      const res = await api.get('/dynamic-website?category=school')
+      return res.data
+    },
+  })
 
-  // Buttons data
-  const buttons = [
+  // Fallback data
+  const fallbackButtons = [
     { name: 'Student Tracking', image: '/schoolProject1.png' },
     { name: 'Events', image: '/events.jpeg' },
+    { name: 'Students Profiles', image: '/student-profile.png' },
+    { name: 'Student Premium Features', image: '/premium-features.png' },
     { name: 'Learning Courses', image: '/courses1.png' },
   ]
+
+  // Map API data to buttons format safely
+  const buttons = apiData?.length
+    ? apiData.map((item: any) => ({
+      name: item.title,
+      image: item.image,
+    }))
+    : fallbackButtons
+
+  // 👉 active image & button state
+  const [activeImage, setActiveImage] = useState(buttons[0].image)
+  const [activeButton, setActiveButton] = useState(buttons[0].name)
+
+  // Update state when data changes
+  React.useEffect(() => {
+    if (buttons.length > 0) {
+      setActiveImage(buttons[0].image)
+      setActiveButton(buttons[0].name)
+    }
+  }, [apiData])
 
   return (
     <div
@@ -56,7 +85,7 @@ const Features = () => {
                 prepare, and excel in your career.
               </p>
 
-              <Link href="/school/dashboard">
+              <Link href="/school/manage-students">
                 <Button
                   size="lg"
                   className="rounded-full bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
@@ -74,7 +103,7 @@ const Features = () => {
       <div className="relative z-10 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-center gap-3">
-            {buttons.map(btn => (
+            {buttons.map((btn: any) => (
               <Button
                 key={btn.name}
                 variant="secondary"
