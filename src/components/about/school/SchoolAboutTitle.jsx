@@ -11,7 +11,10 @@ const SchoolAboutTitle = () => {
         to employers, and take the next big step in your career.
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default SchoolAboutTitle;
+export default SchoolAboutTitle
+
+// # NEXT_PUBLIC_API_BASE_URL=https://wasabigaming.vercel.app/api/v1
+// NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
