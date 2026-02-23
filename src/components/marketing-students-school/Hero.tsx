@@ -16,6 +16,8 @@ import { Star } from 'lucide-react'
 import JoinCommunityModal from './JoinCommunityModal'
 import { useRouter } from 'next/navigation'
 import HeroDropDown from '../ui/HeroDropDown'
+import { useUserProfile } from '@/hooks/useUserProfile'
+import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import { LocationsApiResponse } from '@/types/location-data-type'
 
@@ -44,6 +46,7 @@ const Hero = () => {
   const words = ['DREAMS', 'FUTURE', 'PASSION']
   const [index, setIndex] = useState(0)
   const router = useRouter();
+  const { hasActiveSubscription, isAuthenticated } = useUserProfile()
 
   const [openModal, setOpenModal] = useState(false)
   const [jobType, setJobType] = useState<string | undefined>("");
@@ -84,14 +87,47 @@ const Hero = () => {
   const locationData = data?.data || []
 
 
+  // const locationDataWithNone = [
+  //   { id: 0, name: "None", value: "__none__" },
+  //   ...locationData.map((loc, index) => ({
+  //     id: loc.id || index + 1,
+  //     name: loc.name.trim(),
+  //     value: loc.value.trim(),
+  //   })),
+  // ];
+
+  const cleanedLocations = Array.from(
+    new Map(
+      locationData
+        .map((loc) => {
+          let cleanName = loc.name.trim();
+
+          // remove postcode (anything inside bracket)
+          cleanName = cleanName.replace(/\(.*?\)/g, "");
+
+          // remove "and X other location"
+          cleanName = cleanName.replace(/and\s+\d+\s+other\s+location(s)?/gi, "");
+
+          cleanName = cleanName.trim();
+
+          return cleanName;
+        })
+        .filter((name) => name && name.toLowerCase() !== "paralegal") // remove paralegal
+        .map((name) => [name.toLowerCase(), name]) // key দিয়ে duplicate remove
+    ).values()
+  );
+
   const locationDataWithNone = [
     { id: 0, name: "None", value: "__none__" },
-    ...locationData.map((loc, index) => ({
-      id: loc.id || index + 1,
-      name: loc.name.trim(),
-      value: loc.value.trim(),
+    ...cleanedLocations.map((name, index) => ({
+      id: index + 1,
+      name,
+      value: name,
     })),
   ];
+
+  // console.log(locationDataWithNone)
+
 
 
 
@@ -182,7 +218,7 @@ const Hero = () => {
         >
 
 
-          <div className="w-full flex flex-col sm:flex-row items-center gap-4 md:border md:border-[#E7E7E7] md:rounded-full">
+          <div className="w-full flex flex-col sm:flex-row items-center gap-4 md:gap-0 md:border md:border-[#E7E7E7] md:rounded-full ">
             {/* job type  */}
             <div className="w-full xs:border xs:border-[#E7E7E7] xs:rounded-full ">
               <HeroDropDown
@@ -198,7 +234,7 @@ const Hero = () => {
                   }
                 }}
 
-                placeholderText="Select Type"
+                placeholderText="Select Job Type"
               />
             </div>
             {/* location */}
@@ -235,7 +271,14 @@ const Hero = () => {
       {/* CTA */}
       <div className="flex justify-center mt-10 sm:mt-12">
         <Button
-          onClick={() => setOpenModal(true)}
+          onClick={() => {
+            if (!isAuthenticated || !hasActiveSubscription) {
+              toast.error('This feature requires an active subscription')
+              router.push('/plans')
+              return
+            }
+            setOpenModal(true)
+          }}
           className="w-full sm:w-auto bg-[#FFFF00] hover:bg-[#FFFF00]/90 text-[#1E1E1E] border border-[#CACA00] font-bold py-6 px-10 sm:px-16 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg"
         >
           Join the Community!

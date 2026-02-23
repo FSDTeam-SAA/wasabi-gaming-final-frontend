@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Loader2, X, Check } from 'lucide-react'
+import { Loader2, X, Check, Users } from 'lucide-react'
 import Image from 'next/image'
 import { cn } from '@/utils/cn'
 
@@ -30,9 +30,17 @@ interface FormData {
   fullName: string
   email: string
   age: string
-  cityOrTown: string
-  phoneNumber: string
+  location: string
+  raceEthnicity: string
   yearGroup: string
+
+  industry: string
+  pathway: string
+
+  firstInFamilyToAttendUni: string
+  receivedFreeSchoolMeals: string
+  careExperience: string
+  homePostcode: string
 }
 
 type Status = 'idle' | 'success' | 'error'
@@ -40,8 +48,8 @@ type Status = 'idle' | 'success' | 'error'
 type Community = {
   id: string
   name: string
-  badgeLeft?: string // e.g. "Full", "Active"
-  badgeRight?: string // e.g. "Capacity reached", "Most popular"
+  badgeLeft?: string
+  badgeRight?: string
   filled?: boolean
   whatsappLink?: string
 }
@@ -51,20 +59,24 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
     fullName: '',
     email: '',
     age: '',
-    cityOrTown: '',
-    phoneNumber: '',
+    location: '',
+    raceEthnicity: '',
     yearGroup: '',
+
+    industry: '',
+    pathway: '',
+
+    firstInFamilyToAttendUni: 'Prefer not to say',
+    receivedFreeSchoolMeals: 'Prefer not to say',
+    careExperience: 'Prefer not to say',
+    homePostcode: '',
   })
 
   const [submitStatus, setSubmitStatus] = useState<Status>('idle')
-
-  // ✅ second modal state
   const [communityModalOpen, setCommunityModalOpen] = useState(false)
 
-  // ✅ you can manage multiple communities here
   const communities: Community[] = useMemo(
     () => [
-    
       {
         id: 'c2',
         name: 'Community 1',
@@ -78,13 +90,27 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
   )
 
   const mutation = useMutation({
-    mutationFn: async (data: FormData & { status: 'active' }) => {
+    mutationFn: async (payload: {
+      fullName: string
+      email: string
+      age: number
+      location: string
+      raceEthnicity: string
+      yearGroup: string
+      industry: string
+      pathway: string
+      firstInFamilyToAttendUni: string
+      receivedFreeSchoolMeals: string
+      careExperience: string
+      homePostcode: string
+      status: 'active'
+    }) => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/community`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
+          body: JSON.stringify(payload),
         }
       )
 
@@ -97,9 +123,6 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
     },
     onSuccess: () => {
       setSubmitStatus('success')
-
-      // ✅ Close first modal, open second modal
-      // small delay so user sees success state if you want (optional)
       setTimeout(() => {
         onOpenChange(false)
         setCommunityModalOpen(true)
@@ -108,17 +131,14 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
     onError: () => setSubmitStatus('error'),
   })
 
-  // Reset when modal is opened fresh
   useEffect(() => {
-    if (open) {
-      setSubmitStatus('idle')
-    }
+    if (open) setSubmitStatus('idle')
   }, [open])
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string }
+    e: React.ChangeEvent<HTMLInputElement> | { name: keyof FormData; value: string }
   ) => {
-    const name = 'target' in e ? e.target.name : e.name
+    const name = 'target' in e ? (e.target.name as keyof FormData) : e.name
     const value = 'target' in e ? e.target.value : e.value
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -126,30 +146,60 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (
-      !formData.fullName.trim() ||
-      !formData.email.trim() ||
-      !formData.age.trim() ||
-      !formData.cityOrTown.trim() ||
-      !formData.phoneNumber.trim() ||
-      !formData.yearGroup
-    ) {
+    const requiredOk =
+      formData.fullName.trim() &&
+      formData.email.trim() &&
+      formData.age.trim() &&
+      formData.location.trim() &&
+      formData.raceEthnicity.trim() &&
+      formData.yearGroup.trim() &&
+      formData.industry.trim() &&
+      formData.pathway.trim() &&
+      formData.firstInFamilyToAttendUni.trim() &&
+      formData.receivedFreeSchoolMeals.trim() &&
+      formData.careExperience.trim() &&
+      formData.homePostcode.trim()
+
+    if (!requiredOk) {
+      setSubmitStatus('error')
+      return
+    }
+
+    const ageNumber = Number(formData.age)
+    if (!Number.isFinite(ageNumber) || ageNumber <= 0) {
       setSubmitStatus('error')
       return
     }
 
     setSubmitStatus('idle')
+
+    // ✅ matches the exact payload you asked for
     mutation.mutate({
-      ...formData,
-      status: 'active' as const,
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      age: ageNumber,
+      location: formData.location.trim(),
+      raceEthnicity: formData.raceEthnicity,
+      yearGroup: formData.yearGroup,
+
+      industry: formData.industry,
+      pathway: formData.pathway,
+
+      firstInFamilyToAttendUni: formData.firstInFamilyToAttendUni,
+      receivedFreeSchoolMeals: formData.receivedFreeSchoolMeals,
+      careExperience: formData.careExperience,
+      homePostcode: formData.homePostcode.trim(),
+
+      status: 'active',
     })
   }
 
   const isLoading = mutation.isPending
 
-  // ✅ shared classes
+  // ✅ shared classes (design unchanged)
   const labelClass = 'text-sm font-semibold text-[#0A0A23]'
   const inputClass = 'border border-[#0000001A] rounded-[8px] h-[44px]'
+  const selectTriggerClass = 'border h-[44px] border-[#0000001A] rounded-[8px]'
   const helperEnter = (text: string) => `Enter ${text}`
 
   const openWhatsApp = (link?: string) => {
@@ -161,7 +211,8 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
     <>
       {/* -------------------- 1) FORM MODAL -------------------- */}
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-3xl !rounded-[12px] bg-[#FFFEF0] p-6 border-2 border-[#FFFF00]">
+      <DialogContent className="sm:max-w-3xl !rounded-[12px] bg-[#FFFEF0] p-6 border-2 border-[#FFFF00] h-[85vh] overflow-y-auto hide-scrollbar">
+
           <div className="flex justify-center">
             <Image
               src="/logo.png"
@@ -189,16 +240,21 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
+              <h5 className="text-lg font-medium text-[#0A0A23] mt-8 border-l-4 border-[#FFFF00] pl-2">
+                ABOUT YOU
+              </h5>
+
+              {/* ✅ responsive grid exactly like your layout */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 {/* Full Name */}
                 <div className="space-y-1">
                   <label className={labelClass} htmlFor="fullName">
-                    Full Name
+                    FULL NAME *
                   </label>
                   <Input
                     id="fullName"
                     name="fullName"
-                    placeholder={helperEnter('your full name')}
+                    placeholder="e.g. Alex Smith"
                     value={formData.fullName}
                     onChange={handleChange}
                     className={inputClass}
@@ -209,13 +265,13 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
                 {/* Email */}
                 <div className="space-y-1">
                   <label className={labelClass} htmlFor="email">
-                    Email Address
+                    EMAIL *
                   </label>
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder={helperEnter('your email address')}
+                    placeholder="alex@example.com"
                     value={formData.email}
                     onChange={handleChange}
                     className={inputClass}
@@ -226,13 +282,13 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
                 {/* Age */}
                 <div className="space-y-1">
                   <label className={labelClass} htmlFor="age">
-                    Age
+                    AGE *
                   </label>
                   <Input
                     id="age"
                     name="age"
                     type="number"
-                    placeholder={helperEnter('your age')}
+                    placeholder="16-35"
                     value={formData.age}
                     onChange={handleChange}
                     className={inputClass}
@@ -240,60 +296,245 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
                   />
                 </div>
 
-                {/* City/Town */}
+                {/* Location */}
                 <div className="space-y-1">
-                  <label className={labelClass} htmlFor="cityOrTown">
-                    City or Town
+                  <label className={labelClass} htmlFor="location">
+                    LOCATION *
                   </label>
                   <Input
-                    id="cityOrTown"
-                    name="cityOrTown"
-                    placeholder={helperEnter('your city or town')}
-                    value={formData.cityOrTown}
+                    id="location"
+                    name="location"
+                    placeholder="City or Town"
+                    value={formData.location}
                     onChange={handleChange}
                     className={inputClass}
                     required
                   />
                 </div>
 
-                {/* Phone */}
+                {/* Race/Ethnicity (dropdown like image) */}
                 <div className="space-y-1">
-                  <label className={labelClass} htmlFor="phoneNumber">
-                    Phone Number
-                  </label>
-                  <Input
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    type="Number"
-                    placeholder={helperEnter('your phone number')}
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    className={inputClass}
-                    required
-                  />
+                  <label className={labelClass}>RACE/ETHNICITY *</label>
+                  <Select
+                    value={formData.raceEthnicity}
+                    onValueChange={(value) =>
+                      handleChange({ name: 'raceEthnicity', value })
+                    }
+                  >
+                    <SelectTrigger className={selectTriggerClass}>
+                      <SelectValue placeholder="Select Option" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-none">
+                      <SelectItem value="Asian">Asian</SelectItem>
+                      <SelectItem value="Black">Black</SelectItem>
+                      <SelectItem value="White">White</SelectItem>
+                      <SelectItem value="Mixed">Mixed</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                      <SelectItem value="Prefer not to say">
+                        Prefer not to say
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Year Group */}
                 <div className="space-y-1">
-                  <label className={labelClass}>Year Group</label>
-
+                  <label className={labelClass}>YEAR GROUP *</label>
                   <Select
                     value={formData.yearGroup}
                     onValueChange={(value) =>
                       handleChange({ name: 'yearGroup', value })
                     }
                   >
-                    <SelectTrigger className="border h-[44px] border-[#0000001A] rounded-[8px]">
-                      <SelectValue placeholder="Select year group" />
+                    <SelectTrigger className={selectTriggerClass}>
+                      <SelectValue placeholder="Select Option" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-none">
-                      <SelectItem value="year10">Year 10</SelectItem>
-                      <SelectItem value="year11">Year 11</SelectItem>
-                      <SelectItem value="year12">Year 12</SelectItem>
-                      <SelectItem value="year13">Year 13</SelectItem>
-                      <SelectItem value="graduate">Graduate</SelectItem>
+                      <SelectItem value="Year 10">Year 10</SelectItem>
+                      <SelectItem value="Year 11">Year 11</SelectItem>
+                      <SelectItem value="Year 12">Year 12</SelectItem>
+                      <SelectItem value="Year 13">Year 13</SelectItem>
+                      <SelectItem value="Undergraduate">Undergraduate</SelectItem>
+                      <SelectItem value="Graduate">Graduate</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              <h5 className="text-lg font-medium text-[#0A0A23] mt-8 border-l-4 border-[#FFFF00] pl-2">
+                CAREER INTERESTS
+              </h5>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                {/* Industry (dropdown like image) */}
+                <div className="space-y-1">
+                  <label className={labelClass}>INDUSTRY *</label>
+                  <Select
+                    value={formData.industry}
+                    onValueChange={(value) =>
+                      handleChange({ name: 'industry', value })
+                    }
+                  >
+                    <SelectTrigger className={selectTriggerClass}>
+                      <SelectValue placeholder="Select Option" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-none">
+                      <SelectItem value="Technology">Technology</SelectItem>
+                      <SelectItem value="Finance">Finance</SelectItem>
+                      <SelectItem value="Law">Law</SelectItem>
+                      <SelectItem value="Healthcare">Healthcare</SelectItem>
+                      <SelectItem value="Education">Education</SelectItem>
+                      <SelectItem value="Marketing">Marketing</SelectItem>
+                      <SelectItem value="Engineering">Engineering</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Pathway (dropdown like image) */}
+                <div className="space-y-1">
+                  <label className={labelClass}>PATHWAY *</label>
+                  <Select
+                    value={formData.pathway}
+                    onValueChange={(value) =>
+                      handleChange({ name: 'pathway', value })
+                    }
+                  >
+                    <SelectTrigger className={selectTriggerClass}>
+                      <SelectValue placeholder="Select Option" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-none">
+                      <SelectItem value="Software Engineering">
+                        Software Engineering
+                      </SelectItem>
+                      <SelectItem value="Data Science">Data Science</SelectItem>
+                      <SelectItem value="Product Management">
+                        Product Management
+                      </SelectItem>
+                      <SelectItem value="Consulting">Consulting</SelectItem>
+                      <SelectItem value="Legal">Legal</SelectItem>
+                      <SelectItem value="Apprenticeship">Apprenticeship</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Help Us Support You box (design unchanged) */}
+              <div className="border-2 border-[#FFFF00] rounded-[14px] bg-[#FFFF00]/10 p-4 mt-6">
+                <div>
+                  <div className="flex items-center gap-4 sm:gap-10 text-[#0A0A23]">
+                    <span className="w-[60px] h-[60px] bg-[#FFFF00] rounded-[100%] flex items-center justify-center shrink-0">
+                      <Users className="w-6 h-6" />
+                    </span>
+
+                    <div className="min-w-0">
+                      <h5 className="text-lg font-medium text-[#0A0A23] mt-4">
+                        Help Us Support You
+                      </h5>
+                      <p className="text-sm text-[#0A0A23]/80">
+                        Required for funding that keeps our events more
+                        affordable. Your data is anonymized and confidential
+                        when used.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    {/* First in family (dropdown) */}
+                    <div className="space-y-1">
+                      <label className={labelClass}>
+                        FIRST IN FAMILY TO ATTEND UNI?
+                      </label>
+                      <Select
+                        value={formData.firstInFamilyToAttendUni}
+                        onValueChange={(value) =>
+                          handleChange({
+                            name: 'firstInFamilyToAttendUni',
+                            value,
+                          })
+                        }
+                      >
+                        <SelectTrigger className={selectTriggerClass}>
+                          <SelectValue placeholder="Prefer not to say" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-none">
+                          <SelectItem value="Yes">Yes</SelectItem>
+                          <SelectItem value="No">No</SelectItem>
+                          <SelectItem value="Prefer not to say">
+                            Prefer not to say
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Free school meals (dropdown) */}
+                    <div className="space-y-1">
+                      <label className={labelClass}>
+                        RECEIVED FREE SCHOOL MEALS?
+                      </label>
+                      <Select
+                        value={formData.receivedFreeSchoolMeals}
+                        onValueChange={(value) =>
+                          handleChange({
+                            name: 'receivedFreeSchoolMeals',
+                            value,
+                          })
+                        }
+                      >
+                        <SelectTrigger className={selectTriggerClass}>
+                          <SelectValue placeholder="Prefer not to say" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-none">
+                          <SelectItem value="Yes">Yes</SelectItem>
+                          <SelectItem value="No">No</SelectItem>
+                          <SelectItem value="Prefer not to say">
+                            Prefer not to say
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    {/* Care experience (dropdown) */}
+                    <div className="space-y-1">
+                      <label className={labelClass}>CARE EXPERIENCE?</label>
+                      <Select
+                        value={formData.careExperience}
+                        onValueChange={(value) =>
+                          handleChange({ name: 'careExperience', value })
+                        }
+                      >
+                        <SelectTrigger className={selectTriggerClass}>
+                          <SelectValue placeholder="Prefer not to say" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-none">
+                          <SelectItem value="Yes">Yes</SelectItem>
+                          <SelectItem value="No">No</SelectItem>
+                          <SelectItem value="Prefer not to say">
+                            Prefer not to say
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Home postcode */}
+                    <div className="space-y-1">
+                      <label className={labelClass}>
+                        HOME POSTCODE (FIRST HALF)
+                      </label>
+                      <Input
+                        id="homePostcode"
+                        name="homePostcode"
+                        placeholder="e.g. E1, M1"
+                        value={formData.homePostcode}
+                        onChange={handleChange}
+                        className={inputClass}
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -327,7 +568,6 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
       {/* -------------------- 2) COMMUNITY SELECT MODAL -------------------- */}
       <Dialog open={communityModalOpen} onOpenChange={setCommunityModalOpen}>
         <DialogContent className="sm:max-w-2xl p-0 overflow-hidden !rounded-[18px] border border-[#FFFF00] bg-[#FFFEF0]">
-          {/* header */}
           <div className="relative px-6 pt-6 pb-4 border-b border-white/10">
             <button
               type="button"
@@ -340,7 +580,7 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
 
             <div className="flex items-center gap-2">
               <div className="text-[#1E1E1E] text-xl font-semibold">
-                Join  Community
+                Join Community
               </div>
             </div>
             <p className="text-[#1E1E1E] text-sm mt-1">
@@ -349,7 +589,6 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
           </div>
 
           <div className="p-6">
-            {/* welcome card */}
             <div className="rounded-2xl border border-white/10 bg-[#FFFF00] px-5 py-6 text-center">
               <div className="mx-auto mb-3 h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center">
                 <span className="text-xl">🎉</span>
@@ -358,7 +597,8 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
                 Welcome to the Network!
               </h3>
               <p className="text-[#1E1E1E] text-sm mt-1">
-                Your details have been registered. Join a community group below to get started.
+                Your details have been registered. Join a community group below
+                to get started.
               </p>
             </div>
 
@@ -374,7 +614,9 @@ const JoinCommunityModal = ({ open, onOpenChange }: Props) => {
                     className="rounded-2xl border border-white/10 bg-[#FFF7ED] px-4 py-4 flex items-center justify-between gap-4"
                   >
                     <div>
-                      <div className="text-[#1E1E1E] font-semibold">{c.name}</div>
+                      <div className="text-[#1E1E1E] font-semibold">
+                        {c.name}
+                      </div>
                       <div className="mt-1 flex items-center gap-2 text-xs text-[#1E1E1E]/60">
                         {c.badgeLeft && (
                           <span

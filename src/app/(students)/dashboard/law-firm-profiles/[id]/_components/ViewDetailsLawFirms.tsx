@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
@@ -108,9 +107,9 @@ function ViewDetailsLawFirms() {
         : undefined;
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<"overview" | "positions" | "culture">(
-    "overview",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "positions" | "culture"
+  >("overview");
 
   // Fetch law firm data from API
   const {
@@ -121,7 +120,15 @@ function ViewDetailsLawFirms() {
     queryKey: ["law-firm-profile", id],
     queryFn: async () => {
       if (!id) throw new Error("No ID provided");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lawfirm/${id}`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/lawfirm/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
       if (!res.ok) throw new Error("Failed to fetch law firm data");
       return res.json();
     },
@@ -131,13 +138,16 @@ function ViewDetailsLawFirms() {
   const { data: profileData } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user/profile`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/profile`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
       if (!res.ok) throw new Error("Failed to fetch profile data");
       return res.json();
     },
@@ -204,7 +214,11 @@ function ViewDetailsLawFirms() {
             {firmData.status === "approved" && (
               <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
                 <span className="bg-yellow-300 text-black text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                   </svg>
                   Featured Position
@@ -223,7 +237,8 @@ function ViewDetailsLawFirms() {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
                     if (target.nextElementSibling) {
-                      (target.nextElementSibling as HTMLElement).style.display = "flex";
+                      (target.nextElementSibling as HTMLElement).style.display =
+                        "flex";
                     }
                   }}
                 />
@@ -233,7 +248,11 @@ function ViewDetailsLawFirms() {
                 className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl p-5 w-20 h-20 flex items-center justify-center shadow-lg"
                 style={{ display: firmData.coverImage ? "none" : "flex" }}
               >
-                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-10 h-10 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
                 </svg>
               </div>
@@ -253,7 +272,9 @@ function ViewDetailsLawFirms() {
                 {firmData.location && (
                   <span className="flex items-center gap-1.5">
                     <MapPin className="text-[#DF0000] w-5 h-5" />
-                    <span className="text-base text-[#364153]">{firmData.location}</span>
+                    <span className="text-base text-[#364153]">
+                      {firmData.location}
+                    </span>
                   </span>
                 )}
 
@@ -265,7 +286,11 @@ function ViewDetailsLawFirms() {
                 </span>
 
                 <span className="flex items-center gap-1.5">
-                  <svg className="w-5 h-5 text-[#BEAE00]" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5 text-[#BEAE00]"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
                   </svg>
                   <span className="text-base text-[#364153]">
@@ -293,7 +318,9 @@ function ViewDetailsLawFirms() {
                 <div className="flex gap-3 items-center">
                   <Globe className="w-5 h-5 text-[#1905CD]" />
                   <div>
-                    <p className="text-sm text-[#6A7282] font-normal">Website</p>
+                    <p className="text-sm text-[#6A7282] font-normal">
+                      Website
+                    </p>
                     <span className="text-sm font-normal text-[#364153] break-all">
                       {firmData?.website}
                     </span>
@@ -302,7 +329,11 @@ function ViewDetailsLawFirms() {
 
                 {firmData.website && (
                   <a
-                    href={firmData.website.startsWith("http") ? firmData.website : `https://${firmData.website}`}
+                    href={
+                      firmData.website.startsWith("http")
+                        ? firmData.website
+                        : `https://${firmData.website}`
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shrink-0"
@@ -325,7 +356,9 @@ function ViewDetailsLawFirms() {
               <div className="flex gap-3 items-center">
                 <Phone className="w-5 h-5 text-[#00AE26]" />
                 <div>
-                  <p className="text-sm text-[#6A7282] font-normal">Phone Number</p>
+                  <p className="text-sm text-[#6A7282] font-normal">
+                    Phone Number
+                  </p>
                   <span className="text-sm font-normal text-[#364153] break-all">
                     {firmData?.phoneNumber}
                   </span>
@@ -396,12 +429,17 @@ function ViewDetailsLawFirms() {
                             </h3>
 
                             <ul className="space-y-2 text-gray-700">
-                              {firmData.practiceAreas.split(",").map((area, index) => (
-                                <li key={index} className="flex gap-2 items-center">
-                                  <CircleCheckBig className="w-4 h-4 text-green-500" />
-                                  {area.trim()}
-                                </li>
-                              ))}
+                              {firmData.practiceAreas
+                                .split(",")
+                                .map((area, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex gap-2 items-center"
+                                  >
+                                    <CircleCheckBig className="w-4 h-4 text-green-500" />
+                                    {area.trim()}
+                                  </li>
+                                ))}
                             </ul>
                           </div>
                         )}
@@ -414,12 +452,17 @@ function ViewDetailsLawFirms() {
                             </h3>
 
                             <ul className="space-y-2 text-gray-700">
-                              {firmData.keyHighlights.split(",").map((highlight, index) => (
-                                <li key={index} className="flex gap-2 items-center">
-                                  <CircleCheckBig className="w-4 h-4 text-green-500" />
-                                  {highlight.trim()}
-                                </li>
-                              ))}
+                              {firmData.keyHighlights
+                                .split(",")
+                                .map((highlight, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex gap-2 items-center"
+                                  >
+                                    <CircleCheckBig className="w-4 h-4 text-green-500" />
+                                    {highlight.trim()}
+                                  </li>
+                                ))}
                             </ul>
                           </div>
                         )}
@@ -429,7 +472,9 @@ function ViewDetailsLawFirms() {
 
                   {firmData.exertise && !firmData.practiceAreas && (
                     <div className="border-t border-gray-100 pt-8">
-                      <h3 className="text-lg font-bold text-gray-900 mb-4">Areas of Expertise</h3>
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">
+                        Areas of Expertise
+                      </h3>
                       <div className="flex flex-wrap gap-2">
                         {firmData.exertise.split(",").map((item, index) => (
                           <span
@@ -447,12 +492,18 @@ function ViewDetailsLawFirms() {
                     <div className="border-t border-gray-100 pt-8">
                       <div className="flex items-start gap-4">
                         <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-5 h-5 text-gray-600"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z" />
                           </svg>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-lg font-bold text-gray-900 mb-3">Internship & Training</h3>
+                          <h3 className="text-lg font-bold text-gray-900 mb-3">
+                            Internship & Training
+                          </h3>
                           <p className="text-gray-700 text-sm leading-relaxed">
                             {firmData.internshipTraining}
                           </p>
@@ -476,7 +527,8 @@ function ViewDetailsLawFirms() {
 
                       <div className="flex-1 min-w-0">
                         <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
-                          {firmData?.recentAnnualRevenue?.title || "Recent Awards"}
+                          {firmData?.recentAnnualRevenue?.title ||
+                            "Recent Awards"}
                         </h2>
                         <h3 className="text-base font-normal text-[#4A5565] mb-3">
                           {firmData.recentAnnualRevenue?.description}
@@ -536,7 +588,8 @@ function ViewDetailsLawFirms() {
 
                       <div className="flex-1 min-w-0">
                         <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
-                          {firmData?.technologyInitiatives?.title || "Technology Initiatives"}
+                          {firmData?.technologyInitiatives?.title ||
+                            "Technology Initiatives"}
                         </h2>
                         <h3 className="text-base font-normal text-[#4A5565] mb-3">
                           {firmData.technologyInitiatives?.description}
@@ -566,7 +619,8 @@ function ViewDetailsLawFirms() {
 
                       <div className="flex-1 min-w-0">
                         <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
-                          {firmData?.diversityEquityAndInclusion?.title || "Diversity, Equity & Inclusion"}
+                          {firmData?.diversityEquityAndInclusion?.title ||
+                            "Diversity, Equity & Inclusion"}
                         </h2>
                         <h3 className="text-base font-normal text-[#4A5565] mb-3">
                           {firmData.diversityEquityAndInclusion?.description}
@@ -617,7 +671,8 @@ function ViewDetailsLawFirms() {
                     <div
                       className="max-w-6xl mx-auto border-2 border-[#BEDBFF] rounded-2xl p-4 sm:p-[32px] shadow-sm"
                       style={{
-                        background: "linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)",
+                        background:
+                          "linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)",
                       }}
                     >
                       <div className="flex items-start gap-4">
@@ -636,8 +691,10 @@ function ViewDetailsLawFirms() {
                             Your Career Strengths
                           </h3>
                           <p className="text-sm sm:text-base text-[#4A5565] leading-relaxed mb-4">
-                            Based on your psychometric test results, you excel in analytical thinking and
-                            problem-solving. We've found 5 new job opportunities that match your profile.
+                            Based on your psychometric test results, you excel
+                            in analytical thinking and problem-solving. We've
+                            found 5 new job opportunities that match your
+                            profile.
                           </p>
 
                           {(datass === "Free Plan" || datass === "") && (
@@ -665,7 +722,8 @@ function ViewDetailsLawFirms() {
                         </div>
                         <div className="flex-1">
                           <p className="text-[#1E1E1E] text-base sm:text-lg text-center font-medium italic leading-relaxed">
-                            "Success is the sum of small efforts repeated day in and day out."
+                            "Success is the sum of small efforts repeated day in
+                            and day out."
                           </p>
                         </div>
                       </div>
@@ -677,7 +735,9 @@ function ViewDetailsLawFirms() {
               {/* POSITIONS TAB */}
               {activeTab === "positions" && (
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Open Positions</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-6">
+                    Open Positions
+                  </h2>
                   <ShowOpenPosition firmName={firmData?.firmName} />
                 </div>
               )}
@@ -686,47 +746,69 @@ function ViewDetailsLawFirms() {
               {activeTab === "culture" && (
                 <div className="space-y-6">
                   <div className="border border-[#0000001A] rounded-[12px] py-6">
-                    <h2 className="text-xl font-medium mb-4 px-4 sm:px-6">Culture & Benefits</h2>
+                    <h2 className="text-xl font-medium mb-4 px-4 sm:px-6">
+                      Culture & Benefits
+                    </h2>
 
                     <div className="px-4 sm:px-6">
-                      {Array.isArray(firmData?.cultureAndValue) && firmData.cultureAndValue.length > 0 ? (
+                      {Array.isArray(firmData?.cultureAndValue) &&
+                      firmData.cultureAndValue.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-                          {firmData.cultureAndValue.map((item: string, index: number) => (
-                            <div key={index} className="flex items-start gap-3 text-gray-700">
-                              <div className="w-10 h-10 bg-[#FFFF00] flex justify-center items-center rounded-full">
-                                <CircleCheckBig className="w-5 h-5 text-[#1E1E1E] mt-1 flex-shrink-0" />
+                          {firmData.cultureAndValue.map(
+                            (item: string, index: number) => (
+                              <div
+                                key={index}
+                                className="flex items-start gap-3 text-gray-700"
+                              >
+                                <div className="w-10 h-10 bg-[#FFFF00] flex justify-center items-center rounded-full">
+                                  <CircleCheckBig className="w-5 h-5 text-[#1E1E1E] mt-1 flex-shrink-0" />
+                                </div>
+                                <p className="leading-relaxed text-[#364153]">
+                                  {item}
+                                </p>
                               </div>
-                              <p className="leading-relaxed text-[#364153]">{item}</p>
-                            </div>
-                          ))}
+                            ),
+                          )}
                         </div>
                       ) : (
-                        <p className="text-gray-500 italic">No culture and benefits information available.</p>
+                        <p className="text-gray-500 italic">
+                          No culture and benefits information available.
+                        </p>
                       )}
                     </div>
                   </div>
 
                   <div className="border border-[#0000001A] rounded-[12px] py-6">
-                    <h2 className="text-xl font-medium mb-4 px-4 sm:px-6">Benefits & Perks</h2>
+                    <h2 className="text-xl font-medium mb-4 px-4 sm:px-6">
+                      Benefits & Perks
+                    </h2>
 
                     <div className="px-4 sm:px-6">
-                      {Array.isArray(firmData?.benefitsAndPerks) && firmData.benefitsAndPerks.length > 0 ? (
+                      {Array.isArray(firmData?.benefitsAndPerks) &&
+                      firmData.benefitsAndPerks.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-                          {firmData.benefitsAndPerks.map((item: string, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-start gap-3 text-gray-700 p-3 rounded-[8px]"
-                              style={{
-                                background: "linear-gradient(135deg, #EFF6FF 0%, #ECFEFF 100%)",
-                              }}
-                            >
-                              <Award className="w-5 h-5 text-[#155DFC] mt-1 flex-shrink-0" />
-                              <p className="leading-relaxed text-base text-[#364153] font-normal">{item}</p>
-                            </div>
-                          ))}
+                          {firmData.benefitsAndPerks.map(
+                            (item: string, index: number) => (
+                              <div
+                                key={index}
+                                className="flex items-start gap-3 text-gray-700 p-3 rounded-[8px]"
+                                style={{
+                                  background:
+                                    "linear-gradient(135deg, #EFF6FF 0%, #ECFEFF 100%)",
+                                }}
+                              >
+                                <Award className="w-5 h-5 text-[#155DFC] mt-1 flex-shrink-0" />
+                                <p className="leading-relaxed text-base text-[#364153] font-normal">
+                                  {item}
+                                </p>
+                              </div>
+                            ),
+                          )}
                         </div>
                       ) : (
-                        <p className="text-gray-500 italic">No culture and benefits information available.</p>
+                        <p className="text-gray-500 italic">
+                          No culture and benefits information available.
+                        </p>
                       )}
                     </div>
                   </div>

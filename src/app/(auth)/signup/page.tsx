@@ -211,13 +211,13 @@ export default function SignUpPage() {
 
                     <h2 className="text-2xl font-bold text-center mb-2">
                         {activeTab === 'Students'
-                            ? "Ready to Start Your Journey in Law?"
-                            : "Ready to land an apprenticeship?"}
+                            ? 'Ready to Start Your Journey in Law?'
+                            : 'Ready to join the network?'}
                     </h2>
                     <p className="text-center text-gray-600 mb-8 block">
                         {activeTab === 'Students'
-                            ? "Learn, Connect, and Build Your Legal Career."
-                            : "Quickly find and apply to thousands of apprenticeship in one-click."}
+                            ? 'Learn, Connect, and Build Your Legal Career.'
+                            : 'Manage your students and their legal career journeys.'}
                     </p>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -352,13 +352,13 @@ export default function SignUpPage() {
             <div className="hidden md:flex w-1/2 p-6 md:p-12 flex-col justify-center bg-[#f0f2f5]">
                 <h3 className="text-2xl font-semibold mb-4 text-black">
                     {activeTab === 'Students'
-                        ? "Your All-in-One Platform For Aspiring Legal Professionals!"
-                        : "Aspiring — Your All-in-One School Management Platform"}
+                        ? 'Your All-in-One Platform For Aspiring Legal Professionals!'
+                        : 'Aspiring Legal Network — Your All-in-One School Management Platform'}
                 </h3>
                 <p className="mb-8 text-gray-700">
                     {activeTab === 'Students'
-                        ? "The Aspiring Legal Network helps you explore, prepare, and succeed in law with tools, courses, and mentoring that build confidence."
-                        : "Aspiring is a simple yet powerful system that helps schools manage students, teachers, and activities with ease."}
+                        ? 'The Aspiring Legal Network helps you explore, prepare, and succeed in law with tools, courses, and mentoring that build confidence.'
+                        : 'Aspiring legal network is a simple yet powerful system that helps schools manage students, teachers, and activities with ease. With smart tools and a modern interface, it lets you organise efficiently and focus on better learning outcomes.'}
                 </p>
 
                 {/* <div className="flex space-x-2 mb-8">
@@ -372,7 +372,7 @@ export default function SignUpPage() {
                         src={
                             activeTab === 'Students'
                                 ? IMAGES.signup_Image_Student.src
-                                : IMAGES.signup_Image_School.src
+                                : '/hero-image.jpg'
                         }
                         alt="Hero"
                         className="w-full object-cover"

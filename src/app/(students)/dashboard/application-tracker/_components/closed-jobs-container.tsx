@@ -10,7 +10,7 @@ import Link from "next/link";
 import { ClosedJobsApiResponse, ClosedJob } from "./closed-jobs-data-type";
 import moment from "moment";
 import JobDetailsModal from "./JobViewDetailsModal";
-import ReadyToNextStep from './ready-to-next-step';
+import ReadyToNextStep from "./ready-to-next-step";
 
 const getStatusColor = (status: string) => {
   const lower = status.toLowerCase();
@@ -42,7 +42,7 @@ const ClosedJobsContainer = () => {
     queryKey: ["closed-jobs", currentPage],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=Closed&page=${currentPage}&limit=10`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/not-my-applied-job?jobStatus=Closed&status=active&page=${currentPage}&limit=10`,
         {
           method: "GET",
           headers: {
@@ -105,7 +105,7 @@ const ClosedJobsContainer = () => {
                       }
                      `}
                   >
-                    {app?.status}
+                    {app?.jobStatus}
                   </button>
                 </div>
 
@@ -148,10 +148,7 @@ const ClosedJobsContainer = () => {
                   >
                     <Eye className="w-4 h-4 text-[#1E1E1E]" /> View Details
                   </Button> */}
-                  <JobDetailsModal id = {app?._id}/>
-
-
-
+                  <JobDetailsModal id={app?._id} />
 
                   {/* {canApplyToJob(app) && (
                     <Link href="/dashboard/application-tracker/cv-uplode">
@@ -207,17 +204,17 @@ const ClosedJobsContainer = () => {
           )}
 
           <div className="text-center text-gray-600 mt-6">
-            Showing {data?.data.length} of 10 opportunities{" "}
+            Showing {data?.data?.length} of 10 opportunities{" "}
             {`(Page ${currentPage} of ${totalPages})`}
           </div>
         </>
       )}
 
-            {/* Ready to Take the Next Step? section  */}
-      
-            <section className="pt-8">
-              <ReadyToNextStep />
-            </section>
+      {/* Ready to Take the Next Step? section  */}
+
+      <section className="pt-8">
+        <ReadyToNextStep />
+      </section>
     </div>
   );
 };

@@ -35,11 +35,20 @@ const SettingHaders = ({
           Manage your account information and preferences
         </p>
       </div>
-      <div className="flex flex-col items-end gap-2">
-        <button className="bg-gradient-to-r from-[#F3E8FF] to-[#DBEAFE] flex items-center justify-center  text-[#8200DB] px-4 py-1 rounded-full text-sm font-medium">
-          <Sparkles className="w-4 h-4 mr-2" />{' '}
-          {data?.data?.subscription?.name || ''}
-        </button>
+      <div className="flex flex-col items-end gap-3">
+        <div className="flex items-center gap-3">
+          <button className="bg-gradient-to-r from-[#F3E8FF] to-[#DBEAFE] flex items-center justify-center text-[#8200DB] px-5 py-1.5 rounded-full text-sm font-medium">
+            <Sparkles className="w-4 h-4 mr-2" />{' '}
+            {data?.data?.subscription?.name || ''}
+          </button>
+          {(!data?.data?.subscription?.name || data?.data?.subscription?.name?.toLowerCase() === 'free') && (
+            <a href="/plans">
+              <button className="bg-[#FFFF00] border-none text-black px-5 py-1.5 rounded-full text-sm font-medium hover:bg-[#F0F000] transition-all shadow-sm">
+                Upgrade Plan
+              </button>
+            </a>
+          )}
+        </div>
         <button
           onClick={() => setIsLogoutModalOpen(true)}
           className="flex items-center justify-center bg-[#FFFF00] border-2 border-[#E5E500] text-black px-6 py-2 rounded-full text-base font-bold hover:bg-[#F0F000] transition-all shadow-sm"

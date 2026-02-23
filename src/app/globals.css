@@ -116,3 +116,14 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+
+/* Hide scrollbar but keep scroll working */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}

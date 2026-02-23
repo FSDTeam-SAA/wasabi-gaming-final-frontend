@@ -50,7 +50,7 @@ export default function ResultsPage() {
           <div className="flex items-start justify-between mb-8">
             <div className="space-y-2">
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1E1E1E] flex items-center gap-2">
-                Assessment Centre Suite Result 🎉
+                Assessment Centre Suite Result   🎉
               </h1>
               <p className="text-[#4A5565] font-normal font-sm md:text-base">
                 Great job! Here's how you performed in this Written Case Study session.
@@ -210,9 +210,9 @@ export default function ResultsPage() {
             </p>
             <button
               onClick={() => router.push('/dashboard/ai-assessment-centre')}
-              className="inline-flex items-center gap-2 bg-[#FACC15] text-sm text-black font-semibold px-3 md:px-5 lg:px-6 py-3 rounded-[12px] "
+              className="inline-flex items-center gap-2 bg-[#FFFF00] hover:bg-[#FFFF00]/80 text-sm text-black font-semibold px-3 md:px-5 lg:px-6 py-3 rounded-[12px] "
             >
-              Start Assessment Center Suite
+              Start Assessment Centre Suite
               <ArrowRight size={18} />
             </button>
           </div>
