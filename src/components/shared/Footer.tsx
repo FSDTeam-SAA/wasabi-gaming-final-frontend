@@ -72,7 +72,7 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        {/* Divider & Copyright */}
+        {/* Divider & Copyright  monir*/} 
         <hr className="border-gray-300 mb-6" />
         <p className="text-center text-gray-600 text-sm">
           ©copyright aspiringlegalwork.2025 . All right reserves

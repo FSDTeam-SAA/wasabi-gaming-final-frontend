@@ -1,7 +1,8 @@
-name: Deploy Website
+name: Deploy to Production
+
 on:
   push:
-    branches: [ monir ]
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -18,7 +19,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /var/www/client
-            git pull origin monir
+            git pull origin main
             npm install
             npm run build
             pm2 restart client || pm2 start npm --name "client" -- run start
