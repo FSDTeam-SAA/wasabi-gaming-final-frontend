@@ -15,6 +15,3 @@ const SchoolAboutTitle = () => {
 }
 
 export default SchoolAboutTitle
-
-// # NEXT_PUBLIC_API_BASE_URL=https://wasabigaming.vercel.app/api/v1
-// NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
