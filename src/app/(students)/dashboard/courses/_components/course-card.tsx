@@ -128,6 +128,7 @@ export default function CourseCard() {
 
     if (isError) return <p>Failed to load courses.</p>;
 
+
     return (
         <div className="space-y-6">
             {/* SEARCH + FILTER */}
@@ -160,6 +161,15 @@ export default function CourseCard() {
                     </div>
                 </div>
             </section>
+
+            {/* COURSES */}
+            { courses.length === 0 && (
+                <div className="text-center text-slate-500">
+                    <p className="text-lg">No courses found.</p>
+                </div>
+             )
+
+            }
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {courses.map((course) => (
                     <Card key={course._id} className="overflow-hidden border border-[#0000001A] shadow-sm rounded-2xl bg-white">
@@ -190,7 +200,7 @@ export default function CourseCard() {
                             <div className="space-y-2">
                                 <div className="flex justify-between text-xs font-semibold text-slate-600">
                                     <span>Progress</span>
-                                    <span>{course.gradeLevel}%</span>
+                                    <span>{course.gradeLevel}</span>
                                 </div>
                                 <div className="w-full h-2 rounded-full overflow-hidden">
                                     <Progress value={Number(course.gradeLevel)} />

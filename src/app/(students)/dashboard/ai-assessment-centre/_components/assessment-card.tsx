@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { CircleCheckBig, Clock, Play } from "lucide-react";
+import { Brain, CircleCheckBig, Clock, Play, ChartColumn, Lightbulb, Target } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -47,19 +47,21 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
   const session = useSession();
   const token = session?.data?.accessToken
 
-  console.log(token)
+  // console.log(token)
+
+  // console.log(data)
 
   const statusConfig = {
     AVAILABLE: {
-      badge: "AVAILABLE",
+      badge: "Available",
       badgeClass: "bg-[#FEF9C2] text-[#894B00] border border-[#FFDF20]",
     },
     COMPLETED: {
-      badge: "COMPLETED",
+      badge: "Completed",
       badgeClass: "bg-[#DCFCE7] text-[#016630] border border-[#7BF1A8]",
     },
     PENDING: {
-      badge: "PENDING",
+      badge: "Pending",
       badgeClass: "bg-blue-100 text-blue-800",
     },
   };
@@ -150,18 +152,34 @@ export function AssessmentCard({ data }: AssessmentCardProps) {
       {isPending && <AILoader />}
 
       <div className="bg-white rounded-[20px] border-[2px] border-[#E5E7EB] p-6 hover:shadow-lg transition-shadow">
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="bg-gradient-to-br from-[#F3E8FF] to-[#E9D4FF]
+ p-3 rounded-[24px] flex-shrink-0 mt-1 inline-flex items-center justify-center">
+            {
+              data?.type === "WRITTEN_CASE" ? (
+                <Brain className="text-[#8200DB]" />
+              ) : data?.type === "PRESENTATION" ? (
+                <ChartColumn className="text-[#8200DB]" />
+              ) : data?.type === "EMAIL_EXERCISE" ? (
+                <Lightbulb className="text-[#8200DB]" />
+              ) : (
+                <Target className="text-[#8200DB]" />
+              )
+            }
+
+
+          </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-base text-[#1E1E1E] mb-1">
+            <h4 className="font-semibold text-base text-[#1E1E1E] mb-1">
               {data.title}
-            </h3>
+            </h4>
             <p className="text-sm text-[#4A5565]">
               {data.discription}
             </p>
           </div>
 
           <span
-            className={`flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-full ${config.badgeClass}`}
+            className={`flex items-center gap-2 text-xs font-medium px-2 py-[2px] rounded-full ${config.badgeClass}`}
           >
             {data.status === "COMPLETED" && (
               <CircleCheckBig className="w-3 h-3" />

@@ -5,15 +5,21 @@ import Link from 'next/link'
 import { Button } from './ui/button'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
+import { useQuery } from '@tanstack/react-query'
+import api from '@/lib/api'
 
 const ToolsSection = () => {
-  // 👉 image state
-  const [activeImage, setActiveImage] = useState('/project1.png')
-  // 👉 active button state
-  const [activeButton, setActiveButton] = useState('Application Tracker')
+  // 👉 API integration
+  const { data: apiData, isLoading } = useQuery({
+    queryKey: ['dynamic-websites', 'student'],
+    queryFn: async () => {
+      const res = await api.get('/dynamic-website?category=student')
+      return res.data
+    },
+  })
 
-  // Buttons data
-  const buttons = [
+  // Fallback data
+  const fallbackButtons = [
     { name: 'Application Tracker', image: '/project1.png' },
     { name: 'Law Firm Profiles', image: '/law-firm-profiles1.png' },
     { name: 'Mock Interview', image: '/Mock-Interview1.png' },
@@ -22,6 +28,27 @@ const ToolsSection = () => {
     { name: 'Cover Letter Builder', image: '/cover-letter-builder1.png' },
     { name: 'CV Builder', image: '/cv-builder1.png' },
   ]
+
+  // Map API data to buttons format safely
+  const buttons = apiData?.length
+    ? apiData.map((item: any) => ({
+      name: item.title,
+      image: item.image,
+    }))
+    : fallbackButtons
+
+  // 👉 image state
+  const [activeImage, setActiveImage] = useState(buttons[0].image)
+  // 👉 active button state
+  const [activeButton, setActiveButton] = useState(buttons[0].name)
+
+  // Update state when data changes
+  React.useEffect(() => {
+    if (buttons.length > 0) {
+      setActiveImage(buttons[0].image)
+      setActiveButton(buttons[0].name)
+    }
+  }, [apiData])
 
   return (
     <div
@@ -56,7 +83,7 @@ const ToolsSection = () => {
 
             {/* Right Side */}
             <div className="md:text-start space-y-8 max-w-md">
-              <p className="text-lg text-gray-800">
+              <p className="text-lg text-gray-800 pb-4">
                 The Aspiring Legal Network equips you with smart tools to build,
                 prepare, and excel in your career.
               </p>
@@ -79,7 +106,7 @@ const ToolsSection = () => {
       <div className="relative z-10 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-center gap-3">
-            {buttons.map((btn) => (
+            {buttons.map((btn: any) => (
               <Button
                 key={btn.name}
                 variant="secondary"

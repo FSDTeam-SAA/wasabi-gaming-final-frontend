@@ -72,10 +72,10 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        {/* Divider & Copyright  monir*/} 
+        {/* Divider & Copyright */}
         <hr className="border-gray-300 mb-6" />
         <p className="text-center text-gray-600 text-sm">
-          ©copyright aspiringlegalwork.2025 . All right reserves
+          ©copyright aspiringlegalwork {new Date().getFullYear()} . All right reserves
         </p>
       </div>
     </footer>

@@ -111,12 +111,18 @@ export const getAllPsychometricTests = async (): Promise<PsychometricTestRespons
 };
 
 // Get single psychometric test by ID
-export const getPsychometricTestById = async (id: string): Promise<SinglePsychometricTestResponse> => {
+export const getPsychometricTestById = async (id: string, token?: string): Promise<SinglePsychometricTestResponse> => {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${API_BASE_URL}/psychometric-test/${id}`, {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers,
     });
 
     if (!res.ok) {

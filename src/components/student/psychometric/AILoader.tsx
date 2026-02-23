@@ -6,15 +6,15 @@ import { Brain, Sparkles, Zap, Cpu } from 'lucide-react'
 
 const AILoader = () => {
   const [loadingText, setLoadingText] = useState(
-    'Initializing AI Assessment...',
+    'Initialising AI Assessment...',
   )
 
   const loadingStates = [
-    'Analyzing cognitive patterns...',
+    'Analysing cognitive patterns...',
     'Evaluating decision matrices...',
-    'Synthesizing performance metrics...',
-    'Generating personalized insights...',
-    'Finalizing assessment report...',
+    'Synthesising performance metrics...',
+    'Generating personalised insights...',
+    'Finalising assessment report...',
   ]
 
   useEffect(() => {

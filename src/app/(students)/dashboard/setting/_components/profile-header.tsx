@@ -79,7 +79,7 @@ export default function ProfileHeader() {
         changeProfilePic.mutate(file);
     };
 
-    const initials = profile?.data?.name
+    const initials = profile?.data?.data?.name
         ?.split(" ")
         .map((n: string) => n[0])
         .join("")
@@ -100,9 +100,9 @@ export default function ProfileHeader() {
                             </div>
                         )}
 
-                        {preview || profile?.data?.profileImage ? (
+                        {preview || profile?.data?.data?.profileImage ? (
                             <Image
-                                src={preview || profile?.data?.profileImage}
+                                src={preview || profile?.data?.data?.profileImage}
                                 width={900}
                                 height={900}
                                 alt="Profile preview"
@@ -138,46 +138,46 @@ export default function ProfileHeader() {
                     <div className="flex justify-between">
                         <div>
                             <h2 className="text-[#1E1E1E] text-[20px] sm:text-[24px] break-words">
-                                {profile?.data?.firstName}{" "}
-                                {profile?.data?.lastName}
+                                {profile?.data?.data?.firstName}{" "}
+                                {profile?.data?.data?.lastName}
                             </h2>
 
                             <p className="text-[#4A5565] text-[16px] break-words">
-                                {profile?.data?.company}
+                                {profile?.data?.data?.company}
                             </p>
                         </div>
                     </div>
 
                     <p className="mt-3 text-[14px] sm:text-[16px] text-[#364153] max-w-2xl break-words">
-                        {profile?.data?.bio}
+                        {profile?.data?.data?.bio}
                     </p>
 
                     <p className="mt-3 text-[14px] sm:text-[16px] text-[#364153] max-w-2xl break-words">
-                        {profile?.data?.grade}
+                        {profile?.data?.data?.grade}
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4 text-sm text-gray-500">
 
                         <div className="flex items-center gap-2 break-all">
                             <Mail className="w-4 h-4" />
-                            {profile?.data?.email}
+                            {profile?.data?.data?.email}
                         </div>
 
                         <div className="flex items-center gap-2 break-all">
                             <Phone className="w-4 h-4" />
-                            {profile?.data?.phone}
+                            {profile?.data?.data?.phone}
                         </div>
 
                         <div className="flex items-center gap-2 break-all">
                             <MapPin className="w-4 h-4" />
-                            {profile?.data?.address}
+                            {profile?.data?.data?.address}
                         </div>
 
                         <div className="flex items-center gap-2 break-all">
                             <Calendar className="w-4 h-4" />
-                            {profile?.data?.createdAt
+                            {profile?.data?.data?.createdAt
                                 ? new Date(
-                                    profile.data.createdAt
+                                    profile.data.data.createdAt
                                 ).toLocaleDateString("en-US", {
                                     year: "numeric",
                                     month: "short",

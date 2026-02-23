@@ -198,7 +198,7 @@ export default function EmailExercisePage() {
   const getPriorityStyle = (priority: string) => {
     switch (priority.toUpperCase()) {
       case 'HIGH':
-        return 'bg-[#FACC15] text-[#000000]';
+        return 'bg-[#FFFF00] text-[#000000]';
       case 'MEDIUM':
         return 'bg-yellow-200/40 text-yellow-800';
       case 'LOW':
@@ -354,7 +354,7 @@ export default function EmailExercisePage() {
                     <Button
                       onClick={() => submitMutation.mutate()}
                       disabled={submitMutation.isPending || !responseText.trim()}
-                      className="w-full sm:w-auto rounded-[8px] bg-[#FFFF00] text-gray-900 hover:bg-yellow-500 font-bold border border-t-1 border-b-4 border-l-1 border-r-4 border-gray-900"
+                      className="w-full  sm:w-auto rounded-[8px] bg-[#FFFF00] text-gray-900 hover:bg-yellow-500 font-bold border border-t-1 border-b-4 border-l-1 border-r-4 border-gray-900"
                     >
                       <Send className="w-4 h-4 mr-2" />
                       {submitMutation.isPending ? 'Submitting...' : 'Submit All'}

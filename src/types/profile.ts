@@ -42,6 +42,12 @@ export interface IUser {
     status: 'active' | 'inactive';
     isSubscription: boolean;
     shareLink?: string;
+    applicationJob?: {
+        job: string;
+        status: string;
+        interviewDate?: string;
+        notes?: string;
+    }[];
     createdAt?: string;
     updatedAt?: string;
 }
@@ -50,5 +56,8 @@ export interface ProfileResponse {
     statusCode: number;
     success: boolean;
     message: string;
-    data: IUser;
+    data: {
+        data: IUser;
+        subscription?: any;
+    };
 }
