@@ -1,3 +1,4 @@
+import SubscriptionGuard from '@/components/shared/SubscriptionGuard'
 import SchoolProfile from "@/components/school/SchoolProfile";
 
 export const metadata = {
@@ -7,8 +8,10 @@ export const metadata = {
 
 export default function ProfilePage() {
     return (
-        <main className="max-w-[1600px] mx-auto">
-            <SchoolProfile />
-        </main>
+        <SubscriptionGuard requireSubscription={true} requireLogin={true}>
+            <main className="max-w-[1600px] mx-auto">
+                <SchoolProfile />
+            </main>
+        </SubscriptionGuard>
     );
 }

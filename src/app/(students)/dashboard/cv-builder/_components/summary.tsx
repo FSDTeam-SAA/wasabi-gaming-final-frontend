@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   FormControl,
@@ -6,120 +6,120 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { FileText } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
-import { CvBuilderFormType } from "./cv-making-form";
-import { Button } from "@/components/ui/button";
-import { useFormState } from "./state/useFormState";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Spinner } from "@/components/ui/spinner";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@/components/ui/form'
+import { Textarea } from '@/components/ui/textarea'
+import { FileText } from 'lucide-react'
+import { UseFormReturn } from 'react-hook-form'
+import { CvBuilderFormType } from './cv-making-form'
+import { Button } from '@/components/ui/button'
+import { useFormState } from './state/useFormState'
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { Spinner } from '@/components/ui/spinner'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 type SummaryProps = {
-  form: UseFormReturn<CvBuilderFormType>;
-  isPending: boolean;
-  token: string;
-};
+  form: UseFormReturn<CvBuilderFormType>
+  isPending: boolean
+  token: string
+}
 
 const Summary = ({ form, isPending, token }: SummaryProps) => {
-  const { setIsActive, markStepCompleted } = useFormState();
-  const [aiSummary, setAiSummary] = useState("");
-  const [typewriterText, setTypewriterText] = useState("");
-  const [typewriterIndex, setTypewriterIndex] = useState(0);
-  const [isTyping, setIsTyping] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [characterCount, setCharacterCount] = useState(0);
+  const { setIsActive, markStepCompleted } = useFormState()
+  const [aiSummary, setAiSummary] = useState('')
+  const [typewriterText, setTypewriterText] = useState('')
+  const [typewriterIndex, setTypewriterIndex] = useState(0)
+  const [isTyping, setIsTyping] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [characterCount, setCharacterCount] = useState(0)
 
   useEffect(() => {
-    const subscription = form.watch((value) => {
-      const summaryValue = value.summary || "";
-      setCharacterCount(summaryValue.length);
+    const subscription = form.watch(value => {
+      const summaryValue = value.summary || ''
+      setCharacterCount(summaryValue.length)
 
       if (summaryValue.length >= 10) {
-        markStepCompleted("Summary");
+        markStepCompleted('Summary')
       }
-    });
+    })
 
-    return () => subscription.unsubscribe();
-  }, [form, markStepCompleted]);
+    return () => subscription.unsubscribe()
+  }, [form, markStepCompleted])
 
   useEffect(() => {
     if (!isTyping || !aiSummary || typewriterIndex >= aiSummary.length) {
       if (isTyping && aiSummary) {
-        form.setValue("summary", aiSummary, { shouldValidate: true });
+        form.setValue('summary', aiSummary, { shouldValidate: true })
       }
-      setIsTyping(false);
-      return;
+      setIsTyping(false)
+      return
     }
 
     const timeout = setTimeout(() => {
-      const newText = typewriterText + aiSummary[typewriterIndex];
-      setTypewriterText(newText);
-      setTypewriterIndex((prev) => prev + 1);
+      const newText = typewriterText + aiSummary[typewriterIndex]
+      setTypewriterText(newText)
+      setTypewriterIndex(prev => prev + 1)
 
-      form.setValue("summary", newText, { shouldValidate: true });
-    }, 20);
-    return () => clearTimeout(timeout);
-  }, [isTyping, typewriterIndex, aiSummary, form, typewriterText]);
+      form.setValue('summary', newText, { shouldValidate: true })
+    }, 20)
+    return () => clearTimeout(timeout)
+  }, [isTyping, typewriterIndex, aiSummary, form, typewriterText])
 
   const startTypewriterEffect = (aiText: string) => {
-    setAiSummary(aiText);
-    setTypewriterText("");
-    setTypewriterIndex(0);
-    setIsTyping(true);
+    setAiSummary(aiText)
+    setTypewriterText('')
+    setTypewriterIndex(0)
+    setIsTyping(true)
 
-    form.setValue("summary", "", { shouldValidate: true });
-  };
+    form.setValue('summary', '', { shouldValidate: true })
+  }
 
   const { mutateAsync: generateSummary, isPending: summeryPending } =
     useMutation({
-      mutationKey: ["cv-making"],
+      mutationKey: ['cv-making'],
       mutationFn: async (payload: CvBuilderFormType) => {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/cvbuilder`,
           {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(payload),
           },
-        );
-        return await res.json();
+        )
+        return await res.json()
       },
-      onSuccess: (data) => {
-        toast.success(data?.message);
-        setIsGenerating(false);
+      onSuccess: data => {
+        toast.success(data?.message)
+        setIsGenerating(false)
 
         if (data?.data?.summary) {
           setTimeout(() => {
-            startTypewriterEffect(data.data.summary);
-          }, 300);
+            startTypewriterEffect(data.data.summary)
+          }, 300)
         }
       },
-      onError: (error) => {
-        toast.error(error.message);
-        setIsGenerating(false);
+      onError: error => {
+        toast.error(error.message)
+        setIsGenerating(false)
       },
-    });
+    })
 
   const handleSummery = async () => {
-    setIsGenerating(true);
+    setIsGenerating(true)
 
-    const formData = form.getValues();
+    const formData = form.getValues()
 
     try {
-      await generateSummary(formData);
+      await generateSummary(formData)
     } catch (error) {
-      console.log(`error form summery: ${error}`);
-      setIsGenerating(false);
+      console.log(`error form summery: ${error}`)
+      setIsGenerating(false)
     }
-  };
+  }
 
   return (
     <div className="w-full p-4 border border-gray-300 rounded-xl">
@@ -147,12 +147,12 @@ const Summary = ({ form, isPending, token }: SummaryProps) => {
                   <Textarea
                     placeholder="Experienced software engineer with 5+ years of expertise in full-stack development. Passionate about building scalable applications and leading high-performing teams."
                     {...field}
-                    value={isTyping ? typewriterText : field.value || ""}
-                    onChange={(e) => {
-                      field.onChange(e.target.value);
+                    value={isTyping ? typewriterText : field.value || ''}
+                    onChange={e => {
+                      field.onChange(e.target.value)
                       if (isTyping) {
-                        setIsTyping(false);
-                        setAiSummary("");
+                        setIsTyping(false)
+                        setAiSummary('')
                       }
                     }}
                     className="min-h-[180px] rounded-2xl p-4 border border-gray-100 bg-[#f3f3f5] placeholder:text-gray-500 resize-none"
@@ -182,7 +182,7 @@ const Summary = ({ form, isPending, token }: SummaryProps) => {
               <div className="w-5 h-5 border-2 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
             ) : (
               <Image
-                src={"/details-icon.png"}
+                src={'/details-icon.png'}
                 alt="Generate AI Summary"
                 width={1000}
                 height={1000}
@@ -200,14 +200,14 @@ const Summary = ({ form, isPending, token }: SummaryProps) => {
 
           {/* Character count */}
           <div className="text-sm text-right text-gray-500">
-            {form.watch("summary")?.length || 0} characters
+            {form.watch('summary')?.length || 0} characters
           </div>
         </div>
 
         {/* Navigation Buttons */}
         <div className="mt-4 space-x-4">
           <Button
-            onClick={() => setIsActive("Achievements")}
+            onClick={() => setIsActive('Achievements')}
             type="button"
             className="w-24 bg-gray-300 rounded-3xl hover:bg-gray-400/55"
             disabled={summeryPending || isTyping}
@@ -225,13 +225,13 @@ const Summary = ({ form, isPending, token }: SummaryProps) => {
                 <span>Saving</span>
               </span>
             ) : (
-              "Save"
+              'Save'
             )}
           </Button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Summary;
+export default Summary

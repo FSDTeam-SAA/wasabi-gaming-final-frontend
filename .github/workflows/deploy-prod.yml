@@ -1,4 +1,4 @@
-name: Deploy Website
+name: Deploy to Production
 
 on:
   push:
@@ -22,6 +22,4 @@ jobs:
             git pull origin main
             npm install
             npm run build
-            rm -rf /var/www/html/*
-            cp -r out/* /var/www/html/
-
+            pm2 restart client || pm2 start npm --name "client" -- run start

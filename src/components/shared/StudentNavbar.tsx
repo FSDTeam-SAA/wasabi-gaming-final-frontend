@@ -31,7 +31,7 @@ const StudentNavbar = () => {
     { name: 'Psychometric Test', path: '/dashboard/psychometric-test' },
     { name: 'Mock Interview', path: '/dashboard/mock-interview' },
     { name: 'Courses', path: '/dashboard/courses' },
-    { name: 'AI Assessment Centre', path: '/dashboard/ai-assessment-centre' },
+    { name: 'Assessment Centre Suite', path: '/dashboard/ai-assessment-centre' },
     { name: 'Law Firm Profiles', path: '/dashboard/law-firm-profiles' },
     { name: 'Application Tracker', path: '/dashboard/application-tracker' },
   ]
@@ -73,15 +73,20 @@ const StudentNavbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <ul className="hidden lg:flex items-center space-x-2 flex-grow justify-center">
+          <ul className="hidden xl:flex items-center space-x-2 flex-grow justify-center">
             {navItems.map(item => (
               <li key={item.name}>
                 <Link
                   href={item.path}
-                  className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 ${isActive(item.path)
+                  className={`px-2.5 py-2 rounded-full transition-all duration-200 xl:text-[12px] 2xl:text-[15px] ${isActive(item.path)
                     ? 'yellow text-[#1E1E1E]'
                     : 'text-[#505050] hover:text-black'
                     }`}
+                  style={{
+                    fontWeight: 400,
+                    lineHeight: '24px',
+                    letterSpacing: '0px',
+                  }}
                 >
                   {item.name}
                 </Link>
@@ -91,7 +96,7 @@ const StudentNavbar = () => {
 
           {/* Right Section - Desktop */}
           {session?.user?.role === 'student' ? (
-            <div className="hidden lg:flex items-center space-x-3">
+            <div className="hidden xl:flex items-center space-x-3">
               <Link
                 href="/dashboard/setting"
                 className={`px-4 py-2 rounded-2xl font-medium transition-all duration-200 border-2 ${isActive('/dashboard/setting')
@@ -123,7 +128,7 @@ const StudentNavbar = () => {
               </button>
             </div>
           ) : (
-            <div className="hidden lg:flex items-center space-x-3">
+            <div className="hidden xl:flex items-center space-x-3">
               <Link href="/login">
                 <button className="border-2 border-[#E5E500] text-[#A6A600] px-4 py-2 rounded-full font-semibold text-sm">
                   Login
@@ -140,7 +145,7 @@ const StudentNavbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden text-black p-2"
+            className="xl:hidden text-black p-2"
           >
             {isMobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -152,14 +157,14 @@ const StudentNavbar = () => {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-[#FEF9BE] border-t border-[#E5E500] px-4 py-3">
+          <div className="xl:hidden bg-[#FEF9BE] border-t border-[#E5E500] px-4 py-3">
             <ul className="flex flex-col space-y-2">
               {navItems.map(item => (
                 <li key={item.name}>
                   <Link
                     href={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block px-3  rounded-lg font-medium text-sm transition-all duration-200 ${isActive(item.path)
+                    className={`block px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${isActive(item.path)
                       ? 'bg-[#FFFF00] text-black border-2 border-[#E5E500]'
                       : 'text-[#505050] hover:text-black'
                       }`}

@@ -209,11 +209,11 @@ const ResetPasswordForm = () => {
                     </div>
                 </div>
 
-                <div className="flex space-x-2 mb-8">
+                {/* <div className="flex space-x-2 mb-8">
                     <div className="w-3 h-3 rounded-full bg-[#ffff00]" />
                     <div className="w-3 h-3 rounded-full bg-[#cccccc]" />
                     <div className="w-3 h-3 rounded-full bg-[#cccccc]" />
-                </div>
+                </div> */}
 
                 <Image
                     src={
