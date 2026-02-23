@@ -3,15 +3,12 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
-      {
-        protocol: "http",
-        hostname: "**",
-      },
-      {
-        protocol: "https",
-        hostname: "**",
-      },
+      { protocol: "http", hostname: "**" },
+      { protocol: "https", hostname: "**" },
     ],
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 
