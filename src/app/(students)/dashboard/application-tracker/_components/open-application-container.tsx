@@ -13,6 +13,7 @@ import { cn } from "@/utils/cn";
 import Link from "next/link";
 import moment from "moment";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 import { useDebounce } from "@/hooks/useDebounce";
 import WasabiDropDown from "@/components/ui/WasabiDropdown";
@@ -41,16 +42,6 @@ const jobTypeList = [
   { id: 9, name: "Open Days", value: "Open Days" },
 ];
 
-// const locationList = [
-//   { id: 1, name: "None", value: "__none__" },
-//   { id: 2, name: "London", value: "London" },
-//   { id: 3, name: "Manchester", value: "Manchester" },
-//   { id: 4, name: "Birmingham", value: "Birmingham" },
-//   { id: 5, name: "Leeds", value: "Leeds" },
-//   { id: 6, name: "Liverpool", value: "Liverpool" },
-//   { id: 7, name: "Cardiff", value: "Cardiff" },
-// ];
-
 const isJobClosed = (deadline: string) => {
   if (!deadline) return true;
   const today = new Date();
@@ -65,6 +56,7 @@ const canApplyToJob = (job: OpenJob) => {
 const ALL = "__all__";
 
 const OpenApplicationContainer = () => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
@@ -143,7 +135,7 @@ const OpenApplicationContainer = () => {
           return cleanName;
         })
         .filter((name) => name && name.toLowerCase() !== "paralegal") // remove paralegal
-        .map((name) => [name.toLowerCase(), name]), // key দিয়ে duplicate remove
+        .map((name) => [name.toLowerCase(), name]), 
     ).values(),
   );
 
@@ -271,12 +263,15 @@ const OpenApplicationContainer = () => {
       return result;
     },
 
-    onSuccess: (response) => {
+    onSuccess: (response, jobId) => {
       const redirectUrl = response?.data?.job?.url;
 
       if (redirectUrl) {
         window.open(redirectUrl, "_blank");
+        return;
       }
+
+      router.push(`/dashboard/application-tracker/cv-uplode/${jobId}`);
     },
 
     onError: (error: any) => {
@@ -489,7 +484,7 @@ const OpenApplicationContainer = () => {
             </div>
           )}
 
-          <div className="text-center text-gray-600 mt-6">
+          <div className="text-center text-gray-600 mt-6 mb-6">
             Showing {data?.data?.length} of 10 opportunities{" "}
             {`(Page ${currentPage} of ${totalPages})`}
           </div>
