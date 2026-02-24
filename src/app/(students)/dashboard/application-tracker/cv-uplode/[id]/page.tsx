@@ -1,10 +1,10 @@
 import React from 'react'
-import UploadYourCV from '../_components/UploadYourCV'
+import UploadYourCV from '../../_components/UploadYourCV'
 
 function page() {
   return (
     <div>
-        <UploadYourCV />
+        <UploadYourCV/>
     </div>
   )
 }
