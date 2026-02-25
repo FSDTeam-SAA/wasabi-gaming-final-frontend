@@ -7,7 +7,7 @@ import {
   OpenJob,
   OpenApplicationApiResponse,
 } from "./open-application-data-type";
-import { Search, Calendar, DollarSign, Eye, Building2 } from "lucide-react";
+import { Calendar, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
@@ -65,6 +65,7 @@ const OpenApplicationContainer = () => {
   const [activeFilter, setActiveFilter] = useState<
     "search" | "jobType" | "location" | null
   >(null);
+  const [applyingJobId, setApplyingJobId] = useState<string | null>(null);
   const [filterSource, setFilterSource] = useState<"hero" | "container" | null>(
     null,
   );
@@ -242,6 +243,9 @@ const OpenApplicationContainer = () => {
   };
 
   const applideMutation = useMutation({
+    onMutate: (jobId: string) => {
+      setApplyingJobId(jobId);
+    },
     mutationFn: async (jobId: string) => {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/applied-job/${jobId}`,
@@ -271,11 +275,14 @@ const OpenApplicationContainer = () => {
         return;
       }
 
-      router.push(`/dashboard/application-tracker/cv-uplode/${jobId}`);
+      // router.push(`/dashboard/application-tracker/cv-uplode/${jobId}`);
     },
 
     onError: (error: any) => {
       console.error("Apply failed:", error.message);
+    },
+    onSettled: () => {
+      setApplyingJobId(null);
     },
   });
 
@@ -426,9 +433,12 @@ const OpenApplicationContainer = () => {
 
                   <Button
                     onClick={() => handleApply(app._id)}
+                   disabled={applideMutation.isPending && applyingJobId === app._id}
                     className="w-full h-[32px] rounded-[14px] hover:border-[1.5px] border-[#FFFF00] bg-[#FFFF00] hover:bg-transparent text-sm leading-[20px] text-[#1E1E1E] font-medium"
                   >
-                    {applideMutation.isPending ? "Applying..." : "Apply Now"}
+                    {applideMutation.isPending && applyingJobId === app._id
+                      ? "Applying..."
+                      : "Apply Now"}
                   </Button>
 
                   {/* {canApplyToJob(app) && (
