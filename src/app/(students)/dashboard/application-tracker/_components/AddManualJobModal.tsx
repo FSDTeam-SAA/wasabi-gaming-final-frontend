@@ -583,7 +583,7 @@ export default function AddManualJobModal({
 
           <div>
             <label className={labelClass}>
-              "url": <span className="text-red-500">*</span>
+              URL <span className="text-red-500">*</span>
             </label>
             <input
               required
