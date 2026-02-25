@@ -15,16 +15,16 @@ import { CiCircleCheck } from 'react-icons/ci'
 import { FiAward } from 'react-icons/fi'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { useState } from 'react'
 
 import iconImage from '@/assets/images/Icon.png'
-import { cn } from '@/utils/cn'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import { getProfile } from '@/lib/api/profileApi'
 import { useStudentDashboardStore } from '@/store/studentDashboardStore';
 import { IUser } from '@/types/profile'
+import RecommendedJobsModal from './application-tracker/_components/RecommendedJobsModal'
 
 const recentActivity = [
   { icon: CheckCircle, text: 'Applied to TechCo Inc.', time: '2 hours ago' },
@@ -38,6 +38,7 @@ const recentActivity = [
 
 export default function CareerDashboard() {
   const router = useRouter()
+  const [isRecommendModalOpen, setIsRecommendModalOpen] = useState(false)
 
   const { data: session } = useSession()
   // @ts-ignore
@@ -286,14 +287,13 @@ export default function CareerDashboard() {
                 analysing/thinking and problem solving. We believe it has job
                 opportunities that match your strength.
               </p>
-              <Link href={'/dashboard/application-tracker'}>
-                <Button
-                  className="px-6 py-2.5 rounded-full font-normal text-base transition-all duration-300 hover:scale-105 active:scale-95 main-color"
-                  style={{ backgroundColor: '#FFFF00' }}
-                >
-                  View Recommended Jobs
-                </Button>
-              </Link>
+              <Button
+                onClick={() => setIsRecommendModalOpen(true)}
+                className="px-6 py-2.5 rounded-full font-normal text-base transition-all duration-300 hover:scale-105 active:scale-95 main-color"
+                style={{ backgroundColor: '#FFFF00' }}
+              >
+                View Recommended Jobs
+              </Button>
             </div>
           </div>
         </div>
@@ -305,6 +305,11 @@ export default function CareerDashboard() {
           </p>
         </div>
       </div>
+
+      <RecommendedJobsModal
+        open={isRecommendModalOpen}
+        onOpenChange={setIsRecommendModalOpen}
+      />
     </div>
   )
 }
