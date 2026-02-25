@@ -31,6 +31,7 @@ export default function RecommendedJobsModal({ open, onOpenChange }: Recommended
   const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
+  const [applyingJobId, setApplyingJobId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const session = useSession();
   const token = session?.data?.accessToken;
@@ -74,6 +75,9 @@ export default function RecommendedJobsModal({ open, onOpenChange }: Recommended
   }, [open, token]);
 
   const applideMutation = useMutation({
+    onMutate: (jobId: string) => {
+      setApplyingJobId(jobId);
+    },
     mutationFn: async (jobId: string) => {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/applied-job/${jobId}`,
@@ -103,10 +107,13 @@ export default function RecommendedJobsModal({ open, onOpenChange }: Recommended
         return;
       }
 
-      router.push(`/dashboard/application-tracker/cv-uplode/${jobId}`);
+      // router.push(`/dashboard/application-tracker/cv-uplode/${jobId}`);
     },
     onError: (error: any) => {
       console.error("Apply failed:", error.message);
+    },
+    onSettled: () => {
+      setApplyingJobId(null);
     },
   });
 
@@ -190,7 +197,9 @@ export default function RecommendedJobsModal({ open, onOpenChange }: Recommended
                     disabled={applideMutation.isPending}
                     className="w-full h-[32px] rounded-[14px] hover:border-[1.5px] border-[#FFFF00] bg-[#FFFF00] hover:bg-transparent text-sm leading-[20px] text-[#1E1E1E] font-medium"
                   >
-                    {applideMutation.isPending ? "Applying..." : "Apply Now"}
+                    {applideMutation.isPending && applyingJobId === job._id
+                      ? "Applying..."
+                      : "Apply Now"}
                   </button>
                 </div>
               </div>
