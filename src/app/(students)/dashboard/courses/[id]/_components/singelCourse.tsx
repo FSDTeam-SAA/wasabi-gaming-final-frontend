@@ -20,6 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SingleCourseResponse } from "@/types/course";
 import { useSession } from "next-auth/react";
 import CourseDetailsSkeleton from "./CourseDetailsSkeleton";
+import RatingModal from "./RatingModal";
 
 const SingelCourse = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -45,22 +46,6 @@ const SingelCourse = ({ id }: { id: string }) => {
     },
   });
 
-  // useEffect(() => {
-  //   if (!data?.data) return;
-
-  //   const coursePrice = data.data.coursePrice;
-
-  //   // ✅ Free course → no redirect
-  //   if (coursePrice === 0) return;
-
-  //   // ✅ Paid course → check enrollment
-  //   const isEnrolled = data.data.enrolledStudents.includes(enrollid);
-
-  //   if (!isEnrolled) {
-  //     router.push("/dashboard/courses");
-  //   }
-  // }, [data, enrollid, router]);
-
 
   const course = data?.data;
   const lessons = course?.courseVideo || [];
@@ -71,6 +56,7 @@ const SingelCourse = ({ id }: { id: string }) => {
   >(null);
 
   const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
 
   // Set first lesson as default on load
   useEffect(() => {
@@ -231,6 +217,14 @@ const SingelCourse = ({ id }: { id: string }) => {
             >
               Take Quiz
             </Button>
+             
+              <Button
+              onClick={() => setOpen1(true)}
+              className="mt-6 ml-5 bg-[#FFFF00] text-slate-900 rounded-xl"
+            >
+             Rate this course
+            </Button>
+
           </div>
         </CardContent>
       </Card>
@@ -247,6 +241,7 @@ const SingelCourse = ({ id }: { id: string }) => {
         courseId={course._id}
         currentLesson={currentLesson}
       />
+      <RatingModal token={token || ""} courseId={id} open={open1} onOpenChange={setOpen1}/>
     </div>
   );
 };
