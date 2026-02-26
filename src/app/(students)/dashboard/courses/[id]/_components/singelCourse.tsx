@@ -50,6 +50,7 @@ const SingelCourse = ({ id }: { id: string }) => {
   const course = data?.data;
   const lessons = course?.courseVideo || [];
   console.log(lessons)
+  console.log(course)
 
   const [currentLesson, setCurrentLesson] = useState<
     (typeof lessons)[0] | null

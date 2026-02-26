@@ -86,7 +86,7 @@ export default function AllCourse() {
                         <div className="flex flex-wrap gap-6 text-sm">
                             <span className='flex items-center gap-2 text-[16px]'><Award className='text-[#FFFF00]' size={20} /> {data?.data?.totalFreeCourses} Free Courses</span>
                             <span className='flex items-center gap-2 text-[16px]'><Users className='text-[#FFFF00]' size={20} /> {data?.data?.totalStudents} Students</span>
-                            <span className='flex items-center gap-2'><Star className='text-[#FFFF00]' size={20} /> {rating?.data[0]?.averageRating} Average Rating</span>
+                            <span className='flex items-center gap-2'><Star className='text-[#FFFF00]' size={20} />   {Number(rating?.data?.[0]?.averageRating || 0).toFixed(1)} Average Rating</span>
                         </div>
                     </div>
                 </section>
