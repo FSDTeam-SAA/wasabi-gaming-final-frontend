@@ -237,7 +237,7 @@ export default function CourseCard() {
 
   <div className="flex items-center gap-1">
      <span className="ml-1 text-sm text-[#4A5565]">
-      {course?.averageRating || 0}
+      {Number(course?.averageRating || 0).toFixed(1)}
     </span>
      {Array.from({ length: 5 }).map((_, index) => {
     const rating = course?.averageRating || 0;
