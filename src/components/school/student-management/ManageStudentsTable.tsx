@@ -66,7 +66,8 @@ const fetchStudents = async (token: string | undefined): Promise<Student[]> => {
   }
 
   const json = await res.json()
-  const studentsData = json?.data?.data
+  const studentsData = json?.data
+ 
 
   if (!Array.isArray(studentsData)) {
     console.error('Expected array in response.data.data but got:', studentsData)
@@ -91,7 +92,7 @@ const fetchStudents = async (token: string | undefined): Promise<Student[]> => {
     return {
       key: student._id,
       initial,
-      name: fullName,
+      name: student?.name || 'Unknown',
       email: student.email || 'N/A',
       status: student.status || 'unknown',
       completed: 0,
@@ -232,7 +233,7 @@ export default function ManageStudentsTable() {
               <TableHeader className="bg-[#FFFEF0]">
                 <TableRow className="hover:bg-transparent border-none">
                   <TableHead className="h-14 px-6 min-w-[200px]">
-                    Student Name
+                    Student Name 
                   </TableHead>
                   <TableHead className="h-14 px-6 min-w-[220px]">
                     Email
