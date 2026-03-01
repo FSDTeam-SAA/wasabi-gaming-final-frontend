@@ -4,7 +4,7 @@ import CourseCard from './course-card'
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 
-
+ 
 export const metadata = {
     title: 'CourseHub - Learn from Expert-Led Courses',
     description: 'Access high-quality courses designed to help you land your dream job.',
@@ -110,6 +110,7 @@ export default function AllCourse() {
                                 <div>
                                     <p className="text-lg ">{s.value}</p>
                                     <p className="text-[16px] text-muted-foreground ">{s.label}</p>
+                                   
                                 </div>
                             </div>
                         ))}
