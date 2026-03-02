@@ -13,12 +13,6 @@ import CourseCard from './course-card'
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 
-export const metadata = {
-  title: 'CourseHub - Learn from Expert-Led Courses',
-  description:
-    'Access high-quality courses designed to help you land your dream job.',
-}
-
 export default function AllCourse() {
   const { data: sessionData } = useSession()
   const token = sessionData?.accessToken
