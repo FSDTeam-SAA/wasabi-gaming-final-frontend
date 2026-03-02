@@ -75,7 +75,7 @@ export default function ReadyToNextStep() {
             Ready to Take the Next Step?
           </h2>
           <p className="text-sm md:text-base text-[#1E1E1E] leading-[24px] font-normal">
-            Track progress. Stay organized. Keep growing with Aspiring.
+            Track progress. Stay organized. Keep growing with Aspiring Legal Network.
           </p>
         </div>
 

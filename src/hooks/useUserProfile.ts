@@ -27,10 +27,12 @@ export const useUserProfile = () => {
     })
 
     const userData: IUser | undefined = profileData?.data?.data
+    const subscriptionName = profileData?.data?.subscription?.name || ''
     const hasActiveSubscription = userData?.isSubscription ?? false
 
     return {
         userData,
+        subscriptionName,
         hasActiveSubscription,
         isLoading: isLoading || status === 'loading',
         isError,
