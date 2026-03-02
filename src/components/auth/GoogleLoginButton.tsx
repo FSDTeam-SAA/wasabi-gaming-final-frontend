@@ -44,7 +44,7 @@ export default function GoogleLoginButton() {
         toast.error(result.error)
       } else {
         toast.success('Login successful!')
-        window.location.href = '/'
+        window.location.href = '/dashboard'
       }
     } catch (error) {
       console.error(error)

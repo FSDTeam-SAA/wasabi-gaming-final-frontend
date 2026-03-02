@@ -1,14 +1,13 @@
+"use client";
 import PsychometricAssessment from "@/components/student/psychometric/PsychometricAssessment";
-
-export const metadata = {
-    title: "Psychometric Assessment | Aspiring",
-    description: "Discover your cognitive strengths and ideal career paths.",
-};
+import SubscriptionGuard from "@/components/shared/SubscriptionGuard";
 
 export default function PsychometricPage() {
     return (
-        <main>
-            <PsychometricAssessment />
-        </main>
+        <SubscriptionGuard requireSubscription={true} requireLogin={true} requiredPlan="premium" message="Psychometric tests require a Premium membership">
+            <main>
+                <PsychometricAssessment />
+            </main>
+        </SubscriptionGuard>
     );
 }
