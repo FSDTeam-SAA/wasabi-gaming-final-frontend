@@ -54,11 +54,15 @@ export default function AllCourse() {
             if (!res.ok) throw new Error("Failed to load ");
             return res.json();
         },
-      )
-      if (!res.ok) throw new Error('Failed to load ')
-      return res.json()
-    },
-  })
+    });
+
+    const stats = [
+        { label: 'Total My Courses', value: statss?.data?.purchasedCourseCount || 0, icon: BookOpen, bg: "#DBEAFE", textCOlor: "#155DFC" },
+        { label: 'Enrolled', value: statss?.data?.enrolledCourseCount || 0, icon: CircleCheckBig, bg: "#DCFCE7", textCOlor: "#00A63E" },
+        { label: 'Videos Completed', value: statss?.data?.completedVideoCount || 0, icon: TrendingUp, bg: "#F3E8FF", textCOlor: "#9810FA" },
+        { label: 'Certificates', value: statss?.data?.totalCertificate || 0, icon: Award, bg: "#FEF9C2", textCOlor: "#D08700" },
+    ]; 
+
 
     return (
         <div className="min-h-screen bg-background">
@@ -80,40 +84,28 @@ export default function AllCourse() {
                             Learn at your own pace with interactive video lessons and practical exercises.
                         </p>
 
-            <div className="flex flex-wrap gap-6 text-sm">
-              <span className="flex items-center gap-2 text-[16px]">
-                <Award className="text-[#FFFF00]" size={20} />{' '}
-                {data?.data?.totalFreeCourses} Free Courses
-              </span>
-              <span className="flex items-center gap-2 text-[16px]">
-                <Users className="text-[#FFFF00]" size={20} />{' '}
-                {data?.data?.totalStudents} Students
-              </span>
-              <span className="flex items-center gap-2">
-                <Star className="text-[#FFFF00]" size={20} />{' '}
-                {Number(rating?.data[0]?.averageRating).toPrecision(2)} Average
-                Rating
-              </span>
-            </div>
-          </div>
-        </section>
+                        <div className="flex flex-wrap gap-6 text-sm">
+                            <span className='flex items-center gap-2 text-[16px]'><Award className='text-[#FFFF00]' size={20} /> {data?.data?.totalFreeCourses} Free Courses</span>
+                            <span className='flex items-center gap-2 text-[16px]'><Users className='text-[#FFFF00]' size={20} /> {data?.data?.totalStudents} Students</span>
+                            <span className='flex items-center gap-2'><Star className='text-[#FFFF00]' size={20} />   {Number(rating?.data?.[0]?.averageRating || 0).toFixed(1)} Average Rating</span>
+                        </div>
+                    </div>
+                </section>
 
-        {/* STATS */}
-        <section className="mb-10">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {stats.map((s, i) => (
-              <div
-                key={i}
-                className={`rounded-xl border border-[#0000001A] p-6 flex items-center gap-3 `}
-              >
-                <div
-                  className="h-9 w-9 flex items-center justify-center rounded-full"
-                  style={{ backgroundColor: s.bg }}
-                >
-                  {s.icon && (
-                    <s.icon style={{ color: s.textCOlor }} size={20} />
-                  )}
-                </div>
+                {/* STATS */}
+                <section className="mb-10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {stats.map((s, i) => (
+                            <div
+                                key={i}
+                                className={`rounded-xl border border-[#0000001A] p-6 flex items-center gap-3 `}
+                            >
+                                <div
+                                    className="h-9 w-9 flex items-center justify-center rounded-full"
+                                    style={{ backgroundColor: s.bg }}
+                                >
+                                    {s.icon && <s.icon style={{ color: s.textCOlor }} size={20} />}
+                                </div>
 
                                 <div>
                                     <p className="text-lg ">{s.value}</p>
