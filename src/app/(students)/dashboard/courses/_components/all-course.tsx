@@ -116,7 +116,6 @@ export default function AllCourse() {
                         ))}
                     </div>
                 </section>
-                {/* COURSES */}
                 <CourseCard />
             </main>
         </div>
