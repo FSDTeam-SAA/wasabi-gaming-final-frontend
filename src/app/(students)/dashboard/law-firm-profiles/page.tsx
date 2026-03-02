@@ -24,7 +24,7 @@ export default function LawFirmDirectoryPage() {
   const [selectedTag, setSelectedTag] = useState("All");
 
   return (
-    <SubscriptionGuard requireSubscription={true} requireLogin={true}>
+    <SubscriptionGuard requireSubscription={true} requireLogin={true} requiredPlan="basic" message="Please choose a plan to access Law Firm profiles">
       <div className="min-h-screen bg-[linear-gradient(135deg,#FEFCE8_0%,#FFFFFF_50%,#EFF6FF_100%)] px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:p-12">
         {/* ✅ Only apply container sizing on lg so mobile/tablet doesn’t feel cramped */}
         <div className="space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-12 w-full lg:container lg:mx-auto">
