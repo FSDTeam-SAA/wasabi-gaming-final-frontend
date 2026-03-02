@@ -44,7 +44,17 @@ export default function GoogleLoginButton() {
         toast.error(result.error)
       } else {
         toast.success('Login successful!')
-        window.location.href = '/'
+
+        // Fetch session to get user role
+        const { getSession } = await import('next-auth/react')
+        const session = await getSession()
+        const role = session?.user?.role
+
+        if (role === 'school') {
+          window.location.href = '/school/manage-students'
+        } else {
+          window.location.href = '/dashboard'
+        }
       }
     } catch (error) {
       console.error(error)
