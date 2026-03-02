@@ -4,11 +4,10 @@ import CourseCard from './course-card'
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 
-
+ 
 export const metadata = {
     title: 'CourseHub - Learn from Expert-Led Courses',
-    description:
-        'Access high-quality courses designed to help you land your dream job.',
+    description: 'Access high-quality courses designed to help you land your dream job.',
 }
 
 export default function AllCourse() {
@@ -41,12 +40,29 @@ export default function AllCourse() {
             return res.json();
         },
     });
+    
+        const { data: rating } = useQuery({
+        queryKey: ["rating"],
+        queryFn: async () => {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/review/course`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            }
+            );
+            if (!res.ok) throw new Error("Failed to load ");
+            return res.json();
+        },
+    });
 
     const stats = [
         { label: 'Total My Courses', value: statss?.data?.purchasedCourseCount || 0, icon: BookOpen, bg: "#DBEAFE", textCOlor: "#155DFC" },
         { label: 'Enrolled', value: statss?.data?.enrolledCourseCount || 0, icon: CircleCheckBig, bg: "#DCFCE7", textCOlor: "#00A63E" },
         { label: 'Videos Completed', value: statss?.data?.completedVideoCount || 0, icon: TrendingUp, bg: "#F3E8FF", textCOlor: "#9810FA" },
-    ];
+        { label: 'Certificates', value: statss?.data?.totalCertificate || 0, icon: Award, bg: "#FEF9C2", textCOlor: "#D08700" },
+    ]; 
+
 
     return (
         <div className="min-h-screen bg-background">
@@ -71,14 +87,14 @@ export default function AllCourse() {
                         <div className="flex flex-wrap gap-6 text-sm">
                             <span className='flex items-center gap-2 text-[16px]'><Award className='text-[#FFFF00]' size={20} /> {data?.data?.totalFreeCourses} Free Courses</span>
                             <span className='flex items-center gap-2 text-[16px]'><Users className='text-[#FFFF00]' size={20} /> {data?.data?.totalStudents} Students</span>
-                            {/* <span className='flex items-center gap-2'><Star className='text-[#FFFF00]' size={20} /> 4.8 Average Rating</span> */}
+                            <span className='flex items-center gap-2'><Star className='text-[#FFFF00]' size={20} />   {Number(rating?.data?.[0]?.averageRating || 0).toFixed(1)} Average Rating</span>
                         </div>
                     </div>
                 </section>
 
                 {/* STATS */}
                 <section className="mb-10">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {stats.map((s, i) => (
                             <div
                                 key={i}
@@ -94,6 +110,7 @@ export default function AllCourse() {
                                 <div>
                                     <p className="text-lg ">{s.value}</p>
                                     <p className="text-[16px] text-muted-foreground ">{s.label}</p>
+                                   
                                 </div>
                             </div>
                         ))}

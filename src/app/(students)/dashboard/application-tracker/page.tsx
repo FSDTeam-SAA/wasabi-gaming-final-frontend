@@ -17,6 +17,7 @@ import ClosedJobsContainer from "./_components/closed-jobs-container";
 import ApplicationTrackerContainer from "./_components/application-tracker-container";
 import OpenApplicationContainer from "./_components/open-application-container";
 import ApplicationTrackerCart from "./_components/application-tracker-cart";
+import SavedJobsContainer from "./_components/saved-jobs-container";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -191,7 +192,7 @@ function JobDetailsModal({
 // ─── Main Component ───────────────────────────────────────────────────────
 
 export default function ApplicationTrackerPage() {
-  const [activeTab, setActiveTab] = useState<"op" | "at" | "cj">("op");
+  const [activeTab, setActiveTab] = useState<"op" | "at" | "cj" | "sj">("op");
 
   const [selectedJob, setSelectedJob] = useState<Application | null>(null);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
@@ -214,7 +215,7 @@ export default function ApplicationTrackerPage() {
 
         {/* Tabs */}
         <div className={`${neuton.className} flex gap-10 border-b border-[#FEF9C2] mb-8 overflow-x-auto`}>
-          {(["op", "at", "cj"] as const).map((tab) => (
+          {(["op", "at", "sj", "cj"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -229,7 +230,9 @@ export default function ApplicationTrackerPage() {
                 ? "Open Applications"
                 : tab === "at"
                   ? "Application Tracker"
-                  : "Closed Jobs"}
+                  : tab === "sj"
+                    ? "Save Jobs"
+                    : "Closed Jobs"}
             </button>
           ))}
         </div>
@@ -250,6 +253,11 @@ export default function ApplicationTrackerPage() {
           {activeTab === "at" && (
             <div>
               <ApplicationTrackerContainer />
+            </div>
+          )}
+          {activeTab === "sj" && (
+            <div>
+              <SavedJobsContainer />
             </div>
           )}
           {activeTab === "cj" && (

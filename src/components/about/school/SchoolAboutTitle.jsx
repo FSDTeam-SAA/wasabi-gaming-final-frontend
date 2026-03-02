@@ -11,7 +11,7 @@ const SchoolAboutTitle = () => {
         to employers, and take the next big step in your career.
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default SchoolAboutTitle;
+export default SchoolAboutTitle

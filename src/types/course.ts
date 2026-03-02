@@ -35,6 +35,7 @@ export interface Course {
   _id: string
   name: string
   description: string
+  averageRating:number
   thumbnail: string
   gradeLevel: string
   category: string

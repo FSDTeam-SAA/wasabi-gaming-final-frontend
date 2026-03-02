@@ -4,9 +4,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useParams } from "next/navigation";
 import { Briefcase, MapPin, Calendar, DollarSign } from "lucide-react"; // assuming you're using lucide icons
 import { cn } from "@/lib/utils"; // assuming you have this utility
 import { Button } from "@/components/ui/button"; // assuming shadcn/ui or similar
+import { toast } from "sonner";
 
 // You can define a proper type based on your API response
 type Job = {
@@ -30,6 +32,8 @@ function UploadYourCV() {
 
   const session = useSession();
   const TOKEN = session?.data?.accessToken || "";
+  const params = useParams<{ id: string }>();
+  const jobId = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
   // =========================
   // Upload Mutation
@@ -37,9 +41,9 @@ function UploadYourCV() {
   const uploadCV = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("cvUrl", file);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/job/filter-job-cv-based`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cv/apply/${jobId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${TOKEN}`,
@@ -47,31 +51,27 @@ function UploadYourCV() {
         body: formData,
       });
 
-      if (!res.ok) throw new Error("CV upload failed");
-      return res.json();
+      const result = await res.json();
+      if (!res.ok) throw new Error(result?.message || "CV apply failed");
+      return result;
     },
 
     onSuccess: (response) => {
-      // Extract jobs — adjust path if your real structure is different
-      const matchedJobs: Job[] = [];
-      
-      response?.data?.text?.forEach((item: Record<string, Job[]>) => {
-        Object.values(item).forEach((jobArray) => {
-          matchedJobs.push(...jobArray);
-        });
-      });
-
-      setJobs(matchedJobs);
-      setShowJobs(true);           // ← success → show jobs
-      // You can keep selectedFile if you want to show "Uploaded: filename.pdf"
+      toast.success(response?.message || "CV applied successfully");
+      setShowJobs(false);
     },
 
-    onError: () => {
-      // Optionally show error toast/notification here
+    onError: (error: Error) => {
+      toast.error(error.message || "Upload failed. Please try again.");
     },
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!jobId) {
+      toast.error("Job id is missing in URL");
+      return;
+    }
+
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
       setSelectedFile(file);
@@ -95,18 +95,18 @@ function UploadYourCV() {
         {!showJobs ? (
           // ── Upload view ──
           <>
-            <div className="mb-10 text-center">
+            <div className="mb-10 ">
               <h1 className="text-4xl font-bold text-gray-900 mb-3">
-                Find Your Perfect Job
+                Applied Your Perfect Job
               </h1>
               <p className="text-gray-600">
                 Upload your CV and get matched with opportunities that fit your skills.
               </p>
             </div>
 
-            <div className="bg-[#FEFCE8] border-2 border-[#FFFF00] rounded-2xl p-10 md:p-12 max-w-2xl mx-auto">
+            <div className="bg-[#FEFCE8] border-2 border-[#FFFF00] rounded-2xl p-10 md:p-12 w-full mx-auto">
               <div className="flex justify-center mb-6">
-                <div className="bg-yellow-400 w-16 h-16 rounded-xl flex items-center justify-center">
+                <div className="bg-[#FFFF00] w-16 h-16 rounded-xl flex items-center justify-center">
                   <svg
                     className="w-8 h-8 text-gray-900"
                     fill="none"
@@ -136,7 +136,7 @@ function UploadYourCV() {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <div className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg w-full">
+                  <div className="bg-[#FFFF00] hover:bg-[#FFFF00] text-gray-900 font-semibold px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg w-full">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>

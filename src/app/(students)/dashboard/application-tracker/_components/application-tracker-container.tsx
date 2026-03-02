@@ -161,8 +161,8 @@ const ApplicationTrackerContainer = () => {
                   {/* View Details - Main Button */}
                   {/* <Button
                     onClick={async () => {
-                      setSelectedJobId(app.jobId); // 👈 jobId পাঠাচ্ছি
-                      await fetchSingleJob(); // 👈 API hit করছি
+                      setSelectedJobId(app.jobId); // 
+                      await fetchSingleJob(); // 
                     }}
                     className="flex-1 h-[36px] flex items-center justify-center gap-2 rounded-[14px] border-[1.5px] border-[#FFFF00] bg-[#FFFF00] hover:bg-transparent text-sm leading-[20px] text-[#1E1E1E] font-medium transition-all"
                   >

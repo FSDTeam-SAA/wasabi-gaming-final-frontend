@@ -7,12 +7,13 @@ import {
   OpenJob,
   OpenApplicationApiResponse,
 } from "./open-application-data-type";
-import { Search, Calendar, DollarSign, Eye, Building2 } from "lucide-react";
+import { Calendar, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 import moment from "moment";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 import { useDebounce } from "@/hooks/useDebounce";
 import WasabiDropDown from "@/components/ui/WasabiDropdown";
@@ -41,16 +42,6 @@ const jobTypeList = [
   { id: 9, name: "Open Days", value: "Open Days" },
 ];
 
-// const locationList = [
-//   { id: 1, name: "None", value: "__none__" },
-//   { id: 2, name: "London", value: "London" },
-//   { id: 3, name: "Manchester", value: "Manchester" },
-//   { id: 4, name: "Birmingham", value: "Birmingham" },
-//   { id: 5, name: "Leeds", value: "Leeds" },
-//   { id: 6, name: "Liverpool", value: "Liverpool" },
-//   { id: 7, name: "Cardiff", value: "Cardiff" },
-// ];
-
 const isJobClosed = (deadline: string) => {
   if (!deadline) return true;
   const today = new Date();
@@ -65,6 +56,7 @@ const canApplyToJob = (job: OpenJob) => {
 const ALL = "__all__";
 
 const OpenApplicationContainer = () => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
@@ -73,6 +65,7 @@ const OpenApplicationContainer = () => {
   const [activeFilter, setActiveFilter] = useState<
     "search" | "jobType" | "location" | null
   >(null);
+  const [applyingJobId, setApplyingJobId] = useState<string | null>(null);
   const [filterSource, setFilterSource] = useState<"hero" | "container" | null>(
     null,
   );
@@ -143,7 +136,7 @@ const OpenApplicationContainer = () => {
           return cleanName;
         })
         .filter((name) => name && name.toLowerCase() !== "paralegal") // remove paralegal
-        .map((name) => [name.toLowerCase(), name]), // key দিয়ে duplicate remove
+        .map((name) => [name.toLowerCase(), name]), 
     ).values(),
   );
 
@@ -250,6 +243,9 @@ const OpenApplicationContainer = () => {
   };
 
   const applideMutation = useMutation({
+    onMutate: (jobId: string) => {
+      setApplyingJobId(jobId);
+    },
     mutationFn: async (jobId: string) => {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/applied-job/${jobId}`,
@@ -271,16 +267,22 @@ const OpenApplicationContainer = () => {
       return result;
     },
 
-    onSuccess: (response) => {
+    onSuccess: (response, jobId) => {
       const redirectUrl = response?.data?.job?.url;
 
       if (redirectUrl) {
         window.open(redirectUrl, "_blank");
+        return;
       }
+
+      // router.push(`/dashboard/application-tracker/cv-uplode/${jobId}`);
     },
 
     onError: (error: any) => {
       console.error("Apply failed:", error.message);
+    },
+    onSettled: () => {
+      setApplyingJobId(null);
     },
   });
 
@@ -431,9 +433,12 @@ const OpenApplicationContainer = () => {
 
                   <Button
                     onClick={() => handleApply(app._id)}
+                   disabled={applideMutation.isPending && applyingJobId === app._id}
                     className="w-full h-[32px] rounded-[14px] hover:border-[1.5px] border-[#FFFF00] bg-[#FFFF00] hover:bg-transparent text-sm leading-[20px] text-[#1E1E1E] font-medium"
                   >
-                    {applideMutation.isPending ? "Applying..." : "Apply Now"}
+                    {applideMutation.isPending && applyingJobId === app._id
+                      ? "Applying..."
+                      : "Apply Now"}
                   </Button>
 
                   {/* {canApplyToJob(app) && (
@@ -489,7 +494,7 @@ const OpenApplicationContainer = () => {
             </div>
           )}
 
-          <div className="text-center text-gray-600 mt-6">
+          <div className="text-center text-gray-600 mt-6 mb-6">
             Showing {data?.data?.length} of 10 opportunities{" "}
             {`(Page ${currentPage} of ${totalPages})`}
           </div>
