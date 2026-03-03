@@ -218,16 +218,19 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
                 <label className="block text-[14px] font-normal leading-[20px] text-[#4A5565] mb-2">
                   Update Status
                 </label>
-                <select
-                  value={status}           // ← now controlled by local state
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-300"
-                >
-                  <option value="Applied">Applied</option>
-                  <option value="Interview">Interview</option>
-                  <option value="Offer">Offer</option>           {/* changed label to match value */}
-                  <option value="Rejected">Rejected</option>
-                </select>
+               <select
+  value={status}
+  onChange={(e) => setStatus(e.target.value)}
+  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+>
+  <option value="Applied">Applied</option>
+  <option value="Applying">Applying</option>
+  <option value="Psychometric Test">Psychometric Test</option>
+  <option value="Interview">Interview</option>
+  <option value="Researching Firm">Researching Firm</option>
+  <option value="Assessment Centre">Assessment Centre</option>
+  <option value="Offer">Offer</option>
+</select>
               </div>
 
               <div className="mb-5">
