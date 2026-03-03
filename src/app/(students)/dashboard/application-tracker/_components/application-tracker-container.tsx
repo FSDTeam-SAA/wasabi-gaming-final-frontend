@@ -4,20 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import {
-  Briefcase,
-  Calendar,
-  Eye,
   Building2,
   MapPin,
-  SquarePen,
   RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
-import Link from "next/link";
 import {
   ApplicationTrackerApiResponse,
-  AppliedJob,
 } from "./application-tracker-data-type";
 import JobDetailsModal from "./JobViewDetailsModal";
 import EditApplyjob from "./EditApplyjob";
@@ -39,10 +33,6 @@ const isJobClosed = (deadline: string) => {
   const deadlineDate = new Date(deadline);
   return deadlineDate < today;
 };
-
-// const canApplyToJob = (job: AppliedJob) => {
-//   return job.status === "active" && !isJobClosed(job.applicationDeadline)
-// };
 
 const ApplicationTrackerContainer = () => {
   const [currentPage, setCurrentPage] = useState(1);
