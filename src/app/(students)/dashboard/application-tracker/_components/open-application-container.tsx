@@ -331,8 +331,8 @@ const OpenApplicationContainer = () => {
             // }}
             onValueChange={(value) => {
               if (value === "__none__") {
-                setJobType(""); // API এর জন্য empty
-                setActiveFilter(null); // filter remove
+                setJobType(""); 
+                setActiveFilter(null);
               } else {
                 setJobType(value);
                 setActiveFilter("jobType");

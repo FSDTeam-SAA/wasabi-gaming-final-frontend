@@ -2,12 +2,10 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Check, AlertCircle, Loader2 } from 'lucide-react'
+import { Check, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
-import { getAllPremiums, createPaymentSession } from '@/lib/api/subscriptionApi'
+import { createPaymentSession } from '@/lib/api/subscriptionApi'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -17,24 +15,100 @@ export default function PlansPage() {
   const { data: session } = useSession()
   const router = useRouter()
 
-  // Determine interval string for API
-  const typeQuery = isYearly ? 'yearly' : 'monthly&type=weekly'
+  // Static Plans Data
+  const staticPlans = [
+    {
+      _id: 'starter-plan',
+      name: 'Starter Plan',
+      description: 'Perfect for getting started on your legal journey',
+      price: 0,
+      subscriptionCategory: 'students',
+      features: [
+        'Community access',
+        'Access to legal opportunities',
+        'Limited law firm profiles',
+        'Application tracker',
+        'Unlimited CV builder',
+        'Learning resources'
+      ],
+      buttonText: 'Get Started'
+    },
+    {
+      _id: 'premium-plan',
+      name: 'Premium Plan',
+      description: 'Everything you need to secure competitive legal roles',
+      price: isYearly ? 150 : 15, // Assuming £150 for yearly based on £15/mo
+      type: isYearly ? 'yearly' : 'monthly',
+      subscriptionCategory: 'students',
+      isPremium: true,
+      sections: [
+        {
+          title: 'Application Tools',
+          features: ['Unlimited CV builder', 'Cover letter builder']
+        },
+        {
+          title: 'Interview Preparation',
+          features: [
+            'Mock interview simulations',
+            'Structured feedback and improvement guidance'
+          ]
+        },
+        {
+          title: 'Assessment Centre Training',
+          features: [
+            'In tray email exercises',
+            'Written case studies',
+            'Case law analysis tasks',
+            'Video Presentation practice'
+          ]
+        },
+        {
+          title: 'Psychometric Test Suite',
+          features: [
+            'Watson Glaser style critical thinking tests',
+            'Verbal reasoning',
+            'Numerical reasoning',
+            'Abstract reasoning',
+            'Situational judgement'
+          ]
+        },
+        {
+          title: 'Firm Insights',
+          features: [
+            'Full law firm insights library',
+            'Recruitment process breakdowns'
+          ]
+        },
+        {
+          title: 'Structured Learning',
+          features: [
+            'Step by step learning pathways',
+            'Video lessons from legal professionals'
+          ]
+        }
+      ],
+      buttonText: 'Upgrade Now'
+    },
+    {
+      _id: 'schools-plan',
+      name: 'Schools Plan',
+      description: 'Empower your students with The Aspiring Legal Network',
+      price: 'Custom',
+      subscriptionCategory: 'school',
+      features: [
+        'Everything included in the Premium plan',
+        'School dashboard access',
+        'Cohort management and analytics',
+        'Student progress tracking',
+        'School workshops and events',
+        'Dedicated support'
+      ],
+      buttonText: 'Contact Us'
+    }
+  ]
 
-  // Fetch premiums with query param
-  const {
-    data: apiResponse,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['premiums', typeQuery],
-    queryFn: () => getAllPremiums(typeQuery),
-    retry: 1,
-  })
-
-  const apiPlans = apiResponse?.data || []
-
-  // Filter Logic
-  const filteredPlans = apiPlans.filter(plan => {
+  // Filter Logic (Optional: still keeping role-based filtering if needed, but the user asked for static)
+  const plansToDisplay = staticPlans.filter(plan => {
     if (session?.user?.role) {
       if (
         session.user.role === 'student' &&
@@ -50,28 +124,21 @@ export default function PlansPage() {
     return true
   })
 
-  // Combine for display
-  const plansToDisplay = filteredPlans
-
   const handleSubscribe = async (plan: any) => {
+    if (plan.price === 'Custom') {
+      router.push('/contact') // Or wherever school inquiries go
+      return
+    }
+
     if (!session) {
       router.push('/login')
       return
     }
 
-    /* 
-    // Removed client-side free plan check to allow backend to handle all "purchases" / subscriptions 
-    // including free trials or zero-cost plans via the same checkout flow if configured.
-    if (plan.price === 0 || plan.price === 'Free') {
-       toast.info('Free plan selected')
-       // If we wanted to bypass payment for free plans entirely on client side, we'd do it here.
-       // But user requested "direct payment" flow for logged in users.
-       // We will proceed to createPaymentSession.
-    } 
-    */
-
     try {
       setProcessingPlanId(plan._id)
+      // For static plans that aren't in the DB yet, this might fail unless backend handles them.
+      // But user just wanted static content. 
       const response = await createPaymentSession(plan._id)
 
       if (response.success && response.data?.url) {
@@ -103,30 +170,27 @@ export default function PlansPage() {
           <div className="bg-white rounded-[50px] border border-gray-200 flex items-center shadow-sm w-[360px] h-[50px] relative p-1">
             <button
               onClick={() => setIsYearly(false)}
-              className={`flex-1 h-full rounded-[50px] text-sm font-semibold transition-all duration-200 z-10 ${
-                !isYearly
-                  ? 'bg-transparent text-gray-900'
-                  : 'text-gray-500 hover:text-gray-900'
-              }`}
+              className={`flex-1 h-full rounded-[50px] text-sm font-semibold transition-all duration-200 z-10 ${!isYearly
+                ? 'bg-transparent text-gray-900'
+                : 'text-gray-500 hover:text-gray-900'
+                }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setIsYearly(true)}
-              className={`flex-1 h-full rounded-[50px] text-sm font-semibold transition-all duration-200 z-10 ${
-                isYearly
-                  ? 'bg-transparent text-gray-900'
-                  : 'text-gray-500 hover:text-gray-900'
-              }`}
+              className={`flex-1 h-full rounded-[50px] text-sm font-semibold transition-all duration-200 z-10 ${isYearly
+                ? 'bg-transparent text-gray-900'
+                : 'text-gray-500 hover:text-gray-900'
+                }`}
             >
               Yearly
             </button>
 
             {/* Animated Background Pill */}
             <div
-              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[#f3db40] rounded-[50px] transition-transform duration-300 shadow-sm ${
-                isYearly ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'
-              }`}
+              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[#f3db40] rounded-[50px] transition-transform duration-300 shadow-sm ${isYearly ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'
+                }`}
             />
           </div>
         </div>
@@ -137,174 +201,135 @@ export default function PlansPage() {
 
       {/* Content Area */}
       <div className="container mx-auto w-full min-h-[400px] flex items-center justify-center">
-        {isLoading ? (
-          // Skeleton Loading
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
-            {Array.from({ length: 3 }).map((_, i) => (
+        <div className="flex flex-wrap justify-center gap-8 w-full max-w-7xl items-start py-12">
+          {plansToDisplay.map((plan: any, index) => {
+            const isSchool = plan.subscriptionCategory === 'school'
+            const isHighlighted = plan.isPremium
+
+            const categoryLabel =
+              plan.subscriptionCategory === 'students'
+                ? 'Student'
+                : plan.subscriptionCategory === 'school'
+                  ? 'School'
+                  : 'Student'
+
+            const isProcessing = processingPlanId === plan._id
+
+            return (
               <div
-                key={i}
-                className="relative flex flex-col p-8 rounded-2xl bg-white border border-gray-200 shadow-xl h-[600px]"
-              >
-                <div className="text-center mb-6 space-y-3">
-                  <Skeleton className="h-6 w-24 mx-auto rounded-full" />
-                  <Skeleton className="h-8 w-1/2 mx-auto" />
-                  <Skeleton className="h-12 w-1/3 mx-auto" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-                <div className="space-y-4 flex-1">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <div key={j} className="flex gap-3">
-                      <Skeleton className="h-5 w-5 rounded-full" />
-                      <Skeleton className="h-5 w-3/4" />
-                    </div>
-                  ))}
-                </div>
-                <Skeleton className="h-14 w-full rounded-full mt-auto" />
-              </div>
-            ))}
-          </div>
-        ) : isError ? (
-          <div className="text-center p-8 bg-white rounded-2xl shadow-xl border border-red-100 max-w-md">
-            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-8 h-8 text-red-500" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Unable to load plans
-            </h3>
-            <p className="text-gray-600 mb-6">
-              We encountered an issue while retrieving the subscription plans.
-            </p>
-            <Button
-              onClick={() => window.location.reload()}
-              variant="outline"
-              className="border-gray-300 hover:bg-gray-50"
-            >
-              Reload Page
-            </Button>
-          </div>
-        ) : plansToDisplay.length === 0 ? (
-          <div className="text-center text-gray-500">
-            <p className="text-lg">
-              No subscription plans available for this category/period.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-wrap justify-center gap-8 w-full max-w-7xl items-end py-12">
-            {plansToDisplay.map((plan: any, index) => {
-              const isSchool = plan.subscriptionCategory === 'school'
-              const isHighlighted =
-                !isSchool &&
-                ((plan.name || '').toLowerCase().includes('premium') ||
-                  (plan.name || '').toLowerCase().includes('pro'))
-
-              const categoryLabel =
-                plan.subscriptionCategory === 'students'
-                  ? 'Student'
-                  : plan.subscriptionCategory === 'school'
-                    ? 'School'
-                    : 'Student'
-
-              const isProcessing = processingPlanId === plan._id
-
-              return (
-                <div
-                  key={index}
-                  className={`relative flex flex-col p-2 lg:p-4 rounded-2xl transition-transform hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[400px] origin-bottom ${
-                    isHighlighted
-                      ? 'bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4] shadow-2xl scale-105 z-10 border border-[#FEE64D]'
-                      : isSchool
-                        ? 'bg-slate-50 border border-slate-200 shadow-xl'
-                        : 'bg-white border border-gray-200 shadow-xl'
+                key={index}
+                className={`relative flex flex-col p-5 lg:p-7 rounded-2xl transition-transform hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[380px] ${isHighlighted
+                  ? 'bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4] shadow-2xl z-10 border border-[#FEE64D]'
+                  : isSchool
+                    ? 'bg-slate-50 border border-slate-200 shadow-xl'
+                    : 'bg-white border border-gray-200 shadow-xl'
                   }`}
-                >
-                  {/* Category Badge */}
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span
-                      className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1 ${
-                        isHighlighted
-                          ? 'bg-black text-[#FEE64D] border border-[#FEE64D]'
-                          : isSchool
-                            ? 'bg-slate-800 text-white border border-slate-700'
-                            : 'bg-[#FEE64D] text-black border border-white'
+              >
+                {/* Category Badge */}
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-full flex justify-center">
+                  <span
+                    className={`px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1 ${isHighlighted
+                      ? 'bg-black text-[#FEE64D] border border-[#FEE64D]'
+                      : isSchool
+                        ? 'bg-slate-800 text-white border border-slate-700'
+                        : 'bg-[#FEE64D] text-black border border-white'
                       }`}
-                    >
-                      {categoryLabel}
-                    </span>
-                  </div>
-
-                  {/* Plan Header */}
-                  <div className="text-center mb-6 mt-4">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      {plan.name}
-                    </h3>
-                    <div className="flex items-baseline justify-center gap-1">
-                      <span className="text-4xl font-extrabold text-gray-900">
-                        {typeof plan.price === 'number' && plan.price === 0
-                          ? 'Free'
-                          : typeof plan.price === 'number'
-                            ? `£${plan.price}`
-                            : plan.price}
-                      </span>
-                      {(plan.type === 'monthly' ||
-                        plan.type === 'yearly' ||
-                        plan.type === 'weekly') && (
-                        <span className="text-gray-700 font-medium">
-                          /
-                          {plan.type === 'monthly'
-                            ? 'month'
-                            : plan.type === 'yearly'
-                              ? 'year'
-                              : 'weekly'}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-gray-600 mt-3 text-sm min-h-[40px]">
-                      {plan.description ||
-                        (plan.name === 'Free Plan'
-                          ? 'Perfect for getting started on your legal journey'
-                          : 'Unlock your full potential with our premium features')}
-                    </p>
-                  </div>
-
-                  {/* Features */}
-                  <ul className="space-y-4 mb-8 flex-1">
-                    {plan.features?.map((feature: string, i: number) => (
-                      <li key={i} className="flex items-start gap-3 text-left">
-                        <div
-                          className={`mt-1 min-w-[20px] h-[20px] rounded-full flex items-center justify-center ${isHighlighted ? 'bg-green-700 text-[#FFFF00]' : 'bg-green-700 text-white'}`}
-                        >
-                          <Check size={12} strokeWidth={3} />
-                        </div>
-                        <span
-                          className={`text-sm ${isHighlighted ? 'text-gray-900 font-medium' : isSchool ? 'text-slate-800 font-medium' : 'text-gray-600'}`}
-                        >
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Button
-                    className={`w-full rounded-full py-6 font-bold text-base mt-auto ${isHighlighted ? 'bg-[#f3db40] text-black hover:bg-[#dfc836] border-2 border-[#f3db40]' : 'bg-[#f3db40] text-black hover:bg-[#dfc836] border-2 border-[#f3db40]'}`}
-                    onClick={() => handleSubscribe(plan)}
-                    disabled={isProcessing}
                   >
-                    {isProcessing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
-                      </>
-                    ) : plan.price === 0 || plan.price === 'Free' ? (
-                      'Get Started'
-                    ) : (
-                      'Purchase Plan'
-                    )}
-                  </Button>
+                    {categoryLabel}
+                  </span>
                 </div>
-              )
-            })}
-          </div>
-        )}
+
+                {/* Plan Header */}
+                <div className="text-center mb-5 mt-3">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    {plan.name}
+                  </h3>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-3xl font-extrabold text-gray-900">
+                      {typeof plan.price === 'number' && plan.price === 0
+                        ? 'Free'
+                        : typeof plan.price === 'number'
+                          ? `£${plan.price}`
+                          : plan.price}
+                    </span>
+                    {typeof plan.price === 'number' && plan.price > 0 && (
+                      <span className="text-gray-600 text-xs font-medium">
+                        /{isYearly ? 'year' : 'month'}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-gray-500 mt-2 text-[13px] leading-relaxed min-h-[36px]">
+                    {plan.description}
+                  </p>
+                </div>
+
+                {/* Features */}
+                <div className="flex-1 space-y-5">
+                  {plan.sections ? (
+                    plan.sections.map((section: any, si: number) => (
+                      <div key={si} className="space-y-2">
+                        <h4 className="font-bold text-[11px] text-gray-800 uppercase tracking-widest">
+                          {section.title}
+                        </h4>
+                        <ul className="space-y-2">
+                          {section.features.map((feature: string, fi: number) => (
+                            <li
+                              key={fi}
+                              className="flex items-start gap-2.5 text-left"
+                            >
+                              <div
+                                className={`mt-0.5 min-w-[16px] h-[16px] rounded-full flex items-center justify-center ${isHighlighted ? 'bg-green-700 text-[#FFFF00]' : 'bg-green-700 text-white'}`}
+                              >
+                                <Check size={8} strokeWidth={4} />
+                              </div>
+                              <span
+                                className={`text-[13px] leading-tight ${isHighlighted ? 'text-gray-800 font-normal' : 'text-gray-600'}`}
+                              >
+                                {feature}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))
+                  ) : (
+                    <ul className="space-y-3">
+                      {plan.features?.map((feature: string, i: number) => (
+                        <li key={i} className="flex items-start gap-3 text-left">
+                          <div
+                            className={`mt-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center ${isHighlighted ? 'bg-green-700 text-[#FFFF00]' : 'bg-green-700 text-white'}`}
+                          >
+                            <Check size={10} strokeWidth={3} />
+                          </div>
+                          <span
+                            className={`text-[13px] leading-tight ${isHighlighted ? 'text-gray-800 font-normal' : isSchool ? 'text-slate-700 font-normal' : 'text-gray-600'}`}
+                          >
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <Button
+                  className={`w-full rounded-full py-6 font-bold text-base mt-8 ${'bg-[#f3db40] text-black hover:bg-[#dfc836] border-2 border-[#f3db40]'}`}
+                  onClick={() => handleSubscribe(plan)}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    plan.buttonText || 'Get Started'
+                  )}
+                </Button>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
