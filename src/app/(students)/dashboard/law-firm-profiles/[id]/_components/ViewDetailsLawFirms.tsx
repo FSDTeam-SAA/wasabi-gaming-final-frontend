@@ -7,18 +7,20 @@ import {
   CircleCheckBig,
   ExternalLink,
   Globe,
+  Lock,
   Mail,
   MapPin,
   Phone,
   Target,
   Users,
 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import ShowOpenPosition from "./ShowOpenPosition";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 // TypeScript interface
 interface RecentInfo {
@@ -96,6 +98,7 @@ interface ApiResponse {
 
 function ViewDetailsLawFirms() {
   const params = useParams();
+  const router = useRouter();
   const session = useSession();
   const token = session.data?.accessToken;
 
@@ -155,6 +158,19 @@ function ViewDetailsLawFirms() {
   });
 
   const datass = profileData?.data?.subscription?.name ?? "";
+  const isPremium = datass !== "" && datass !== "Free Plan";
+
+  const handlePremiumTab = (tab: "positions" | "culture") => {
+    if (!isPremium) {
+      toast.error("This section is for premium subscribers only. Upgrade your plan to access it.", {
+        duration: 3000,
+      });
+      setTimeout(() => router.push("/plans"), 1500);
+      return;
+    }
+    setActiveTab(tab);
+  };
+
   const firmData = response?.data;
 
   if (isLoading) {
@@ -372,34 +388,33 @@ function ViewDetailsLawFirms() {
             <div className="flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`flex-1 min-w-[130px] sm:min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${
-                  activeTab === "overview"
+                className={`flex-1 min-w-[130px] sm:min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${activeTab === "overview"
                     ? "bg-[#FFFF00] text-black shadow-sm"
                     : "text-[#1E1E1E]"
-                }`}
+                  }`}
               >
                 Overview
               </button>
 
               <button
-                onClick={() => setActiveTab("positions")}
-                className={`flex-1 min-w-[160px] sm:min-w-[180px] text-sm font-medium py-3 rounded-full transition-all ${
-                  activeTab === "positions"
+                onClick={() => handlePremiumTab("positions")}
+                className={`flex-1 min-w-[160px] sm:min-w-[180px] text-sm font-medium py-3 rounded-full transition-all flex items-center justify-center gap-1.5 ${activeTab === "positions"
                     ? "bg-[#FFFF00] text-black shadow-sm"
                     : "text-[#1E1E1E]"
-                }`}
+                  }`}
               >
+                {!isPremium && <Lock className="w-3.5 h-3.5 flex-shrink-0" />}
                 Open Positions ({firmData?.jobs?.length ?? 0})
               </button>
 
               <button
-                onClick={() => setActiveTab("culture")}
-                className={`flex-1 min-w-[170px] sm:min-w-[190px] text-sm font-medium py-3 rounded-full transition-all ${
-                  activeTab === "culture"
+                onClick={() => handlePremiumTab("culture")}
+                className={`flex-1 min-w-[170px] sm:min-w-[190px] text-sm font-medium py-3 rounded-full transition-all flex items-center justify-center gap-1.5 ${activeTab === "culture"
                     ? "bg-[#FFFF00] text-black shadow-sm"
                     : "text-[#1E1E1E]"
-                }`}
+                  }`}
               >
+                {!isPremium && <Lock className="w-3.5 h-3.5 flex-shrink-0" />}
                 Cultures & Benefits
               </button>
             </div>
@@ -752,7 +767,7 @@ function ViewDetailsLawFirms() {
 
                     <div className="px-4 sm:px-6">
                       {Array.isArray(firmData?.cultureAndValue) &&
-                      firmData.cultureAndValue.length > 0 ? (
+                        firmData.cultureAndValue.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                           {firmData.cultureAndValue.map(
                             (item: string, index: number) => (
@@ -785,7 +800,7 @@ function ViewDetailsLawFirms() {
 
                     <div className="px-4 sm:px-6">
                       {Array.isArray(firmData?.benefitsAndPerks) &&
-                      firmData.benefitsAndPerks.length > 0 ? (
+                        firmData.benefitsAndPerks.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                           {firmData.benefitsAndPerks.map(
                             (item: string, index: number) => (
