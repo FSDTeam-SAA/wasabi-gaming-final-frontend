@@ -9,15 +9,19 @@ interface SubscriptionGuardProps {
     children: React.ReactNode
     requireSubscription?: boolean
     requireLogin?: boolean
+    message?: string
+    requiredPlan?: 'basic' | 'premium'
 }
 
 export default function SubscriptionGuard({
     children,
     requireSubscription = true,
     requireLogin = true,
+    message,
+    requiredPlan = 'basic',
 }: SubscriptionGuardProps) {
     const router = useRouter()
-    const { isAuthenticated, hasActiveSubscription, isLoading } = useUserProfile()
+    const { isAuthenticated, hasActiveSubscription, isLoading, subscriptionName } = useUserProfile()
 
     useEffect(() => {
         // Wait for loading to complete
@@ -31,12 +35,23 @@ export default function SubscriptionGuard({
         }
 
         // Check subscription requirement
-        if (requireSubscription && isAuthenticated && !hasActiveSubscription) {
-            toast.error('This feature requires an active subscription')
-            router.push('/plans')
-            return
+        if (requireSubscription && isAuthenticated) {
+            const isPremium = subscriptionName.toLowerCase().includes('premium') || subscriptionName.toLowerCase().includes('pro')
+            const hasBasic = hasActiveSubscription
+
+            if (requiredPlan === 'premium' && !isPremium) {
+                toast.error(message || 'This feature requires an active premium subscription')
+                router.push('/plans')
+                return
+            }
+
+            if (requiredPlan === 'basic' && !hasBasic) {
+                toast.error(message || 'This feature requires an active subscription')
+                router.push('/plans')
+                return
+            }
         }
-    }, [isAuthenticated, hasActiveSubscription, isLoading, requireLogin, requireSubscription, router])
+    }, [isAuthenticated, hasActiveSubscription, isLoading, requireLogin, requireSubscription, router, requiredPlan, subscriptionName, message])
 
     // Show loading state
     if (isLoading) {
@@ -52,8 +67,12 @@ export default function SubscriptionGuard({
         return null
     }
 
-    if (requireSubscription && !hasActiveSubscription) {
-        return null
+    if (requireSubscription && isAuthenticated) {
+        const isPremium = subscriptionName.toLowerCase().includes('premium') || subscriptionName.toLowerCase().includes('pro')
+        const hasBasic = hasActiveSubscription
+
+        if (requiredPlan === 'premium' && !isPremium) return null
+        if (requiredPlan === 'basic' && !hasBasic) return null
     }
 
     return <>{children}</>

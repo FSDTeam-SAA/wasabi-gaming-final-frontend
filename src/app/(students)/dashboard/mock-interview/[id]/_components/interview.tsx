@@ -223,26 +223,13 @@ const Interview: React.FC<InterviewProps> = ({
     return <ShimmerSkeleton />;
   }
 
-  // Progress calculation
+  // Progress calculation (overall completion only, by submitted questions)
   const calculateProgress = (): number => {
     const totalQuestions = questions.length;
     if (totalQuestions === 0) return 0;
 
-    let currentQuestionProgress = 0;
-    if (!isVideoRecorded && !isRecording) {
-      // Do not count preparation time toward overall progress
-      currentQuestionProgress = 0;
-    } else if (isRecording) {
-      // Recording time progress (0-120 seconds)
-      currentQuestionProgress = (recordingTime / MAX_RECORDING_TIME) * 100;
-    } else if (isVideoRecorded) {
-      // Recording completed
-      currentQuestionProgress = 100;
-    }
-
     const submittedAnswers = answers.filter((a) => a.submitted).length;
-    const totalProgress =
-      (submittedAnswers * 100 + currentQuestionProgress) / totalQuestions;
+    const totalProgress = (submittedAnswers / totalQuestions) * 100;
 
     return Math.min(totalProgress, 100);
   };
@@ -253,12 +240,6 @@ const Interview: React.FC<InterviewProps> = ({
   }, [
     answers,
     questions.length,
-    prepTimer,
-    recordingTime,
-    isRecording,
-    isVideoRecorded,
-    isCameraActive,
-    currentQuestionIndex,
   ]);
 
   // Start camera function
@@ -723,7 +704,7 @@ const Interview: React.FC<InterviewProps> = ({
         <div>
           <h1 className="text-2xl font-bold">{sessionData.category}</h1>
           <p className="text-sm text-gray-600">
-            Session ID: {sessionId?.slice(-8) || "N/A"}
+            Session  ID: {sessionId?.slice(-8) || "N/A"}
           </p>
         </div>
 
