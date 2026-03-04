@@ -103,9 +103,9 @@ export default function ResultsPage() {
                   <span className="text-sm font-semibold text-[#18181B]">Words Completed</span>
                   <span className="text-sm font-bold text-[#18181B]">{writtentData?.wordsCompleted || 0}</span>
                 </div>
-                <div className="w-full bg-[#E4E4E7] rounded-full h-2">
+                <div className="w-full bg-[#E4E4E7] rounded-full h-3">
                   <div
-                    className="bg-[#FFFF00] h-2 rounded-full transition-all"
+                    className="bg-[#EAB308] h-3 rounded-full transition-all"
                     style={{ width: `${writtentData?.wordsCompleted}%` }}
                   />
                 </div>
@@ -115,9 +115,9 @@ export default function ResultsPage() {
                   <span className="text-sm font-semibold text-[#18181B]">Completion Rate</span>
                   <span className="text-sm font-bold text-[#18181B]">{writtentData?.completionRate || 0}</span>
                 </div>
-                <div className="w-full bg-[#E4E4E7] rounded-full h-2">
+                <div className="w-full bg-[#E4E4E7] rounded-full h-3">
                   <div
-                    className="bg-[#FFFF00] h-2 rounded-full transition-all"
+                    className="bg-[#EAB308] h-3 rounded-full transition-all"
                     style={{ width: `${writtentData?.completionRate}%` }}
                   />
                 </div>
@@ -127,9 +127,9 @@ export default function ResultsPage() {
                   <span className="text-sm font-semibold text-[#18181B]">Writing Speed</span>
                   <span className="text-sm font-bold text-[#18181B]">{writtentData?.writingSpeed || 0}</span>
                 </div>
-                <div className="w-full bg-[#E4E4E7] rounded-full h-2">
+                <div className="w-full bg-[#E4E4E7] rounded-full h-3">
                   <div
-                    className="bg-[#FFFF00] h-2 rounded-full transition-all"
+                    className="bg-[#EAB308] h-3 rounded-full transition-all"
                     style={{ width: `${writtentData?.writingSpeed}%` }}
                   />
                 </div>
@@ -139,9 +139,9 @@ export default function ResultsPage() {
                   <span className="text-sm font-semibold text-[#18181B]">Overall Grade</span>
                   <span className="text-sm font-bold text-[#18181B]">{writtentData?.overallGrade || ""}</span>
                 </div>
-                <div className="w-full bg-[#E4E4E7] rounded-full h-2">
+                <div className="w-full bg-[#E4E4E7] rounded-full h-3">
                   <div
-                    className="bg-[#FFFF00] h-2 rounded-full transition-all"
+                    className="bg-[#EAB308] h-3 rounded-full transition-all"
                     style={{ width: `${writtentData?.overallGrade}%` }}
                   />
                 </div>

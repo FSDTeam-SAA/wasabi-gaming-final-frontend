@@ -185,10 +185,7 @@ const ReviewInterview = () => {
                   <div className="w-1.5 h-1.5 rounded-full bg-[#00D084] mt-1.5 shrink-0" />
                   {feedback?.strength || "No data provided"}
                 </li>
-                <li className="flex items-start gap-2 text-sm text-gray-600">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#00D084] mt-1.5 shrink-0" />
-                  Strong structured thinking using frameworks
-                </li>
+               
               </ul>
             </div>
 
@@ -246,7 +243,7 @@ const ReviewInterview = () => {
               <div className="flex items-center gap-3 mb-2">
                 <CheckCircle2 size={18} className="text-[#00D084]" />
                 <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-mono">
-                  0:15
+                  {duration > 0 ? formatTime(duration) : "0:00"}
                 </span>
                 <h4 className="text-sm font-bold">Great opening hook!</h4>
               </div>
@@ -259,9 +256,9 @@ const ReviewInterview = () => {
             <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-2xl">
               <div className="flex items-center gap-3 mb-2">
                 <Lightbulb size={18} className="text-[#FF6B2C]" />
-                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-mono">
+                {/* <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-mono">
                   0:45
-                </span>
+                </span> */}
                 <h4 className="text-sm font-bold">Watch the filler words</h4>
               </div>
               <p className="text-xs leading-relaxed text-gray-500 ml-7">
