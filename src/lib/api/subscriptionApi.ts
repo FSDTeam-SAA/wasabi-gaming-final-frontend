@@ -39,18 +39,45 @@ export const getAllPremiums = async (interval: string): Promise<IPremiumResponse
     headers: {
       'Content-Type': 'application/json',
     },
-    // Assuming next.js revalidate or cache settings if needed
     cache: 'no-store',
   })
 
-  // We are not using the generic TResponse here because we want strict typing for this specific response shape
-  // to match the user's provided JSON including the typo 'mounth' if that's what's returned.
-  // Although usually we'd use a shared fetch wrapper if the project has one.
-  // I saw `achievementsApi.ts` uses relative path for types but I don't have access to types folder content content easily without checking.
-  // I will just return the JSON.
-
   if (!res.ok) {
     throw new Error('Failed to fetch premiums')
+  }
+
+  return res.json()
+}
+
+export const getPlansByCategory = async (category: string): Promise<IPremiumResponse> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/premium?subscriptionCategory=${category}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch premiums by category')
+  }
+
+  return res.json()
+}
+
+export const getPremiumById = async (id: string): Promise<any> => {
+  const session = await getSession()
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/premium/${id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session?.accessToken}`,
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch premium by ID')
   }
 
   return res.json()
