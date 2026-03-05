@@ -194,8 +194,8 @@ export default function PlansPage() {
               return (
                 <div
                   key={index}
-                  className={`relative flex flex-col p-5 lg:p-7 rounded-2xl transition-transform hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[380px] ${isHighlighted
-                    ? 'bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4] shadow-2xl z-10 border border-[#FEE64D]'
+                  className={`relative flex flex-col p-5 lg:p-7 rounded-2xl transition-all hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[380px] ${isHighlighted
+                    ? `bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4] shadow-2xl z-10 border border-[#FEE64D] ${!session ? 'lg:scale-110 lg:z-20' : ''}`
                     : isSchool
                       ? 'bg-slate-50 border border-slate-200 shadow-xl'
                       : 'bg-white border border-gray-200 shadow-xl'
