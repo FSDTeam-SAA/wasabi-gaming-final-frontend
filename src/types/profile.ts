@@ -41,6 +41,8 @@ export interface IUser {
     registered: boolean;
     status: 'active' | 'inactive';
     isSubscription: boolean;
+    subscription?: string | any;
+    subscribedSchool?: any;
     shareLink?: string;
     applicationJob?: {
         job: string;

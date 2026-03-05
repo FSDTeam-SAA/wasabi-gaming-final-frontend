@@ -1,132 +1,97 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Check, Loader2 } from 'lucide-react'
-import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { createPaymentSession } from '@/lib/api/subscriptionApi'
+import { createPaymentSession, getPlansByCategory, getPremiumById } from '@/lib/api/subscriptionApi'
+import { getProfile } from '@/lib/api/profileApi'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 export default function PlansPage() {
   const [isYearly, setIsYearly] = useState(false)
+  const [plans, setPlans] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null)
   const { data: session } = useSession()
   const router = useRouter()
 
-  // Static Plans Data
-  const staticPlans = [
-    {
-      _id: 'starter-plan',
-      name: 'Starter Plan',
-      description: 'Perfect for getting started on your legal journey',
-      price: 0,
-      subscriptionCategory: 'students',
-      features: [
-        'Community access',
-        'Access to legal opportunities',
-        'Limited law firm profiles',
-        'Application tracker',
-        'Unlimited CV builder',
-        'Learning resources'
-      ],
-      buttonText: 'Get Started'
-    },
-    {
-      _id: 'premium-plan',
-      name: 'Premium Plan',
-      description: 'Everything you need to secure competitive legal roles',
-      price: isYearly ? 150 : 15, // Assuming £150 for yearly based on £15/mo
-      type: isYearly ? 'yearly' : 'monthly',
-      subscriptionCategory: 'students',
-      isPremium: true,
-      sections: [
-        {
-          title: 'Application Tools',
-          features: ['Unlimited CV builder', 'Cover letter builder']
-        },
-        {
-          title: 'Interview Preparation',
-          features: [
-            'Mock interview simulations',
-            'Structured feedback and improvement guidance'
-          ]
-        },
-        {
-          title: 'Assessment Centre Training',
-          features: [
-            'In tray email exercises',
-            'Written case studies',
-            'Case law analysis tasks',
-            'Video Presentation practice'
-          ]
-        },
-        {
-          title: 'Psychometric Test Suite',
-          features: [
-            'Watson Glaser style critical thinking tests',
-            'Verbal reasoning',
-            'Numerical reasoning',
-            'Abstract reasoning',
-            'Situational judgement'
-          ]
-        },
-        {
-          title: 'Firm Insights',
-          features: [
-            'Full law firm insights library',
-            'Recruitment process breakdowns'
-          ]
-        },
-        {
-          title: 'Structured Learning',
-          features: [
-            'Step by step learning pathways',
-            'Video lessons from legal professionals'
-          ]
-        }
-      ],
-      buttonText: 'Upgrade Now'
-    },
-    {
-      _id: 'schools-plan',
-      name: 'Schools Plan',
-      description: 'Empower your students with The Aspiring Legal Network',
-      price: 'Custom',
-      subscriptionCategory: 'school',
-      features: [
-        'Everything included in the Premium plan',
-        'School dashboard access',
-        'Cohort management and analytics',
-        'Student progress tracking',
-        'School workshops and events',
-        'Dedicated support'
-      ],
-      buttonText: 'Contact Us'
-    }
-  ]
+  const currentInterval = isYearly ? 'yearly' : 'monthly'
 
-  // Filter Logic (Optional: still keeping role-based filtering if needed, but the user asked for static)
-  const plansToDisplay = staticPlans.filter(plan => {
-    if (session?.user?.role) {
-      if (
-        session.user.role === 'student' &&
-        plan.subscriptionCategory !== 'students'
-      )
-        return false
-      if (
-        session.user.role === 'school' &&
-        plan.subscriptionCategory !== 'school'
-      )
-        return false
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        setIsLoading(true)
+        let fetchedPlans: any[] = []
+
+        if (!session) {
+          // Logged out: Fetch student plans
+          const studentRes = await getPlansByCategory('students')
+          fetchedPlans = studentRes.data || []
+
+          // Add static Contact card for schools
+          fetchedPlans.push({
+            _id: 'contact-school',
+            name: 'Schools Plan',
+            description: 'Empower your students with The Aspiring Legal Network',
+            price: 'Custom',
+            subscriptionCategory: 'school',
+            features: [
+              'Everything included in the Premium plan',
+              'School dashboard access',
+              'Cohort management and analytics',
+              'Student progress tracking',
+              'School workshops and events',
+              'Dedicated support'
+            ],
+            buttonText: 'Contact Us'
+          })
+        } else if (session.user?.role === 'student') {
+          // Student: Fetch only student plans
+          const studentRes = await getPlansByCategory('students')
+          fetchedPlans = studentRes.data || []
+        } else if (session.user?.role === 'school') {
+          // School: Fetch user profile first to get the latest subscription ID
+          const profileRes = await getProfile((session as any)?.accessToken || (session.user as any)?.accessToken)
+
+          if (profileRes.success && profileRes.data?.data) {
+            const userData = profileRes.data.data as any
+            // The user pointed out subscription field in profile data
+            const subId = userData.subscription || userData.subscribedSchool?._id
+
+            if (subId) {
+              const schoolPlanRes = await getPremiumById(subId)
+              if (schoolPlanRes.success && schoolPlanRes.data) {
+                fetchedPlans = [schoolPlanRes.data]
+              }
+            }
+          }
+        }
+
+        setPlans(fetchedPlans)
+      } catch (error) {
+        console.error('Error fetching plans:', error)
+        toast.error('Failed to load subscription plans')
+      } finally {
+        setIsLoading(false)
+      }
     }
-    return true
+
+    fetchPlans()
+  }, [session])
+
+  // Filter plans based on the selected interval
+  // Free plans (price 0) or Custom plans are shown in both
+  const filteredPlans = plans.filter(plan => {
+    if (plan.price === 0 || plan.price === 'Custom') return true
+    return plan.type === currentInterval
   })
 
+  // Handle Subscription
   const handleSubscribe = async (plan: any) => {
     if (plan.price === 'Custom') {
-      router.push('/contact') // Or wherever school inquiries go
+      router.push('/contact')
       return
     }
 
@@ -137,8 +102,6 @@ export default function PlansPage() {
 
     try {
       setProcessingPlanId(plan._id)
-      // For static plans that aren't in the DB yet, this might fail unless backend handles them.
-      // But user just wanted static content. 
       const response = await createPaymentSession(plan._id)
 
       if (response.success && response.data?.url) {
@@ -187,7 +150,6 @@ export default function PlansPage() {
               Yearly
             </button>
 
-            {/* Animated Background Pill */}
             <div
               className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[#f3db40] rounded-[50px] transition-transform duration-300 shadow-sm ${isYearly ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'
                 }`}
@@ -201,98 +163,80 @@ export default function PlansPage() {
 
       {/* Content Area */}
       <div className="container mx-auto w-full min-h-[400px] flex items-center justify-center">
-        <div className="flex flex-wrap justify-center gap-8 w-full max-w-7xl items-start py-12">
-          {plansToDisplay.map((plan: any, index) => {
-            const isSchool = plan.subscriptionCategory === 'school'
-            const isHighlighted = plan.isPremium
+        {isLoading ? (
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-yellow-600" />
+            <p className="text-gray-500 font-medium">Loading plans...</p>
+          </div>
+        ) : filteredPlans.length === 0 ? (
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold text-gray-800">No plans found</h2>
+            <p className="text-gray-500">We couldn't find any {currentInterval} plans at the moment.</p>
+            <Button variant="outline" onClick={() => setIsYearly(!isYearly)}>
+              Switch to {isYearly ? 'Monthly' : 'Yearly'}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-wrap justify-center gap-8 w-full max-w-7xl items-start py-12">
+            {filteredPlans.map((plan: any, index) => {
+              const isSchool = plan.subscriptionCategory === 'school'
+              const isHighlighted = plan.name === 'premium'
 
-            const categoryLabel =
-              plan.subscriptionCategory === 'students'
-                ? 'Student'
-                : plan.subscriptionCategory === 'school'
-                  ? 'School'
-                  : 'Student'
+              const categoryLabel =
+                plan.subscriptionCategory === 'students'
+                  ? 'Student'
+                  : plan.subscriptionCategory === 'school'
+                    ? 'School'
+                    : 'Student'
 
-            const isProcessing = processingPlanId === plan._id
+              const isProcessing = processingPlanId === plan._id
 
-            return (
-              <div
-                key={index}
-                className={`relative flex flex-col p-5 lg:p-7 rounded-2xl transition-transform hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[380px] ${isHighlighted
-                  ? 'bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4] shadow-2xl z-10 border border-[#FEE64D]'
-                  : isSchool
-                    ? 'bg-slate-50 border border-slate-200 shadow-xl'
-                    : 'bg-white border border-gray-200 shadow-xl'
-                  }`}
-              >
-                {/* Category Badge */}
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-full flex justify-center">
-                  <span
-                    className={`px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1 ${isHighlighted
-                      ? 'bg-black text-[#FEE64D] border border-[#FEE64D]'
-                      : isSchool
-                        ? 'bg-slate-800 text-white border border-slate-700'
-                        : 'bg-[#FEE64D] text-black border border-white'
-                      }`}
-                  >
-                    {categoryLabel}
-                  </span>
-                </div>
-
-                {/* Plan Header */}
-                <div className="text-center mb-5 mt-3">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">
-                    {plan.name}
-                  </h3>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-3xl font-extrabold text-gray-900">
-                      {typeof plan.price === 'number' && plan.price === 0
-                        ? 'Free'
-                        : typeof plan.price === 'number'
-                          ? `£${plan.price}`
-                          : plan.price}
+              return (
+                <div
+                  key={index}
+                  className={`relative flex flex-col p-5 lg:p-7 rounded-2xl transition-transform hover:-translate-y-1 duration-300 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-w-[300px] max-w-[380px] ${isHighlighted
+                    ? 'bg-gradient-to-b from-[#FEE64D] to-[#FFFFD4] shadow-2xl z-10 border border-[#FEE64D]'
+                    : isSchool
+                      ? 'bg-slate-50 border border-slate-200 shadow-xl'
+                      : 'bg-white border border-gray-200 shadow-xl'
+                    }`}
+                >
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-full flex justify-center">
+                    <span
+                      className={`px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1 ${isHighlighted
+                        ? 'bg-black text-[#FEE64D] border border-[#FEE64D]'
+                        : isSchool
+                          ? 'bg-slate-800 text-white border border-slate-700'
+                          : 'bg-[#FEE64D] text-black border border-white'
+                        }`}
+                    >
+                      {categoryLabel}
                     </span>
-                    {typeof plan.price === 'number' && plan.price > 0 && (
-                      <span className="text-gray-600 text-xs font-medium">
-                        /{isYearly ? 'year' : 'month'}
-                      </span>
-                    )}
                   </div>
-                  <p className="text-gray-500 mt-2 text-[13px] leading-relaxed min-h-[36px]">
-                    {plan.description}
-                  </p>
-                </div>
 
-                {/* Features */}
-                <div className="flex-1 space-y-5">
-                  {plan.sections ? (
-                    plan.sections.map((section: any, si: number) => (
-                      <div key={si} className="space-y-2">
-                        <h4 className="font-bold text-[11px] text-gray-800 uppercase tracking-widest">
-                          {section.title}
-                        </h4>
-                        <ul className="space-y-2">
-                          {section.features.map((feature: string, fi: number) => (
-                            <li
-                              key={fi}
-                              className="flex items-start gap-2.5 text-left"
-                            >
-                              <div
-                                className={`mt-0.5 min-w-[16px] h-[16px] rounded-full flex items-center justify-center ${isHighlighted ? 'bg-green-700 text-[#FFFF00]' : 'bg-green-700 text-white'}`}
-                              >
-                                <Check size={8} strokeWidth={4} />
-                              </div>
-                              <span
-                                className={`text-[13px] leading-tight ${isHighlighted ? 'text-gray-800 font-normal' : 'text-gray-600'}`}
-                              >
-                                {feature}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))
-                  ) : (
+                  {/* Plan Header */}
+                  <div className="text-center mb-5 mt-3">
+                    <h3 className="text-lg font-bold text-gray-900 mb-1 capitalize">
+                      {plan.name} Plan
+                    </h3>
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-3xl font-extrabold text-gray-900">
+                        {typeof plan.price === 'number' && plan.price === 0
+                          ? 'Free'
+                          : typeof plan.price === 'number'
+                            ? `£${plan.price}`
+                            : plan.price}
+                      </span>
+                      {typeof plan.price === 'number' && plan.price > 0 && (
+                        <span className="text-gray-600 text-xs font-medium">
+                          /{plan.type === 'yearly' ? 'year' : 'month'}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Features */}
+                  <div className="flex-1 space-y-5">
                     <ul className="space-y-3">
                       {plan.features?.map((feature: string, i: number) => (
                         <li key={i} className="flex items-start gap-3 text-left">
@@ -309,27 +253,27 @@ export default function PlansPage() {
                         </li>
                       ))}
                     </ul>
-                  )}
-                </div>
+                  </div>
 
-                <Button
-                  className={`w-full rounded-full py-6 font-bold text-base mt-8 ${'bg-[#f3db40] text-black hover:bg-[#dfc836] border-2 border-[#f3db40]'}`}
-                  onClick={() => handleSubscribe(plan)}
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    plan.buttonText || 'Get Started'
-                  )}
-                </Button>
-              </div>
-            )
-          })}
-        </div>
+                  <Button
+                    className={`w-full rounded-full py-6 font-bold text-base mt-8 ${'bg-[#f3db40] text-black hover:bg-[#dfc836] border-2 border-[#f3db40]'}`}
+                    onClick={() => handleSubscribe(plan)}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      plan.buttonText || (session?.user?.role === 'school' ? 'Upgrade Plan' : plan.price === 0 ? 'Get Started' : 'Upgrade Now')
+                    )}
+                  </Button>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )
