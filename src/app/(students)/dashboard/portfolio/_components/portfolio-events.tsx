@@ -1,123 +1,71 @@
 'use client';
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { LeftOutlined, CalendarOutlined } from "@ant-design/icons";
-import { Button, Col, Image, Row, Typography, Modal, Card } from "antd";
+import { Button, Col, Image, Row, Typography, Modal, Card, Input } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 
 const { Title, Paragraph, Text } = Typography;
 
-type EventItem = {
-  id: number;
+type ApiEvent = {
+  _id: string;
   title: string;
-  type: string;
-  image: string;
+  description: string;
   date: string;
-  preview: string;
-  modalContent: string;
+  time?: string;
+  eventType?: string;
+  thumbnail?: string;
 };
 
-const eventsData: EventItem[] = [
-  {
-    id: 1,
-    title: "Get Ready to Ask an Apprentice!",
-    type: "Webinar",
-    image: "/event1.png",
-    date: "Tuesday, Jun 24 • 06:00 PM UTC",
-    preview: `"Apprenticeships? Isn't that just for people who can't get into university?" 🤔 Er... nope, that's not true at all! And here's why...`,
-    modalContent: `
-      <p><strong>Tuesday, Jun 24 • 06:00 PM UTC</strong></p>
-      <h2>Get Ready to Ask an Apprentice!</h2>
-      <p><strong>Webinar</strong></p>
-      <p>🚨 <strong>CALLING ALL ASPIRING LEGAL APPRENTICES!</strong> 🚨</p>
-      <p>"Apprenticeships? Isn't that just for people who can't get into university?" 🤔</p>
-      <p>Er… nope, that's not true at all! And here's why…</p>
-      <p>When I was in school, I heard it all:</p>
-      <ul>
-        <li>"Apprenticeships are just for plumbers."</li>
-        <li>"You'll get stuck doing the same thing for years."</li>
-        <li>"You won't be able to switch career paths after an apprenticeship."</li>
-      </ul>
-      <p>Sound familiar? 🙄</p>
-      <p>But the reality is, I was just misinformed — mainly because apprenticeships weren't being promoted enough at school.</p>
-      <p>So, if you're wondering what it's REALLY like, join us for the Ask a Legal Apprentice event.</p>
-      <p><strong>🔗 Sign up here:</strong><br/>https://lnkd.in/eym4rDVE</p>
-      <p>See you there! 😎</p>
-    `,
-  },
-  {
-    id: 2,
-    title: "1:1 Mock Interview with Current Legal Apprentices",
-    type: "Webinar - 1:1 Session",
-    image: "/event1.png",
-    date: "Tuesday, Mar 18 • 12:00 PM UTC",
-    preview:
-      "We're excited to announce that registration is now open for our mock interviews with current solicitor apprentices! This is a unique opportunity to...",
-    modalContent: `
-      <p><strong>Tuesday, Mar 18 • 12:00 PM UTC</strong></p>
-      <h2>1:1 Mock Interview with Current Legal Apprentices</h2>
-      <p><strong>Webinar - 1:1 Session</strong></p>
-      <h3>🚀 Aspiring Legal Professionals—This is Your Chance! 🚀</h3>
-      <ul>
-        <li>✅ Gain real-life interview experience</li>
-        <li>✅ Receive personalised feedback</li>
-        <li>✅ Boost your confidence for future legal interviews</li>
-      </ul>
-      <p><strong>📅 Registration Deadline:</strong> 18th March 2025</p>
-      <p><strong>🌐 Secure your spot now:</strong> https://lnkd.in/dmT3SBHG</p>
-    `,
-  },
-  {
-    id: 3,
-    title: "DWF x Aspiring Legal Network Solicitor Apprenticeship Insight Event",
-    type: "Webinar",
-    image: "/event1.png",
-    date: "Thursday, Dec 05 • 06:00 PM UTC",
-    preview:
-      "This event includes: A session with Ben Winstanley for top tips on strengthening your solicitor apprenticeship applications...",
-    modalContent: `
-      <p><strong>Thursday, Dec 05 • 06:00 PM UTC</strong></p>
-      <h2>DWF x Aspiring Legal Network Solicitor Apprenticeship Insight Event</h2>
-      <p><strong>Webinar</strong></p>
-      <p><strong>📢 Join us for our first event:</strong> DWF Solicitor Apprenticeship Insight Event</p>
-      <p><strong>🗓 December 5th | ⏰ 6 PM | 🌐 Virtual</strong></p>
-      <ul>
-        <li>✨ Tips on strengthening applications</li>
-        <li>✨ Interactive Q&A with current solicitor apprentices</li>
-      </ul>
-      <p>👉 https://lnkd.in/eccpDWDT</p>
-    `,
-  },
-  {
-    id: 4,
-    title: "Legal Tech Conference 2024",
-    type: "Conference",
-    image: "/event1.png",
-    date: "Friday, Nov 15 • 09:00 AM UTC",
-    preview:
-      "Explore the latest innovations in legal technology with industry leaders and tech experts...",
-    modalContent: `<p>Conference details here...</p>`,
-  },
-  {
-    id: 5,
-    title: "Networking for Junior Lawyers",
-    type: "Networking",
-    image: "/event1.png",
-    date: "Wednesday, Oct 30 • 07:00 PM UTC",
-    preview:
-      "Connect with fellow legal professionals and build your network in a casual setting...",
-    modalContent: `<p>Networking event details here...</p>`,
-  },
-  {
-    id: 6,
-    title: "Workshop: Contract Law Fundamentals",
-    type: "Workshop",
-   image: "/event1.png",
-    date: "Saturday, Sep 21 • 10:00 AM UTC",
-    preview:
-      "Learn the basics of contract law from experienced practitioners...",
-    modalContent: `<p>Workshop details here...</p>`,
-  },
-];
+type EventsApiResponse = {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+  };
+  data: ApiEvent[];
+};
+
+type EventItem = {
+  id: string;
+  title: string;
+  eventType: string;
+  image: string;
+  dateDisplay: string;
+  time?: string;
+  preview: string;
+  description: string;
+};
+
+const FALLBACK_IMAGE = "/event1.png";
+
+const stripHtml = (html: string) =>
+  html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+const buildPreview = (html: string, maxLength = 160) => {
+  const text = stripHtml(html || "");
+  if (!text) return "No description available.";
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength).trim()}...`;
+};
+
+const formatEventDate = (dateIso: string, time?: string) => {
+  if (!dateIso) return time ? `• ${time}` : "Date not available";
+  const date = new Date(dateIso);
+  if (Number.isNaN(date.getTime())) return time ? `• ${time}` : "Date not available";
+  const formatted = new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).format(date);
+  return time ? `${formatted} • ${time}` : formatted;
+};
 
 type RichTextContentProps = {
   content: string;
@@ -142,12 +90,14 @@ type EventDetailModalProps = {
   event: EventItem | null;
   visible: boolean;
   onClose: () => void;
+  onRegister: () => void;
 };
 
 const EventDetailModal: React.FC<EventDetailModalProps> = ({
   event,
   visible,
   onClose,
+  onRegister,
 }) => {
   if (!event) return null;
 
@@ -200,12 +150,25 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({
         {/* Content Section */}
         <div style={{ padding: 40, backgroundColor: "#fff" }}>
           <div style={{ maxWidth: 700, margin: "0 auto" }}>
-            <RichTextContent content={event.modalContent} />
+            <div style={{ marginBottom: 24 }}>
+              <Text style={{ color: "#666", fontSize: 13, display: "block" }}>
+                <CalendarOutlined style={{ marginRight: 6 }} />
+                {event.dateDisplay}
+              </Text>
+              <Title level={3} style={{ marginTop: 12, marginBottom: 8 }}>
+                {event.title}
+              </Title>
+              <Text style={{ fontSize: 14, color: "#666" }}>
+                {event.eventType || "Event"}
+              </Text>
+            </div>
+            <RichTextContent content={event.description} />
 
             <div style={{ marginTop: 40, display: "flex", gap: 16 }}>
               <Button
                 type="primary"
                 size="large"
+                onClick={onRegister}
                 style={{
                   backgroundColor: "#ffff00",
                   borderColor: "#ffff00",
@@ -227,6 +190,166 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({
   );
 };
 
+type RegistrationFormState = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
+type EventRegistrationModalProps = {
+  event: EventItem | null;
+  visible: boolean;
+  onClose: () => void;
+  formState: RegistrationFormState;
+  onChange: (field: keyof RegistrationFormState, value: string) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  isSubmitting: boolean;
+};
+
+const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
+  event,
+  visible,
+  onClose,
+  formState,
+  onChange,
+  onSubmit,
+  isSubmitting,
+}) => {
+  if (!event) return null;
+
+  const labelStyle: React.CSSProperties = {
+    display: "block",
+    fontSize: 16,
+    color: "#1a1a1a",
+    fontWeight: 500,
+    marginBottom: 6,
+  };
+
+  const inputStyle: React.CSSProperties = {
+    height: 48,
+    borderRadius: 8,
+  };
+
+  return (
+    <Modal
+      open={visible}
+      onCancel={onClose}
+      footer={null}
+      width="90%"
+      style={{ maxWidth: 560, top: 24 }}
+      styles={{
+        body: {
+          padding: 0,
+          borderRadius: 12,
+          overflow: "hidden",
+        },
+      }}
+    >
+      <div style={{ backgroundColor: "#fff" }}>
+        <div
+         className="bg-[#FFFF00] p-2 mt-5 rounded-tl-[8px] rounded-tr-[8px]"
+        >
+          <Text style={{ fontSize: 12, color: "#8c8c8c", letterSpacing: 1 }}>
+            EVENT REGISTRATION
+          </Text>
+          <Title level={4} style={{ marginTop: 6, marginBottom: 8 }}>
+            {event.title}
+          </Title>
+          <Text style={{ color: "#666", fontSize: 13 }}>
+            <CalendarOutlined style={{ marginRight: 6 }} />
+            {event.dateDisplay}
+          </Text>
+        </div>
+
+        <form onSubmit={onSubmit} style={{ padding: 24 }}>
+          <div style={{ display: "grid", gap: 16 }}>
+            <div>
+              <Text style={labelStyle}>Full Name</Text>
+              <Input
+                value={formState.name}
+                onChange={(e) => onChange("name", e.target.value)}
+                placeholder="e.g. Mahabur Rahman"
+                size="large"
+                style={inputStyle}
+                className="event-register-input"
+              />
+            </div>
+
+            <div>
+              <Text style={labelStyle}>Email Address</Text>
+              <Input
+                type="email"
+                value={formState.email}
+                onChange={(e) => onChange("email", e.target.value)}
+                placeholder="e.g. mahabur24cse@gmail.com"
+                size="large"
+                style={inputStyle}
+                className="event-register-input"
+              />
+            </div>
+
+            <div>
+              <Text style={labelStyle}>Phone Number</Text>
+              <Input
+                value={formState.phone}
+                onChange={(e) => onChange("phone", e.target.value)}
+                placeholder="e.g. 01712345678"
+                size="large"
+                style={inputStyle}
+                className="event-register-input"
+              />
+            </div>
+          </div>
+
+          <div
+            style={{
+              marginTop: 24,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+            }}
+          >
+            <Text style={{ fontSize: 12, color: "#8c8c8c" }}>
+              We will send confirmation to your email.
+            </Text>
+            <div style={{ display: "flex", gap: 12 }}>
+              <Button className="h-[48px] " onClick={onClose} disabled={isSubmitting}>
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isSubmitting}
+                className="h-[48px]"
+                style={{
+                  backgroundColor: "#ffff00",
+                  borderColor: "#ffff00",
+                  color: "#000",
+                  borderRadius: 24,
+                  fontWeight: 600,
+                  padding: "0 24px",
+                }}
+              >
+                Submit Registration
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <style jsx global>{`
+        .event-register-input.ant-input:focus,
+        .event-register-input.ant-input-focused,
+        .event-register-input.ant-input:hover {
+          box-shadow: none !important;
+          border-color: #d9d9d9 !important;
+        }
+      `}</style>
+    </Modal>
+  );
+};
+
 type EventCardProps = {
   event: EventItem;
   onClick: (event: EventItem) => void;
@@ -236,7 +359,6 @@ const EventCard: React.FC<EventCardProps> = ({ event, onClick }) => {
   return (
     <Card
       hoverable
-      onClick={() => onClick(event)}
       style={{
         height: "100%",
         borderRadius: 16,
@@ -287,7 +409,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onClick }) => {
         }}
       >
         <CalendarOutlined style={{ marginRight: 6 }} />
-        {event.date}
+        {event.dateDisplay}
       </Text>
 
       {/* Event Type */}
@@ -303,7 +425,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onClick }) => {
             border: "1px solid #ffecb3",
           }}
         >
-          {event.type}
+          {event.eventType}
         </span>
       </div>
 
@@ -352,6 +474,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onClick }) => {
             fontSize: 14,
             transition: "all 0.3s ease",
           }}
+          onClick={() => onClick(event)}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "#f2f200";
             e.currentTarget.style.transform = "translateY(-2px)";
@@ -371,6 +494,50 @@ const EventCard: React.FC<EventCardProps> = ({ event, onClick }) => {
 const EventPage: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isRegisterModalVisible, setIsRegisterModalVisible] =
+    useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [registrationForm, setRegistrationForm] =
+    useState<RegistrationFormState>({
+      name: "",
+      email: "",
+      phone: "",
+    });
+  const session = useSession();
+  const token = session.data?.accessToken || "";
+  const islogin = session.status;
+  
+  const isSessionReady = session.status !== "loading";
+
+  const { data: eventsResponse, isLoading, isError } = useQuery<EventsApiResponse>({
+    queryKey: ["events", token],
+    queryFn: async () => {
+      const headers: HeadersInit = token
+        ? { Authorization: `Bearer ${token}` }
+        : {};
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/event`, {
+        method: "GET",
+        headers,
+      });
+      if (!res.ok) throw new Error("Failed to load events");
+      return res.json();
+    },
+    enabled: isSessionReady,
+  });
+
+  const eventsData = useMemo<EventItem[]>(() => {
+    const rawEvents = eventsResponse?.data || [];
+    return rawEvents.map((event) => ({
+      id: event._id,
+      title: event.title,
+      eventType: event.eventType || "Event",
+      image: event.thumbnail || FALLBACK_IMAGE,
+      dateDisplay: formatEventDate(event.date, event.time),
+      time: event.time,
+      preview: buildPreview(event.description),
+      description: event.description || "",
+    }));
+  }, [eventsResponse]);
 
   const handleEventClick = (event: EventItem) => {
     setSelectedEvent(event);
@@ -379,8 +546,131 @@ const EventPage: React.FC = () => {
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
-    setSelectedEvent(null);
   };
+
+  const handleOpenRegisterModal = () => {
+    if (!selectedEvent) return;
+    if (islogin === "unauthenticated") {
+      toast.error("Please login and register.");
+      return;
+    }
+    setRegistrationForm({
+      name: session.data?.user?.name || "",
+      email: session.data?.user?.email || "",
+      phone: "",
+    });
+    setIsRegisterModalVisible(true);
+    setIsModalVisible(false);
+  };
+
+  const handleCloseRegisterModal = () => {
+    setIsRegisterModalVisible(false);
+  };
+
+  useEffect(() => {
+    if (!isModalVisible && !isRegisterModalVisible) {
+      setSelectedEvent(null);
+    }
+  }, [isModalVisible, isRegisterModalVisible]);
+
+  const handleRegisterChange = (
+    field: keyof RegistrationFormState,
+    value: string
+  ) => {
+    setRegistrationForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleRegisterSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    if (islogin === "unauthenticated") {
+      toast.error("Please login and register.");
+      return;
+    }
+    if (!selectedEvent) {
+      toast.error("Please select an event to register.");
+      return;
+    }
+
+    const payload = {
+      name: registrationForm.name.trim(),
+      email: registrationForm.email.trim(),
+      phone: registrationForm.phone.trim(),
+      eventId: selectedEvent.id,
+    };
+
+    if (!payload.name || !payload.email || !payload.phone) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    const toastId = toast.loading("Submitting registration...");
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/event-management`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.message || `Request failed (${res.status})`);
+      }
+
+      toast.success(
+        data?.message || "Registration submitted successfully.",
+        { id: toastId }
+      );
+      setIsRegisterModalVisible(false);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Something went wrong.";
+      toast.error(message, { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          minHeight: "100vh",
+          padding: "80px 20px",
+          textAlign: "center",
+          color: "#666",
+        }}
+      >
+        Loading events...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          minHeight: "100vh",
+          padding: "80px 20px",
+          textAlign: "center",
+          color: "#b91c1c",
+        }}
+      >
+        Failed to load events. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <div
@@ -425,19 +715,36 @@ const EventPage: React.FC = () => {
 
         {/* Events Grid */}
         <Row gutter={[32, 32]} justify="center">
-          {eventsData.map((event) => (
-            <Col
-              key={event.id}
-              xs={24}
-              sm={24}
-              md={12}
-              lg={8}
-              xl={8}
-              xxl={8}
-            >
-              <EventCard event={event} onClick={handleEventClick} />
+          {eventsData.length === 0 ? (
+            <Col xs={24} sm={24} md={12} lg={8} xl={8} xxl={8}>
+              <Card
+                style={{
+                  borderRadius: 16,
+                  border: "2px solid #f0f0f0",
+                  textAlign: "center",
+                  padding: 24,
+                }}
+              >
+                <Paragraph style={{ marginBottom: 0, color: "#666" }}>
+                  No events available.
+                </Paragraph>
+              </Card>
             </Col>
-          ))}
+          ) : (
+            eventsData.map((event) => (
+              <Col
+                key={event.id}
+                xs={24}
+                sm={24}
+                md={12}
+                lg={8}
+                xl={8}
+                xxl={8}
+              >
+                <EventCard event={event} onClick={handleEventClick} />
+              </Col>
+            ))
+          )}
         </Row>
       </div>
 
@@ -446,6 +753,17 @@ const EventPage: React.FC = () => {
         event={selectedEvent}
         visible={isModalVisible}
         onClose={handleCloseModal}
+        onRegister={handleOpenRegisterModal}
+      />
+
+      <EventRegistrationModal
+        event={selectedEvent}
+        visible={isRegisterModalVisible}
+        onClose={handleCloseRegisterModal}
+        formState={registrationForm}
+        onChange={handleRegisterChange}
+        onSubmit={handleRegisterSubmit}
+        isSubmitting={isSubmitting}
       />
     </div>
   );
