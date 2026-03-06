@@ -8,10 +8,8 @@ export const metadata = {
 
 export default function ProfilePage() {
     return (
-        <SubscriptionGuard requireSubscription={true} requireLogin={true}>
-            <main className="max-w-[1600px] mx-auto">
-                <SchoolProfile />
-            </main>
-        </SubscriptionGuard>
+        <main className="max-w-[1600px] mx-auto">
+            <SchoolProfile />
+        </main>
     );
 }

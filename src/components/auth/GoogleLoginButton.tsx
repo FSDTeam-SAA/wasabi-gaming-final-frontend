@@ -51,7 +51,7 @@ export default function GoogleLoginButton() {
         const role = session?.user?.role
 
         if (role === 'school') {
-          window.location.href = '/school/manage-students'
+          window.location.href = '/school/premium-features'
         } else {
           window.location.href = '/dashboard'
         }

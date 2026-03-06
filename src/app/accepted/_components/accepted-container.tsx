@@ -25,13 +25,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 /* ------------------ Schema ------------------ */
 const acceptedSchema = z.object({
-  firstName: z.string().min(1, "fisrt Name is required"),
-  lastName: z.string().min(1, "Last Name is required"),
+  name: z.string().min(1, "Full Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z
     .string()
     .min(10, "Phone number must be at least 10 digits"),
-    
+
 });
 
 type AcceptedFormValues = z.infer<typeof acceptedSchema>;
@@ -49,11 +48,9 @@ const AcceptedContainerPage = () => {
   const form = useForm<AcceptedFormValues>({
     resolver: zodResolver(acceptedSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      name: "",
       email: email || "",
       phone: "",
-
     },
   });
 
@@ -86,24 +83,23 @@ const AcceptedContainerPage = () => {
   });
 
   const onSubmit = (values: AcceptedFormValues) => {
-     if (!schoolId) {
-    toast.error("Invalid invitation link");
-    return;
-  }
+    if (!schoolId) {
+      toast.error("Invalid invitation link");
+      return;
+    }
 
-  const payload = {
-    firstName: values.firstName,
-    lastName: values.lastName,
-    phone: values.phone,
-    email: values.email,
+    const payload = {
+      name: values.name,
+      phone: values.phone,
+      email: values.email,
 
-    // from search params
-    status,
-    // email,
-    schoolId,
-  };
+      // from search params
+      status,
+      // email,
+      schoolId,
+    };
 
-  mutate(payload);
+    mutate(payload);
   };
 
   return (
@@ -118,39 +114,18 @@ const AcceptedContainerPage = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
 
-          {/* First Name */}
+          {/* Full Name */}
           <FormField
             control={form.control}
-            name="firstName"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-semibold">
-                  First Name *
+                  Full Name *
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter first name"
-                    className="h-12 bg-[#FAFAFA] rounded-[16px] placeholder:text-[#424242]/40"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Last Name */}
-          <FormField
-            control={form.control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-semibold">
-                  Last Name *
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter last name"
+                    placeholder="Enter full name"
                     className="h-12 bg-[#FAFAFA] rounded-[16px] placeholder:text-[#424242]/40"
                     {...field}
                   />
