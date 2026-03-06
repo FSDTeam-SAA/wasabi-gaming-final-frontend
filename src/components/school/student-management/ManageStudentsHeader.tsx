@@ -110,7 +110,7 @@ export default function ManageStudentsHeader() {
     enabled: status === "authenticated" && !!token, // only run when logged in
   });
 
-  // Define stats based on real API data (you can rename or add more)
+  // Define stats based on real API data
   const stats = [
     {
       icon: UserPlus,
@@ -118,14 +118,19 @@ export default function ManageStudentsHeader() {
       value: data?.totalStudents ?? 0,
     },
     {
-      icon: TrendingUp,
+      icon: TrendingUp, // You can use a different icon if you like
       label: "Active Students",
       value: data?.activeStudents ?? 0,
     },
     {
       icon: CircleCheckBig,
-      label: "Inactive Students",
-      value: data?.inactiveStudents ?? 0,
+      label: "Total Assessments",
+      value: data?.totalAssessments ?? 0,
+    },
+    {
+      icon: TrendingUp, // You can use a different icon if you like
+      label: "Total Applications",
+      value: data?.totalAppliedApplications ?? 0,
     },
   ];
 
@@ -141,9 +146,10 @@ export default function ManageStudentsHeader() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-12 px-6 max-w-[1600px] mx-auto pb-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-12 px-6 max-w-[1600px] mx-auto pb-20">
         {isLoading || status === "loading" ? (
           <>
+            <StatCardSkeleton />
             <StatCardSkeleton />
             <StatCardSkeleton />
             <StatCardSkeleton />

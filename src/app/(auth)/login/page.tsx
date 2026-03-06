@@ -78,7 +78,7 @@ export default function LoginPage() {
         if (session?.user?.role === 'student') {
           router.push('/dashboard')
         } else if (session?.user?.role === 'school') {
-          router.push('/school/manage-students')
+          router.push('/school/premium-features')
         } else {
           // Fallback to home if role is not recognized
           router.push('/')
