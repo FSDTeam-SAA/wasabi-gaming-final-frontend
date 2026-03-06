@@ -91,7 +91,7 @@ export default function PlansPage() {
   // Handle Subscription
   const handleSubscribe = async (plan: any) => {
     if (plan.price === 'Custom') {
-      router.push('/contact')
+      router.push('/contact-us')
       return
     }
 
