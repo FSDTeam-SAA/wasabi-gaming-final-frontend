@@ -62,7 +62,11 @@ export default function LoginPage() {
       })
 
       if (res?.error) {
-        toast.error('Login failed. Please check your credentials.')
+        if (res.error === 'CredentialsSignin') {
+          toast.error('Login failed. Please check your credentials.')
+        } else {
+          toast.error(res.error)
+        }
       } else {
         toast.success('Login successful!')
 
