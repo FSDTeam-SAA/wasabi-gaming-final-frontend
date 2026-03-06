@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { Search, Plus, Trash } from 'lucide-react'
+import { Search, Plus, Trash, Download, MoreVertical, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import {
   Table,
@@ -21,10 +21,25 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Link from 'next/link'
 
@@ -44,8 +59,30 @@ type Student = {
 }
 
 // ────────────────────────────────────────────────
-// API fetch function
+// API fetch functions
 // ────────────────────────────────────────────────
+const deleteStudent = async ({ id, token }: { id: string; token: string }) => {
+  if (!token) throw new Error('No authentication token')
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/school-management/${id}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  )
+
+  if (!res.ok) {
+    const errorJson = await res.json()
+    throw new Error(errorJson.message || 'Failed to delete student')
+  }
+
+  return res.json()
+}
+
 const fetchStudents = async (token: string | undefined): Promise<Student[]> => {
   if (!token) throw new Error('No authentication token')
 
@@ -67,7 +104,7 @@ const fetchStudents = async (token: string | undefined): Promise<Student[]> => {
 
   const json = await res.json()
   const studentsData = json?.data
- 
+
 
   if (!Array.isArray(studentsData)) {
     console.error('Expected array in response.data.data but got:', studentsData)
@@ -75,13 +112,25 @@ const fetchStudents = async (token: string | undefined): Promise<Student[]> => {
   }
 
   return studentsData.map((student: any) => {
-    const firstName = student.firstName || ''
-    const lastName = student.lastName || ''
-    const fullName = `${firstName} ${lastName}`.trim() || 'Unknown'
+    const profile = student.profile || {}
+    const invite = student.invite || {}
+    const stats = student.stats || {}
+
+    const name = invite.name || 'Unknown'
+    const email = profile.email || invite.email || 'N/A'
+    const status = profile.status || 'unknown'
+
+    // As per the image, completed could be string percentage or number.
+    // If stats just gives totalAssessments, we mapped it directly.
+    // You could also compute percentage if maxAssessments was known.
+    // Assuming backend totalAssessments maps to completed.
+    const completed = stats.totalAssessments || 0
+    const applications = stats.totalApplications || 0
+    const interviews = 0
 
     let initial = '?'
-    if (fullName !== 'Unknown') {
-      const names = fullName.split(/\s+/).filter(Boolean)
+    if (name !== 'Unknown') {
+      const names = name.split(/\s+/).filter(Boolean)
       if (names.length >= 2) {
         initial = (names[0][0] + names[1][0]).toUpperCase()
       } else {
@@ -90,15 +139,15 @@ const fetchStudents = async (token: string | undefined): Promise<Student[]> => {
     }
 
     return {
-      key: student._id,
+      key: profile._id || invite._id || Math.random().toString(),
       initial,
-      name: student?.name || 'Unknown',
-      email: student.email || 'N/A',
-      status: student.status || 'unknown',
-      completed: 0,
-      applications: 0,
-      interviews: 0,
-      profileImage: student.profileImage || null,
+      name,
+      email,
+      status,
+      completed,
+      applications,
+      interviews,
+      profileImage: profile.profileImage || null,
     }
   })
 }
@@ -156,8 +205,13 @@ export default function ManageStudentsTable() {
   const [filterStatus, setFilterStatus] = useState('All Status')
   const [currentPage, setCurrentPage] = useState(1)
 
+  // Deletion state
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
   const pageSize = 6
 
+  const queryClient = useQueryClient()
   const { data, isLoading, error } = useQuery<Student[]>({
     queryKey: ['students', token],
     queryFn: () => fetchStudents(token),
@@ -203,17 +257,69 @@ export default function ManageStudentsTable() {
   const hasPrevious = currentPage > 1
   const hasNext = currentPage * pageSize < total
 
-  const handleTrackStudent = (student: Student) => {
-    router.push(`/school/student/applications/${student.key}`)
+  const handleDelete = (student: Student) => {
+    setStudentToDelete(student)
+    setIsDeleteDialogOpen(true)
   }
 
-  const handleInviteForJob = (student: Student) => {
-    router.push(`/school/student/invite/${student.key}`)
+  const deleteMutation = useMutation({
+    mutationFn: deleteStudent,
+    onSuccess: () => {
+      toast.success('Student deleted successfully')
+      queryClient.invalidateQueries({ queryKey: ['students', token] })
+      setIsDeleteDialogOpen(false)
+      setStudentToDelete(null)
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to delete student')
+    },
+  })
+
+  const confirmDelete = () => {
+    if (studentToDelete && token) {
+      deleteMutation.mutate({ id: studentToDelete.key, token })
+    }
   }
 
-  const handleDelete = (key: string) => {
-    console.log('Delete student:', key)
-    // TODO: useMutation + invalidate
+  const handleExport = () => {
+    if (!filteredData.length) return;
+
+    // Javascript best practice for CSV generation from JSON data
+    const headers = [
+      "Student Name",
+      "Email",
+      "Status",
+      "Completed Assessments",
+      "Applications",
+      "Interviews"
+    ];
+
+    // Note: completed here might be a number but display shows "%", 
+    // appending % for CSV if that's preferred.
+    const csvContent = [
+      headers.join(","),
+      ...filteredData.map(s => {
+        // Escape quotes if any exist in data
+        const row = [
+          `"${s.name.replace(/"/g, '""')}"`,
+          `"${s.email.replace(/"/g, '""')}"`,
+          `"${s.status.replace(/"/g, '""')}"`,
+          `"${s.completed}%"`,
+          `"${s.applications}"`,
+          `"${s.interviews}"`
+        ];
+        return row.join(",");
+      })
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `students_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   if (sessionStatus === 'loading' || isLoading) {
@@ -233,7 +339,7 @@ export default function ManageStudentsTable() {
               <TableHeader className="bg-[#FFFEF0]">
                 <TableRow className="hover:bg-transparent border-none">
                   <TableHead className="h-14 px-6 min-w-[200px]">
-                    Student Name 
+                    Student Name
                   </TableHead>
                   <TableHead className="h-14 px-6 min-w-[220px]">
                     Email
@@ -311,6 +417,18 @@ export default function ManageStudentsTable() {
               <SelectItem value="Inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
+
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExport}
+            className="h-12 px-4 rounded-xl border-gray-200 font-medium whitespace-nowrap bg-white text-gray-700 hover:bg-gray-50"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Export</span>
+            <span className="sm:hidden">Export</span>
+          </Button>
+
           <Link href="/school/invite-students">
             <Button
               size="sm"
@@ -344,6 +462,9 @@ export default function ManageStudentsTable() {
                 </TableHead>
                 <TableHead className="font-bold text-[#1E1E1E] h-14 px-4 sm:px-6 text-center min-w-[110px]">
                   Applications
+                </TableHead>
+                <TableHead className="font-bold text-[#1E1E1E] h-14 px-4 sm:px-6 text-center min-w-[100px]">
+                  Interviews
                 </TableHead>
 
                 <TableHead className="font-bold text-[#1E1E1E] h-14 px-4 sm:px-6 text-center min-w-[200px] sm:min-w-[280px]">
@@ -413,28 +534,44 @@ export default function ManageStudentsTable() {
 
                     <TableCell className="px-4 sm:px-6">
                       <div className="flex items-center gap-2 justify-center">
-                        <div className="w-full max-w-xs h-2 bg-yellow-200 rounded-full overflow-hidden">
+                        <div className="w-full max-w-[120px] h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-[#FFFF00] rounded-full transition-all duration-500"
                             style={{ width: `${student.completed}%` }}
                           />
                         </div>
-                        <span className="font-bold text-gray-700 text-sm min-w-fit">
+                        <span className="font-medium text-gray-500 text-xs min-w-fit">
                           {student.completed}%
                         </span>
                       </div>
                     </TableCell>
 
-                    <TableCell className="px-4 sm:px-6 text-center font-bold text-gray-700 text-sm">
+                    <TableCell className="px-4 sm:px-6 text-center font-medium text-gray-700 text-sm">
                       {student.applications}
+                    </TableCell>
+
+                    <TableCell className="px-4 sm:px-6 text-center font-medium text-gray-700 text-sm">
+                      {student.interviews}
                     </TableCell>
 
                     <TableCell className="px-4 sm:px-6">
                       <div className="flex gap-3 justify-center items-center">
-                        <Trash
-                          className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-                          onClick={() => handleDelete(student.key)}
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-white border-none shadow-[0px_8px_24px_rgba(0,0,0,0.12)] min-w-[110px] p-1 rounded-xl">
+                            <DropdownMenuItem
+                              className="text-red-500 cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-50 focus:bg-red-50 focus:text-red-500 transition-colors"
+                              onClick={() => handleDelete(student)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span className="text-sm font-semibold text-red-600">Delete</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -477,6 +614,39 @@ export default function ManageStudentsTable() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-white">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete{' '}
+              <span className="font-bold text-gray-900">
+                {studentToDelete?.name}
+              </span>
+              ? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+            >
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete Student'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
