@@ -109,6 +109,16 @@ const ReviewInterview = () => {
 
   const currentAnswer = data?.session?.answers[activeIdx];
   const feedback = currentAnswer?.aiResult?.feedback;
+  const feedbackTimeline = currentAnswer?.aiResult?.feedback_timeline;
+  const openingHookSecond = feedbackTimeline?.opening_hook?.secound;
+  const openingHookSecondLabel =
+    openingHookSecond !== undefined && openingHookSecond !== null
+      ? `${openingHookSecond}s`
+      : "0s";
+  const openingHookText = feedbackTimeline?.opening_hook?.text;
+  const fillerWordsText = feedbackTimeline?.filler_words;
+  const strongerAnswerText = feedbackTimeline?.stronger_answer;
+  console.log(strongerAnswerText)
 
   return (
     <div className="pb-8 border-b border-black">
@@ -243,26 +253,22 @@ const ReviewInterview = () => {
               <div className="flex items-center gap-3 mb-2">
                 <CheckCircle2 size={18} className="text-[#00D084]" />
                 <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-mono">
-                  {duration > 0 ? formatTime(duration) : "0:00"}
+                  {openingHookSecondLabel}
                 </span>
                 <h4 className="text-sm font-bold">Great opening hook!</h4>
               </div>
               <p className="text-xs leading-relaxed text-gray-500 ml-7">
-                You started with a strong, confident statement that immediately
-                answered the core question.
+                {openingHookText || "No opening hook feedback available."}
               </p>
             </div>
 
             <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-2xl">
               <div className="flex items-center gap-3 mb-2">
                 <Lightbulb size={18} className="text-[#FF6B2C]" />
-                {/* <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-mono">
-                  0:45
-                </span> */}
                 <h4 className="text-sm font-bold">Watch the filler words</h4>
               </div>
               <p className="text-xs leading-relaxed text-gray-500 ml-7">
-                {feedback?.areas_for_improvement?.slice(0, 100)}...
+                {fillerWordsText || "No filler words feedback available."}
               </p>
             </div>
           </div>
@@ -274,9 +280,9 @@ const ReviewInterview = () => {
               <h3 className="font-bold">Example of a Stronger Answer</h3>
             </div>
             <p className="text-xs text-[#92400E] leading-loose italic mb-4">
-              "A more impactful way to explain this would be to focus on
-              technical specifics. For instance, clearly outlining the
-              trade-offs between different architectural approaches..."
+              {strongerAnswerText
+                ? `"${strongerAnswerText}"`
+                : "No stronger answer example available."}
             </p>
             <div className="bg-[#FEFCE8] text-[#854D0E] text-[10px] font-bold py-2 px-4 rounded-full inline-flex items-center gap-2">
               ✨ Try this structure in your next attempt!

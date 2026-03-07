@@ -27,8 +27,11 @@ dist-ssr
 .next
 
 
-.env
 env
 
 monir
 asduifashldfsd
+config.bat
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
