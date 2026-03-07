@@ -15,7 +15,7 @@ import {
   Users,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ShowOpenPosition from "./ShowOpenPosition";
 import Image from "next/image";
 import Link from "next/link";
@@ -113,6 +113,8 @@ function ViewDetailsLawFirms() {
   const [activeTab, setActiveTab] = useState<
     "overview" | "positions" | "culture"
   >("overview");
+  const [recommendedJobsCount, setRecommendedJobsCount] = useState(0);
+  const [recommendedJobsLoading, setRecommendedJobsLoading] = useState(false);
 
   // Fetch law firm data from API
   const {
@@ -156,6 +158,58 @@ function ViewDetailsLawFirms() {
     },
     enabled: !!token,
   });
+
+  useEffect(() => {
+    if (!token) {
+      setRecommendedJobsCount(0);
+      return;
+    }
+
+    let isMounted = true;
+
+    const fetchRecommendedJobs = async () => {
+      setRecommendedJobsLoading(true);
+
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/recommended-jobs`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch recommended jobs");
+
+        const result = await res.json();
+
+        if (isMounted) {
+          if (result.success && Array.isArray(result.data)) {
+            setRecommendedJobsCount(result.data.length);
+          } else {
+            setRecommendedJobsCount(0);
+          }
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setRecommendedJobsCount(0);
+        }
+      } finally {
+        if (isMounted) {
+          setRecommendedJobsLoading(false);
+        }
+      }
+    };
+
+    fetchRecommendedJobs();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [token]);
 
   const isSubscriptionActive = profileData?.data?.data?.isSubscription === true;
   const subscriptionName = profileData?.data?.subscription?.name ?? "";
@@ -720,10 +774,11 @@ function ViewDetailsLawFirms() {
                             Your Career Strengths
                           </h3>
                           <p className="text-sm sm:text-base text-[#4A5565] leading-relaxed mb-4">
-                            Based on your psychometric test results, you excel
-                            in analytical thinking and problem-solving. We've
-                            found 5 new job opportunities that match your
-                            profile.
+                            Based on your profile and interests, this law firm
+                            aligns with your strengths in analytical thinking
+                            and problem-solving. We found{" "}
+                            {recommendedJobsLoading ? "..." : recommendedJobsCount}{" "}
+                            new job opportunities that match your profile.
                           </p>
 
                           {!isPremium && (
