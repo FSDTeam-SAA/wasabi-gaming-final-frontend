@@ -137,34 +137,12 @@ const ApplicationTrackerContainer = () => {
                       </span>
                     )}
                   </div>
-                  {/* <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      <span>Deadline: {new Date(app.applicationDeadline).toLocaleDateString("en-GB")}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4" />
-                        <span>{app.salaryRange}</span>
-                      </div> */}
+                
                 </div>
 
                 <div className="flex items-center gap-3 mt-auto">
-                  {/* View Details - Main Button */}
-                  {/* <Button
-                    onClick={async () => {
-                      setSelectedJobId(app.jobId); // 
-                      await fetchSingleJob(); // 
-                    }}
-                    className="flex-1 h-[36px] flex items-center justify-center gap-2 rounded-[14px] border-[1.5px] border-[#FFFF00] bg-[#FFFF00] hover:bg-transparent text-sm leading-[20px] text-[#1E1E1E] font-medium transition-all"
-                  >
-                    <Eye className="w-4 h-4" />
-                    View Details
-                  </Button> */}
+                 
                   <JobDetailsModal id={app?.jobId} />
-
-                  {/* Edit Button */}
-                  {/* <button className="h-[36px] w-[36px] flex items-center justify-center rounded-[12px] border border-gray-300 hover:bg-gray-100 transition">
-                    <SquarePen className="w-4 h-4 text-gray-600" />
-                  </button> */}
                   <EditApplyjob id={app?.jobId} />
 
                   {/* Refresh Button */}
