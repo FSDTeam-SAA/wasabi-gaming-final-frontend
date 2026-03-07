@@ -28,7 +28,7 @@ export default function AssessmentPage() {
   const assessmentId = params.id as string
   const content = {
      instructions: [
-      'Summarize the main issues',
+      'Summarise the main issues',
       'Explain potential impact on client relationship',
       'Suggest two next steps',
     ],
