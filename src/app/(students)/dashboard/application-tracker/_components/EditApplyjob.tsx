@@ -10,7 +10,7 @@ import {
   UserRound,
   ExternalLink,
 } from "lucide-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -33,10 +33,13 @@ interface Job {
 }
 
 const STATUS_PROGRESS: Record<string, number> = {
-  Applied: 25,
-  Interview: 50,
+  Applied: 10,
+  Applying: 25,
+  "Psychometric Test": 40,
+  "Researching Firm": 50,
+  "Assessment Centre": 70,
+  Interview: 80,
   Offer: 100,
-  Rejected: 0,
 };
 
 export default function EditApplyjob({ id }: EditApplyjobProps) {
@@ -47,6 +50,7 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
 
   const session = useSession();
   const token = session?.data?.accessToken;
+  const queryClient = useQueryClient();
 
   const {
     data: companyData,
@@ -116,6 +120,8 @@ export default function EditApplyjob({ id }: EditApplyjobProps) {
     },
     onSuccess: () => {
       toast.success("Application updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["application-tracker"] });
+      queryClient.invalidateQueries({ queryKey: ["companydata", id] });
       setIsOpen(false);
     },
     onError: (err: any) => {

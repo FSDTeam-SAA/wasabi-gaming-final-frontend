@@ -32,6 +32,9 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 
+
+
+
 const { Title, Text, Paragraph } = Typography;
 const { Dragger } = Upload;
 

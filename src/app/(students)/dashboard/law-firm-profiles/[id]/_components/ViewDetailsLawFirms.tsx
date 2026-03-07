@@ -15,7 +15,7 @@ import {
   Users,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ShowOpenPosition from "./ShowOpenPosition";
 import Image from "next/image";
 import Link from "next/link";
@@ -113,6 +113,8 @@ function ViewDetailsLawFirms() {
   const [activeTab, setActiveTab] = useState<
     "overview" | "positions" | "culture"
   >("overview");
+  const [recommendedJobsCount, setRecommendedJobsCount] = useState(0);
+  const [recommendedJobsLoading, setRecommendedJobsLoading] = useState(false);
 
   // Fetch law firm data from API
   const {
@@ -157,14 +159,70 @@ function ViewDetailsLawFirms() {
     enabled: !!token,
   });
 
-  const datass = profileData?.data?.subscription?.name ?? "";
-  const isPremium = datass !== "" && datass !== "Free Plan";
+  useEffect(() => {
+    if (!token) {
+      setRecommendedJobsCount(0);
+      return;
+    }
+
+    let isMounted = true;
+
+    const fetchRecommendedJobs = async () => {
+      setRecommendedJobsLoading(true);
+
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/recommended-jobs`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch recommended jobs");
+
+        const result = await res.json();
+
+        if (isMounted) {
+          if (result.success && Array.isArray(result.data)) {
+            setRecommendedJobsCount(result.data.length);
+          } else {
+            setRecommendedJobsCount(0);
+          }
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setRecommendedJobsCount(0);
+        }
+      } finally {
+        if (isMounted) {
+          setRecommendedJobsLoading(false);
+        }
+      }
+    };
+
+    fetchRecommendedJobs();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [token]);
+
+  const isSubscriptionActive = profileData?.data?.data?.isSubscription === true;
+  const subscriptionName = profileData?.data?.subscription?.name ?? "";
+  const isPremium = isSubscriptionActive && subscriptionName === "premium";
 
   const handlePremiumTab = (tab: "positions" | "culture") => {
     if (!isPremium) {
-      toast.error("This section is for premium subscribers only. Upgrade your plan to access it.", {
-        duration: 3000,
-      });
+      toast.error(
+        "This section is for premium subscribers only. Upgrade your plan to access it.",
+        {
+          duration: 3000,
+        },
+      );
       setTimeout(() => router.push("/plans"), 1500);
       return;
     }
@@ -388,20 +446,22 @@ function ViewDetailsLawFirms() {
             <div className="flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`flex-1 min-w-[130px] sm:min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${activeTab === "overview"
+                className={`flex-1 min-w-[130px] sm:min-w-[150px] text-sm font-medium py-3 rounded-full transition-all ${
+                  activeTab === "overview"
                     ? "bg-[#FFFF00] text-black shadow-sm"
                     : "text-[#1E1E1E]"
-                  }`}
+                }`}
               >
                 Overview
               </button>
 
               <button
                 onClick={() => handlePremiumTab("positions")}
-                className={`flex-1 min-w-[160px] sm:min-w-[180px] text-sm font-medium py-3 rounded-full transition-all flex items-center justify-center gap-1.5 ${activeTab === "positions"
+                className={`flex-1 min-w-[160px] sm:min-w-[180px] text-sm font-medium py-3 rounded-full transition-all flex items-center justify-center gap-1.5 ${
+                  activeTab === "positions"
                     ? "bg-[#FFFF00] text-black shadow-sm"
                     : "text-[#1E1E1E]"
-                  }`}
+                }`}
               >
                 {!isPremium && <Lock className="w-3.5 h-3.5 flex-shrink-0" />}
                 Open Positions ({firmData?.jobs?.length ?? 0})
@@ -409,10 +469,11 @@ function ViewDetailsLawFirms() {
 
               <button
                 onClick={() => handlePremiumTab("culture")}
-                className={`flex-1 min-w-[170px] sm:min-w-[190px] text-sm font-medium py-3 rounded-full transition-all flex items-center justify-center gap-1.5 ${activeTab === "culture"
+                className={`flex-1 min-w-[170px] sm:min-w-[190px] text-sm font-medium py-3 rounded-full transition-all flex items-center justify-center gap-1.5 ${
+                  activeTab === "culture"
                     ? "bg-[#FFFF00] text-black shadow-sm"
                     : "text-[#1E1E1E]"
-                  }`}
+                }`}
               >
                 {!isPremium && <Lock className="w-3.5 h-3.5 flex-shrink-0" />}
                 Cultures & Benefits
@@ -589,97 +650,104 @@ function ViewDetailsLawFirms() {
                     </div>
                   </div>
 
-                  <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Image
-                          src="/lawicon.png"
-                          width={1000}
-                          height={1000}
-                          alt="Technology Initiatives"
-                          className="w-6 h-6 object-cover"
-                        />
+                  {isPremium && (
+                    <>
+                      <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Image
+                              src="/lawicon.png"
+                              width={1000}
+                              height={1000}
+                              alt="Technology Initiatives"
+                              className="w-6 h-6 object-cover"
+                            />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
+                              {firmData?.technologyInitiatives?.title ||
+                                "Technology Initiatives"}
+                            </h2>
+                            <h3 className="text-base font-normal text-[#4A5565] mb-3">
+                              {firmData.technologyInitiatives?.description}
+                            </h3>
+
+                            <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                              Url Link:{" "}
+                              <span className="text-blue-600 text-base break-all">
+                                {firmData.technologyInitiatives?.link}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Image
+                              src="/lawicon.png"
+                              width={1000}
+                              height={1000}
+                              alt="Diversity, Equity & Inclusion"
+                              className="w-6 h-6 object-cover"
+                            />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
+                              {firmData?.diversityEquityAndInclusion?.title ||
+                                "Diversity, Equity & Inclusion"}
+                            </h2>
+                            <h3 className="text-base font-normal text-[#4A5565] mb-3">
+                              {
+                                firmData.diversityEquityAndInclusion
+                                  ?.description
+                              }
+                            </h3>
+
+                            <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                              Url Link:{" "}
+                              <span className="text-blue-600 text-base break-all">
+                                {firmData.diversityEquityAndInclusion?.link}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
-                          {firmData?.technologyInitiatives?.title ||
-                            "Technology Initiatives"}
-                        </h2>
-                        <h3 className="text-base font-normal text-[#4A5565] mb-3">
-                          {firmData.technologyInitiatives?.description}
-                        </h3>
+                      <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Image
+                              src="/lawicon.png"
+                              width={1000}
+                              height={1000}
+                              alt="CSR & Pro Bono"
+                              className="w-6 h-6 object-cover"
+                            />
+                          </div>
 
-                        <p className="text-gray-700 text-sm leading-relaxed mb-2">
-                          Url Link:{" "}
-                          <span className="text-blue-600 text-base break-all">
-                            {firmData.technologyInitiatives?.link}
-                          </span>
-                        </p>
+                          <div className="flex-1 min-w-0">
+                            <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
+                              {firmData?.CSRAndProBono?.title ||
+                                "CSR & Pro Bono"}
+                            </h2>
+                            <h3 className="text-base font-normal text-[#4A5565] mb-3">
+                              {firmData.CSRAndProBono?.description}
+                            </h3>
+
+                            <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                              Url Link:{" "}
+                              <span className="text-blue-600 text-base break-all">
+                                {firmData.CSRAndProBono?.link}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Image
-                          src="/lawicon.png"
-                          width={1000}
-                          height={1000}
-                          alt="Diversity, Equity & Inclusion"
-                          className="w-6 h-6 object-cover"
-                        />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
-                          {firmData?.diversityEquityAndInclusion?.title ||
-                            "Diversity, Equity & Inclusion"}
-                        </h2>
-                        <h3 className="text-base font-normal text-[#4A5565] mb-3">
-                          {firmData.diversityEquityAndInclusion?.description}
-                        </h3>
-
-                        <p className="text-gray-700 text-sm leading-relaxed mb-2">
-                          Url Link:{" "}
-                          <span className="text-blue-600 text-base break-all">
-                            {firmData.diversityEquityAndInclusion?.link}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="shadow-md rounded-[12px] pt-6 sm:pt-8 p-4 sm:p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Image
-                          src="/lawicon.png"
-                          width={1000}
-                          height={1000}
-                          alt="CSR & Pro Bono"
-                          className="w-6 h-6 object-cover"
-                        />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-normal text-[#1E1E1E] mb-2">
-                          {firmData?.CSRAndProBono?.title || "CSR & Pro Bono"}
-                        </h2>
-                        <h3 className="text-base font-normal text-[#4A5565] mb-3">
-                          {firmData.CSRAndProBono?.description}
-                        </h3>
-
-                        <p className="text-gray-700 text-sm leading-relaxed mb-2">
-                          Url Link:{" "}
-                          <span className="text-blue-600 text-base break-all">
-                            {firmData.CSRAndProBono?.link}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
 
                   <div className="space-y-6">
                     {/* Career Strengths */}
@@ -706,13 +774,14 @@ function ViewDetailsLawFirms() {
                             Your Career Strengths
                           </h3>
                           <p className="text-sm sm:text-base text-[#4A5565] leading-relaxed mb-4">
-                            Based on your psychometric test results, you excel
-                            in analytical thinking and problem-solving. We've
-                            found 5 new job opportunities that match your
-                            profile.
+                            Based on your profile and interests, this law firm
+                            aligns with your strengths in analytical thinking
+                            and problem-solving. We found{" "}
+                            {recommendedJobsLoading ? "..." : recommendedJobsCount}{" "}
+                            new job opportunities that match your profile.
                           </p>
 
-                          {(datass === "Free Plan" || datass === "") && (
+                          {!isPremium && (
                             <Link href="/plans">
                               <button className="bg-[#FFFF00] rounded-[24px] w-full sm:w-[215px] hover:bg-[#FFFF00]/90 text-[#1E1E1E] font-normal py-3 px-2 transition-colors shadow-md">
                                 Upgrade Your Plan
@@ -767,7 +836,7 @@ function ViewDetailsLawFirms() {
 
                     <div className="px-4 sm:px-6">
                       {Array.isArray(firmData?.cultureAndValue) &&
-                        firmData.cultureAndValue.length > 0 ? (
+                      firmData.cultureAndValue.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                           {firmData.cultureAndValue.map(
                             (item: string, index: number) => (
@@ -800,7 +869,7 @@ function ViewDetailsLawFirms() {
 
                     <div className="px-4 sm:px-6">
                       {Array.isArray(firmData?.benefitsAndPerks) &&
-                        firmData.benefitsAndPerks.length > 0 ? (
+                      firmData.benefitsAndPerks.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                           {firmData.benefitsAndPerks.map(
                             (item: string, index: number) => (
