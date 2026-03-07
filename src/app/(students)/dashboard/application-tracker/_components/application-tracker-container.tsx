@@ -143,7 +143,7 @@ const ApplicationTrackerContainer = () => {
                 <div className="flex items-center gap-3 mt-auto">
                  
                   <JobDetailsModal id={app?.jobId} />
-                  <EditApplyjob id={app?.jobId} />
+                  <EditApplyjob id={app?.jobId} statuss={app?.status} />
 
                   {/* Refresh Button */}
                   <button onClick={() => window.location.reload()} className="h-[36px] w-[36px] flex items-center justify-center rounded-[12px] border border-gray-300 hover:bg-gray-100 transition">
